@@ -2,6 +2,16 @@ FROM oven/bun:1.3.10 AS builder
 
 WORKDIR /app
 
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+      python3 \
+      python-is-python3 \
+      python3-pip \
+      make \
+      g++ \
+      pkg-config && \
+    rm -rf /var/lib/apt/lists/*
+
 COPY package.json bun.lock tsconfig.json ./
 COPY apps/client/package.json apps/client/package.json
 COPY apps/server/package.json apps/server/package.json
