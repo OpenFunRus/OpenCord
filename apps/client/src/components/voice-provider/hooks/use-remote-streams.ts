@@ -1,5 +1,5 @@
 import type { TRemoteStreams, TRemoteUserStreamKinds } from '@/types';
-import { StreamKind } from '@sharkord/shared';
+import { StreamKind } from '@opencord/shared';
 import { useCallback, useState } from 'react';
 
 export type TExternalStreamState = {
@@ -190,3 +190,4 @@ const useRemoteStreams = () => {
 };
 
 export { useRemoteStreams };
+

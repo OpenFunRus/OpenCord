@@ -11,7 +11,7 @@ import {
   Input,
   Switch,
   Textarea
-} from '@sharkord/ui';
+} from '@opencord/ui';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -71,3 +71,4 @@ const General = memo(({ channelId }: TGeneralProps) => {
 });
 
 export { General };
+

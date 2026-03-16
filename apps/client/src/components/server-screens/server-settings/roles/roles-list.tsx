@@ -1,6 +1,6 @@
 import { getTRPCClient } from '@/lib/trpc';
-import type { TJoinedRole } from '@sharkord/shared';
-import { Button, Card, CardContent, CardHeader, CardTitle } from '@sharkord/ui';
+import type { TJoinedRole } from '@opencord/shared';
+import { Button, Card, CardContent, CardHeader, CardTitle } from '@opencord/ui';
 import { Plus } from 'lucide-react';
 import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -73,3 +73,4 @@ const RolesList = memo(
 );
 
 export { RolesList };
+

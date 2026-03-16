@@ -1,4 +1,4 @@
-import { Permission } from '@sharkord/shared';
+import { Permission } from '@opencord/shared';
 import { getSettings } from '../../db/queries/server';
 import { protectedProcedure } from '../../utils/trpc';
 
@@ -11,3 +11,4 @@ const getSettingsRoute = protectedProcedure.query(async ({ ctx }) => {
 });
 
 export { getSettingsRoute };
+

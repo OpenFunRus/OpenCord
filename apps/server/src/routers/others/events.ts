@@ -1,4 +1,4 @@
-import { ServerEvents } from '@sharkord/shared';
+import { ServerEvents } from '@opencord/shared';
 import { protectedProcedure } from '../../utils/trpc';
 
 const onServerSettingsUpdateRoute = protectedProcedure.subscription(
@@ -8,3 +8,4 @@ const onServerSettingsUpdateRoute = protectedProcedure.subscription(
 );
 
 export { onServerSettingsUpdateRoute };
+

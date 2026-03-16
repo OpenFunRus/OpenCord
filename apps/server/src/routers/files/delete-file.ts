@@ -1,4 +1,4 @@
-import { isEmptyMessage, Permission } from '@sharkord/shared';
+import { isEmptyMessage, Permission } from '@opencord/shared';
 import { eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '../../db';
@@ -49,3 +49,4 @@ const deleteFileRoute = protectedProcedure
   });
 
 export { deleteFileRoute };
+

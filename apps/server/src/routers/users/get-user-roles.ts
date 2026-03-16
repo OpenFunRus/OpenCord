@@ -1,4 +1,4 @@
-import type { Permission, TJoinedRole } from '@sharkord/shared';
+import type { Permission, TJoinedRole } from '@opencord/shared';
 import { eq } from 'drizzle-orm';
 import { db } from '../../db';
 import { rolePermissions, roles, userRoles } from '../../db/schema';
@@ -37,3 +37,4 @@ const getUserRoles = async (userId: number): Promise<TJoinedRole[]> => {
 };
 
 export { getUserRoles };
+

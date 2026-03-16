@@ -5,7 +5,7 @@ import {
   parseTrpcErrors,
   type TJoinedEmoji,
   type TTrpcErrors
-} from '@sharkord/shared';
+} from '@opencord/shared';
 import {
   Button,
   Card,
@@ -14,7 +14,7 @@ import {
   CardTitle,
   Input,
   Label
-} from '@sharkord/ui';
+} from '@opencord/ui';
 import { filesize } from 'filesize';
 import { Trash2 } from 'lucide-react';
 import { memo, useCallback, useState } from 'react';
@@ -95,7 +95,7 @@ const UpdateEmoji = memo(
             <div>
               <div className="font-medium">:{selectedEmoji.name}:</div>
               <div className="text-sm text-muted-foreground">
-                {filesize(selectedEmoji.file.size)} • {t('emojiUploadedBy')}{' '}
+                {filesize(selectedEmoji.file.size)} | {t('emojiUploadedBy')}{' '}
                 {selectedEmoji.user.name}
               </div>
             </div>
@@ -138,3 +138,4 @@ const UpdateEmoji = memo(
 );
 
 export { UpdateEmoji };
+

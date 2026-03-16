@@ -2,7 +2,7 @@
   "name": "plugin-with-settings",
   "version": "0.0.1",
   "module": "src/index.ts",
-  "sharkord": {
+  "opencord": {
     "entry": {
       "server": "index.js",
       "client": "index.js"
@@ -12,3 +12,4 @@
   },
   "type": "module"
 }
+

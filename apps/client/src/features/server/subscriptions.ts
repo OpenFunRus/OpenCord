@@ -1,6 +1,6 @@
 import { logDebug } from '@/helpers/browser-logger';
 import { getTRPCClient } from '@/lib/trpc';
-import { type TPublicServerSettings } from '@sharkord/shared';
+import { type TPublicServerSettings } from '@opencord/shared';
 import { setPublicServerSettings } from './actions';
 import { subscribeToCategories } from './categories/subscriptions';
 import { subscribeToChannels } from './channels/subscriptions';
@@ -52,3 +52,4 @@ const initSubscriptions = () => {
 };
 
 export { initSubscriptions };
+

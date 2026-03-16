@@ -1,4 +1,4 @@
-import { ActivityLogType, Permission } from '@sharkord/shared';
+import { ActivityLogType, Permission } from '@opencord/shared';
 import { z } from 'zod';
 import { db } from '../../db';
 import { publishEmoji } from '../../db/publishers';
@@ -47,3 +47,4 @@ const addEmojiRoute = protectedProcedure
   });
 
 export { addEmojiRoute };
+

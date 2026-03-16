@@ -4,7 +4,7 @@ import { openServerScreen } from '@/features/server-screens/actions';
 import { useCategoryById } from '@/features/server/categories/hooks';
 import { useCan } from '@/features/server/hooks';
 import { getTRPCClient } from '@/lib/trpc';
-import { Permission } from '@sharkord/shared';
+import { Permission } from '@opencord/shared';
 import {
   ContextMenu,
   ContextMenuContent,
@@ -12,7 +12,7 @@ import {
   ContextMenuLabel,
   ContextMenuSeparator,
   ContextMenuTrigger
-} from '@sharkord/ui';
+} from '@opencord/ui';
 import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
@@ -75,3 +75,4 @@ const CategoryContextMenu = memo(
 );
 
 export { CategoryContextMenu };
+

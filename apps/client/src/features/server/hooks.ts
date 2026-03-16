@@ -5,7 +5,7 @@ import {
   Permission,
   prepareMessageHtml,
   type TPluginSlotContext
-} from '@sharkord/shared';
+} from '@opencord/shared';
 import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import type { IRootState } from '../store';
@@ -171,3 +171,4 @@ export const useHasUnreadMentions = (channelId: number) =>
   useSelector((state: IRootState) =>
     hasUnreadMentionsSelector(state, channelId)
   );
+

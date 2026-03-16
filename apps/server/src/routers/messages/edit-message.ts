@@ -1,4 +1,4 @@
-import { Permission, isEmptyMessage } from '@sharkord/shared';
+import { Permission, isEmptyMessage } from '@opencord/shared';
 import { eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { config } from '../../config';
@@ -91,3 +91,4 @@ const editMessageRoute = rateLimitedProcedure(protectedProcedure, {
   });
 
 export { editMessageRoute };
+

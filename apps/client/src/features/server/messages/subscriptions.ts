@@ -1,6 +1,6 @@
 import { logDebug } from '@/helpers/browser-logger';
 import { getTRPCClient } from '@/lib/trpc';
-import type { TJoinedMessage } from '@sharkord/shared';
+import type { TJoinedMessage } from '@opencord/shared';
 import {
   addMessages,
   addTypingUser,
@@ -88,3 +88,4 @@ const subscribeToMessages = () => {
 };
 
 export { subscribeToMessages };
+

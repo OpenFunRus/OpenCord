@@ -1,4 +1,4 @@
-import { Permission, ServerEvents, StreamKind } from '@sharkord/shared';
+import { Permission, ServerEvents, StreamKind } from '@opencord/shared';
 import { z } from 'zod';
 import { VoiceRuntime } from '../../runtimes/voice';
 import { invariant } from '../../utils/invariant';
@@ -84,3 +84,4 @@ const consumeRoute = protectedProcedure
   });
 
 export { consumeRoute };
+

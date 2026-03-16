@@ -60,7 +60,7 @@ const canonicalizeMessageEmojiHtml = (
 
 const renderUnicodeEmojiHtml = (text: string) =>
   twemoji.parse(escapeHtml(text), {
-    callback: (icon) => getLocalTwemojiUrlByIcon(icon),
+    callback: (icon) => getLocalTwemojiUrlByIcon(icon) || false,
     attributes: (rawText) => ({
       class: INLINE_EMOJI_CLASS,
       'data-emoji-text': rawText

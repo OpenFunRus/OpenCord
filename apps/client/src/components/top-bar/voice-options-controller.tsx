@@ -13,7 +13,7 @@ import {
   PopoverTrigger,
   Switch,
   Tooltip
-} from '@sharkord/ui';
+} from '@opencord/ui';
 import { Settings } from 'lucide-react';
 import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -95,3 +95,4 @@ const VoiceOptionsController = memo(() => {
 VoiceOptionsController.displayName = 'VoiceOptionsController';
 
 export { VoiceOptionsController };
+

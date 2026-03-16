@@ -1,10 +1,12 @@
-import type { TArtifact } from '@sharkord/shared';
-import {
-  validateReleaseMetadata,
-  type TReleaseMetadata
-} from 'bun-sfe-autoupdater';
+import type { TArtifact } from '@opencord/shared';
 import fs from 'fs/promises';
 import path from 'path';
+type TReleaseMetadata = {
+  version: string;
+  releaseDate: string;
+  artifacts: TArtifact[];
+};
+
 
 const buildScriptDir = import.meta.dir;
 const serverCwd = path.resolve(buildScriptDir, '..');
@@ -47,17 +49,9 @@ const downloadMediasoupBinary = async (
       url += `mediasoup-worker-${version}-linux-x64-kernel6.tgz`;
       fileName = 'mediasoup-worker';
       break;
-    case 'bun-linux-arm64':
-      url += `mediasoup-worker-${version}-linux-arm64-kernel6.tgz`;
-      fileName = 'mediasoup-worker';
-      break;
     case 'bun-windows-x64':
       url += `mediasoup-worker-${version}-win32-x64.tgz`;
       fileName = 'mediasoup-worker.exe';
-      break;
-    case 'bun-darwin-arm64':
-      url += `mediasoup-worker-${version}-darwin-arm64.tgz`;
-      fileName = 'mediasoup-worker';
       break;
     default:
       throw new Error(`Unsupported target for mediasoup binary: ${target}`);
@@ -175,13 +169,13 @@ const compile = async ({ out, target }: TTarget) => {
       `--outfile=${out}`,
       `--target=${target}`,
       '--define',
-      `process.env.SHARKORD_ENV="production"`,
+      `process.env.OPENCORD_ENV="production"`,
       '--define',
-      `process.env.SHARKORD_BUILD_VERSION="${version}"`,
+      `process.env.OPENCORD_BUILD_VERSION="${version}"`,
       '--define',
-      `process.env.SHARKORD_BUILD_DATE="${new Date().toISOString()}"`,
+      `process.env.OPENCORD_BUILD_DATE="${new Date().toISOString()}"`,
       '--define',
-      `process.env.SHARKORD_MEDIASOUP_BIN_NAME="${mediasoupBinary}"`,
+      `process.env.OPENCORD_MEDIASOUP_BIN_NAME="${mediasoupBinary}"`,
       '--define',
       `process.env.CURRENT_VERSION="${version}"`,
       ...entryPoints
@@ -191,7 +185,7 @@ const compile = async ({ out, target }: TTarget) => {
       '--windows-title=OpenCord',
       '--windows-publisher=OpenCord',
       '--windows-description=OpenCord Server',
-      '--windows-version=0.0.12.0'
+      '--windows-version=0.0.1.0'
     ];
 
     let result = await runWindowsCompile([...baseArgs, ...metadataArgs]);
@@ -222,10 +216,10 @@ const compile = async ({ out, target }: TTarget) => {
       target
     },
     define: {
-      'process.env.SHARKORD_ENV': '"production"',
-      'process.env.SHARKORD_BUILD_VERSION': `"${version}"`,
-      'process.env.SHARKORD_BUILD_DATE': `"${new Date().toISOString()}"`,
-      'process.env.SHARKORD_MEDIASOUP_BIN_NAME': `"${mediasoupBinary}"`,
+      'process.env.OPENCORD_ENV': '"production"',
+      'process.env.OPENCORD_BUILD_VERSION': `"${version}"`,
+      'process.env.OPENCORD_BUILD_DATE': `"${new Date().toISOString()}"`,
+      'process.env.OPENCORD_MEDIASOUP_BIN_NAME': `"${mediasoupBinary}"`,
       'process.env.CURRENT_VERSION': `"${version}"`
     }
   });
@@ -261,11 +255,11 @@ const getVersionInfo = async (
     });
   }
 
-  const versionInfo = validateReleaseMetadata({
+  const versionInfo: TReleaseMetadata = {
     version,
     releaseDate: new Date().toISOString(),
     artifacts
-  });
+  };
 
   return versionInfo;
 };
@@ -288,3 +282,4 @@ export {
   rmIfExists
 };
 export type { TTarget };
+

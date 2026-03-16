@@ -13,7 +13,7 @@ import type {
   TLogEntry,
   TPublicServerSettings,
   TVoiceUserState
-} from '@sharkord/shared';
+} from '@opencord/shared';
 import type { Unsubscribable } from '@trpc/server/observable';
 import { observable, type Observable } from '@trpc/server/observable';
 import { EventEmitter } from 'events';
@@ -306,3 +306,4 @@ class PubSub {
 }
 
 export const pubsub = new PubSub();
+

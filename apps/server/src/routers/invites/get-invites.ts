@@ -1,4 +1,4 @@
-import { Permission } from '@sharkord/shared';
+import { Permission } from '@opencord/shared';
 import { getInvites } from '../../db/queries/invites';
 import { protectedProcedure } from '../../utils/trpc';
 
@@ -11,3 +11,4 @@ const getInvitesRoute = protectedProcedure.query(async ({ ctx }) => {
 });
 
 export { getInvitesRoute };
+

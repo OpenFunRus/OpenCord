@@ -1,4 +1,4 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@sharkord/ui';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@opencord/ui';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TServerScreenBaseProps } from '../screens';
@@ -32,3 +32,4 @@ const CategorySettings = memo(
 );
 
 export { CategorySettings };
+

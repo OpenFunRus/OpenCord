@@ -1,4 +1,4 @@
-import type { ActivityLogType, TActivityLogDetailsMap } from '@sharkord/shared';
+import type { ActivityLogType, TActivityLogDetailsMap } from '@opencord/shared';
 import chalk from 'chalk';
 import Queue from 'queue';
 import { db } from '../../db';
@@ -49,3 +49,4 @@ const enqueueActivityLog = <T extends ActivityLogType>({
 };
 
 export { enqueueActivityLog };
+

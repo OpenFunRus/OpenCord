@@ -7,7 +7,7 @@ import {
   useSelectedChannelId,
   useSelectedChannelType
 } from '@/features/server/channels/hooks';
-import { ChannelType, PluginSlot } from '@sharkord/shared';
+import { ChannelType, PluginSlot } from '@opencord/shared';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -92,3 +92,4 @@ const ContentWrapper = memo(
 );
 
 export { ContentWrapper };
+

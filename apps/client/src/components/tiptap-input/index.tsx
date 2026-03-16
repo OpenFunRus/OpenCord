@@ -2,8 +2,8 @@ import { EmojiPicker } from '@/components/emoji-picker';
 import { ALL_EMOJIS } from '@/components/emoji-picker/emoji-data';
 import { useCustomEmojis } from '@/features/server/emojis/hooks';
 import { useMentionableUsers } from '@/features/server/users/hooks';
-import type { TCommandInfo } from '@sharkord/shared';
-import { Button } from '@sharkord/ui';
+import type { TCommandInfo } from '@opencord/shared';
+import { Button } from '@opencord/ui';
 import Emoji, { type EmojiItem } from '@tiptap/extension-emoji';
 import Link from '@tiptap/extension-link';
 import { EditorContent, useEditor } from '@tiptap/react';
@@ -320,3 +320,4 @@ const TiptapInput = memo(
 );
 
 export { TiptapInput };
+

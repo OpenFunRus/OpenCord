@@ -4,8 +4,8 @@ import { playSound } from '@/features/server/sounds/actions';
 import { SoundType } from '@/features/server/types';
 import { canonicalizeMessageEmojiHtml } from '@/helpers/message-emojis';
 import { getTRPCClient } from '@/lib/trpc';
-import type { TJoinedPublicUser } from '@sharkord/shared';
-import { TYPING_MS, getTrpcError, prepareMessageHtml } from '@sharkord/shared';
+import type { TJoinedPublicUser } from '@opencord/shared';
+import { TYPING_MS, getTrpcError, prepareMessageHtml } from '@opencord/shared';
 import { throttle } from 'lodash-es';
 import { memo, useCallback, useMemo, useState } from 'react';
 import { toast } from 'sonner';
@@ -80,3 +80,4 @@ const ThreadCompose = memo(
 );
 
 export { ThreadCompose };
+

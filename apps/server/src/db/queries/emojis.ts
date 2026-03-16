@@ -1,4 +1,4 @@
-import type { TJoinedEmoji } from '@sharkord/shared';
+import type { TJoinedEmoji } from '@opencord/shared';
 import { eq } from 'drizzle-orm';
 import { db } from '..';
 import { emojis, files, users } from '../schema';
@@ -103,3 +103,4 @@ export {
   getEmojis,
   getUniqueEmojiName
 };
+

@@ -1,4 +1,4 @@
-import { cn } from '@sharkord/ui';
+import { cn } from '@opencord/ui';
 import { memo } from 'react';
 
 type TUnreadCountProps = {
@@ -22,3 +22,4 @@ const UnreadCount = memo(({ count, hasMention }: TUnreadCountProps) => {
 });
 
 export { UnreadCount };
+

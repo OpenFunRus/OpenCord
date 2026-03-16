@@ -1,6 +1,6 @@
 import { logDebug } from '@/helpers/browser-logger';
 import { getTRPCClient } from '@/lib/trpc';
-import type { TCategory } from '@sharkord/shared';
+import type { TCategory } from '@opencord/shared';
 import { addCategory, removeCategory, updateCategory } from './actions';
 
 const subscribeToCategories = () => {
@@ -38,3 +38,4 @@ const subscribeToCategories = () => {
 };
 
 export { subscribeToCategories };
+

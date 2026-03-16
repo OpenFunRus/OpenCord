@@ -9,14 +9,14 @@ import {
 import { useFlatPluginCommands } from '@/features/server/plugins/hooks';
 import { useUploadFiles } from '@/hooks/use-upload-files';
 import { getTRPCClient } from '@/lib/trpc';
-import type { TJoinedPublicUser, TTempFile } from '@sharkord/shared';
+import type { TJoinedPublicUser, TTempFile } from '@opencord/shared';
 import {
   ChannelPermission,
   Permission,
   PluginSlot,
   isEmptyMessage
-} from '@sharkord/shared';
-import { Button, Spinner } from '@sharkord/ui';
+} from '@opencord/shared';
+import { Button, Spinner } from '@opencord/ui';
 import { filesize } from 'filesize';
 import { Paperclip, Send } from 'lucide-react';
 import {
@@ -210,3 +210,4 @@ const MessageCompose = memo(
 );
 
 export { MessageCompose, type TMessageComposeHandle };
+

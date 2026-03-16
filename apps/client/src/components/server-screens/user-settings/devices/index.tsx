@@ -11,7 +11,7 @@ import {
 } from '@/helpers/audio-worklet/noise-gate-worklet';
 import { useForm } from '@/hooks/use-form';
 import { Resolution, VideoCodec } from '@/types';
-import { DEFAULT_BITRATE } from '@sharkord/shared';
+import { DEFAULT_BITRATE } from '@opencord/shared';
 import {
   Alert,
   AlertDescription,
@@ -33,7 +33,7 @@ import {
   Separator,
   Slider,
   Switch
-} from '@sharkord/ui';
+} from '@opencord/ui';
 import { filesize } from 'filesize';
 import { Info } from 'lucide-react';
 import {
@@ -613,3 +613,4 @@ const Devices = memo(() => {
 });
 
 export { Devices };
+

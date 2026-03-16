@@ -1,4 +1,4 @@
-import { ActivityLogType, Permission } from '@sharkord/shared';
+import { ActivityLogType, Permission } from '@opencord/shared';
 import { sql } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '../../db';
@@ -46,3 +46,4 @@ const addCategoryRoute = protectedProcedure
   });
 
 export { addCategoryRoute };
+

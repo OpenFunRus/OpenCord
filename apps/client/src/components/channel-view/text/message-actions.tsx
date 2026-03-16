@@ -9,8 +9,8 @@ import {
 import { openThreadSidebar } from '@/features/app/actions';
 import { requestConfirmation } from '@/features/dialogs/actions';
 import { getTRPCClient } from '@/lib/trpc';
-import { Permission } from '@sharkord/shared';
-import { IconButton } from '@sharkord/ui';
+import { Permission } from '@opencord/shared';
+import { IconButton } from '@opencord/ui';
 import {
   MessageSquareText,
   Pencil,
@@ -199,3 +199,4 @@ const MessageActions = memo(
 );
 
 export { MessageActions };
+

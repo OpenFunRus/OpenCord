@@ -1,24 +1,32 @@
+FROM oven/bun:1.3.10 AS builder
+
+WORKDIR /app
+
+COPY package.json bun.lock tsconfig.json ./
+COPY apps/client/package.json apps/client/package.json
+COPY apps/server/package.json apps/server/package.json
+COPY packages/plugin-sdk/package.json packages/plugin-sdk/package.json
+COPY packages/shared/package.json packages/shared/package.json
+COPY packages/ui/package.json packages/ui/package.json
+
+RUN bun install --frozen-lockfile
+
+COPY apps ./apps
+COPY packages ./packages
+
+RUN cd apps/server && bun run build:linux
+
 FROM oven/bun:1.3.10
 
-ARG TARGETARCH
 ENV RUNNING_IN_DOCKER=true
 
 USER root
 
-COPY apps/server/build/out/sharkord-linux-x64 /tmp/sharkord-linux-x64
-COPY apps/server/build/out/sharkord-linux-arm64 /tmp/sharkord-linux-arm64
+COPY --from=builder /app/apps/server/build/out/opencord-linux-x64 /opencord
 
-RUN set -eux; \
-    case "$TARGETARCH" in \
-      amd64)  cp /tmp/sharkord-linux-x64 /sharkord ;; \
-      arm64)  cp /tmp/sharkord-linux-arm64 /sharkord ;; \
-      *) echo "Unsupported arch: $TARGETARCH" >&2; exit 1 ;; \
-    esac; \
-    chmod +x /sharkord; \
-    chown bun:bun /sharkord; \
-    rm -rf /tmp/sharkord-linux-*
-
-RUN mkdir -p /home/bun/.config/sharkord && \
+RUN chmod +x /opencord && \
+    chown bun:bun /opencord && \
+    mkdir -p /home/bun/.config/opencord && \
     chown -R bun:bun /home/bun/.config
 
 COPY docker-entrypoint.sh /entrypoint.sh

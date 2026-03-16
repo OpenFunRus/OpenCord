@@ -1,5 +1,5 @@
 import { getTRPCClient } from '@/lib/trpc';
-import { getTrpcError } from '@sharkord/shared';
+import { getTrpcError } from '@opencord/shared';
 import {
   Button,
   Card,
@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
   Group
-} from '@sharkord/ui';
+} from '@opencord/ui';
 import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
@@ -55,3 +55,4 @@ const Security = memo(({ channelId }: TSecurityProps) => {
 });
 
 export { Security };
+

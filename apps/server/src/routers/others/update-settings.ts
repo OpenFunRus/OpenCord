@@ -2,7 +2,7 @@ import {
   ActivityLogType,
   Permission,
   StorageOverflowAction
-} from '@sharkord/shared';
+} from '@opencord/shared';
 import { z } from 'zod';
 import { updateSettings } from '../../db/mutations/server';
 import { publishSettings } from '../../db/publishers';
@@ -75,3 +75,4 @@ const updateSettingsRoute = protectedProcedure
   });
 
 export { updateSettingsRoute };
+

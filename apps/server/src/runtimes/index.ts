@@ -1,4 +1,4 @@
-import { ChannelType } from '@sharkord/shared';
+import { ChannelType } from '@opencord/shared';
 import { eq } from 'drizzle-orm';
 import { db } from '../db';
 import { channels } from '../db/schema';
@@ -22,4 +22,13 @@ const initVoiceRuntimes = async () => {
   }
 };
 
-export { initVoiceRuntimes };
+const shutdownVoiceRuntimes = async () => {
+  const runtimes = VoiceRuntime.getAllRuntimes();
+
+  for (const runtime of runtimes) {
+    await runtime.destroy();
+  }
+};
+
+export { initVoiceRuntimes, shutdownVoiceRuntimes };
+

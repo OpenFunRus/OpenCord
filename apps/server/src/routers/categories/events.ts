@@ -1,4 +1,4 @@
-import { ServerEvents } from '@sharkord/shared';
+import { ServerEvents } from '@opencord/shared';
 import { protectedProcedure } from '../../utils/trpc';
 
 const onCategoryCreateRoute = protectedProcedure.subscription(
@@ -20,3 +20,4 @@ const onCategoryUpdateRoute = protectedProcedure.subscription(
 );
 
 export { onCategoryCreateRoute, onCategoryDeleteRoute, onCategoryUpdateRoute };
+

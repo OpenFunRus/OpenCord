@@ -2,8 +2,8 @@ import { UserAvatar } from '@/components/user-avatar';
 import { uploadFile } from '@/helpers/upload-file';
 import { useFilePicker } from '@/hooks/use-file-picker';
 import { getTRPCClient } from '@/lib/trpc';
-import { getTrpcError, type TJoinedPublicUser } from '@sharkord/shared';
-import { Button, Group } from '@sharkord/ui';
+import { getTrpcError, type TJoinedPublicUser } from '@opencord/shared';
+import { Button, Group } from '@opencord/ui';
 import { Upload } from 'lucide-react';
 import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -82,3 +82,4 @@ const AvatarManager = memo(({ user }: TAvatarManagerProps) => {
 });
 
 export { AvatarManager };
+

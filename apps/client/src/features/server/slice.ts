@@ -20,7 +20,7 @@ import type {
   TServerInfo,
   TVoiceMap,
   TVoiceUserState
-} from '@sharkord/shared';
+} from '@opencord/shared';
 import type {
   TDisconnectInfo,
   TMessagesMap,
@@ -193,7 +193,7 @@ export const serverSlice = createSlice({
         merged = [...existing, ...filtered];
       }
 
-      // store in chronological asc order (oldest → newest)
+      // store in chronological asc order (oldest в†’ newest)
       state.messagesMap[channelId] = merged.sort(
         (a, b) => a.createdAt - b.createdAt
       );
@@ -833,3 +833,4 @@ const serverSliceActions = serverSlice.actions;
 const serverSliceReducer = serverSlice.reducer;
 
 export { serverSliceActions, serverSliceReducer };
+

@@ -1,4 +1,4 @@
-import { ActivityLogType, DisconnectCode, Permission } from '@sharkord/shared';
+import { ActivityLogType, DisconnectCode, Permission } from '@opencord/shared';
 import z from 'zod';
 import { enqueueActivityLog } from '../../queues/activity-log';
 import { invariant } from '../../utils/invariant';
@@ -34,3 +34,4 @@ const kickRoute = protectedProcedure
   });
 
 export { kickRoute };
+

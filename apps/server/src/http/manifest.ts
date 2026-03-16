@@ -1,4 +1,4 @@
-import type { TWebAppManifest } from '@sharkord/shared';
+import type { TWebAppManifest } from '@opencord/shared';
 import http from 'http';
 import { getSettings } from '../db/queries/server';
 
@@ -56,3 +56,4 @@ const manifestRouteHandler = async (
 };
 
 export { manifestRouteHandler };
+

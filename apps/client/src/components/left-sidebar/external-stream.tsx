@@ -1,5 +1,5 @@
-import type { TExternalStreamTracks } from '@sharkord/shared';
-import { Tooltip } from '@sharkord/ui';
+import type { TExternalStreamTracks } from '@opencord/shared';
+import { Tooltip } from '@opencord/ui';
 import { Headphones, Router, Video } from 'lucide-react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -51,3 +51,4 @@ const ExternalStream = memo(
 );
 
 export { ExternalStream };
+

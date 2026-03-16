@@ -27,13 +27,13 @@ declare global {
 
 declare module 'bun' {
   interface Env {
-    // SHARKORD_ prefixed environment variables
-    SHARKORD_PORT?: string;
-    SHARKORD_DEBUG?: string;
-    SHARKORD_AUTOUPDATE?: string;
-    SHARKORD_WEBRTC_PORT?: string;
-    SHARKORD_WEBRTC_ANNOUNCED_ADDRESS?: string;
-    SHARKORD_DATA_PATH?: string;
+    // OPENCORD_ prefixed environment variables
+    OPENCORD_PORT?: string;
+    OPENCORD_DEBUG?: string;
+    OPENCORD_WEBRTC_PORT?: string;
+    OPENCORD_WEBRTC_ANNOUNCED_ADDRESS?: string;
+    OPENCORD_WEBRTC_MAX_BITRATE?: string;
+    OPENCORD_DATA_PATH?: string;
   }
 }
 
@@ -44,3 +44,4 @@ declare module 'node:fs/promises' {
 declare module 'fs/promises' {
   export function exists(path: import('node:fs').PathLike): Promise<boolean>;
 }
+

@@ -1,4 +1,4 @@
-import { ServerEvents } from '@sharkord/shared';
+import { ServerEvents } from '@opencord/shared';
 import { protectedProcedure } from '../../utils/trpc';
 
 const onUserJoinRoute = protectedProcedure.subscription(async ({ ctx }) => {
@@ -28,3 +28,4 @@ export {
   onUserLeaveRoute,
   onUserUpdateRoute
 };
+

@@ -7,8 +7,8 @@ import { cn } from '@/lib/utils';
 import type {
   TChannelRolePermission,
   TChannelUserPermission
-} from '@sharkord/shared';
-import { getTrpcError } from '@sharkord/shared';
+} from '@opencord/shared';
+import { getTrpcError } from '@opencord/shared';
 import {
   Avatar,
   AvatarFallback,
@@ -17,7 +17,7 @@ import {
   CardHeader,
   CardTitle,
   Separator
-} from '@sharkord/ui';
+} from '@opencord/ui';
 import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
@@ -271,3 +271,4 @@ const OverridesList = memo(
 );
 
 export { OverridesList };
+

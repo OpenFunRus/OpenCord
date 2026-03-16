@@ -1,5 +1,5 @@
 import { store } from '@/features/store';
-import type { TJoinedEmoji } from '@sharkord/shared';
+import type { TJoinedEmoji } from '@opencord/shared';
 import { serverSliceActions } from '../slice';
 
 export const setEmojis = (emojis: TJoinedEmoji[]) => {
@@ -17,3 +17,4 @@ export const updateEmoji = (emojiId: number, emoji: Partial<TJoinedEmoji>) => {
 export const removeEmoji = (emojiId: number) => {
   store.dispatch(serverSliceActions.removeEmoji({ emojiId }));
 };
+

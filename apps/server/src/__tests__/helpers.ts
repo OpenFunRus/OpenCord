@@ -1,4 +1,4 @@
-import { sha256, UploadHeaders } from '@sharkord/shared';
+import { sha256, UploadHeaders } from '@opencord/shared';
 import jwt from 'jsonwebtoken';
 import { appRouter } from '../routers';
 import { createMockContext } from './context';
@@ -72,3 +72,4 @@ const uploadFile = async (file: File, token: string) =>
   });
 
 export { getCaller, getMockedToken, initTest, login, uploadFile };
+

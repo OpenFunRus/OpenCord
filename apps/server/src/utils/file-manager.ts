@@ -2,7 +2,7 @@ import {
   StorageOverflowAction,
   type TFile,
   type TTempFile
-} from '@sharkord/shared';
+} from '@opencord/shared';
 import { randomUUIDv7 } from 'bun';
 import { createHash } from 'crypto';
 import { eq } from 'drizzle-orm';
@@ -256,3 +256,4 @@ class FileManager {
 const fileManager = new FileManager();
 
 export { fileManager };
+

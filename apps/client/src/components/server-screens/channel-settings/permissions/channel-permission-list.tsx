@@ -1,5 +1,5 @@
-import { ChannelPermission } from '@sharkord/shared';
-import { Label, Switch } from '@sharkord/ui';
+import { ChannelPermission } from '@opencord/shared';
+import { Label, Switch } from '@opencord/ui';
 import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -73,3 +73,4 @@ const ChannelPermissionList = memo(
 );
 
 export { ChannelPermissionList };
+

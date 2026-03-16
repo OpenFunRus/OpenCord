@@ -1,5 +1,5 @@
 import { store } from '@/features/store';
-import type { TCategory } from '@sharkord/shared';
+import type { TCategory } from '@opencord/shared';
 import { serverSliceActions } from '../slice';
 
 // export const setCategories = (categories: TCategory[]) => {
@@ -24,3 +24,4 @@ export const updateCategory = (
 export const removeCategory = (categoryId: number) => {
   store.dispatch(serverSliceActions.removeCategory({ categoryId }));
 };
+

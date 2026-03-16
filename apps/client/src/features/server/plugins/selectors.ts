@@ -1,6 +1,6 @@
 import type { IRootState } from '@/features/store';
 import { createSelector } from '@reduxjs/toolkit';
-import type { PluginSlot, TPluginReactComponent } from '@sharkord/shared';
+import type { PluginSlot, TPluginReactComponent } from '@opencord/shared';
 import { createCachedSelector } from 're-reselect';
 
 export const commandsSelector = (state: IRootState) =>
@@ -33,3 +33,4 @@ export const pluginComponentsBySlotSelector = createCachedSelector(
     return componentsBySlot;
   }
 )((_state, slotId) => slotId);
+

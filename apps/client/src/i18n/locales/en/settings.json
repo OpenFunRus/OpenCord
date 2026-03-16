@@ -297,7 +297,7 @@
   "diskTotalSpace": "Total Disk Space",
   "diskAvailableSpace": "Available Space",
   "diskSystemUsed": "System Used",
-  "diskSharkordUsed": "OpenCord Used",
+  "diskOpenCordUsed": "OpenCord Used",
   "diskUsage": "Disk Usage",
   "diskUsedPercent": "{{percent}}% used",
 
@@ -424,3 +424,4 @@
   "fileDeletedSuccess": "File deleted successfully",
   "failedDeleteFile": "Failed to delete file"
 }
+

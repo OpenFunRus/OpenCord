@@ -2,8 +2,8 @@ import { useThreadSidebar } from '@/features/app/hooks';
 import { useParentMessage } from '@/features/server/messages/hooks';
 import { useUserById } from '@/features/server/users/hooks';
 import { getRenderedUsername } from '@/helpers/get-rendered-username';
-import type { TJoinedMessage } from '@sharkord/shared';
-import { Spinner } from '@sharkord/ui';
+import type { TJoinedMessage } from '@opencord/shared';
+import { Spinner } from '@opencord/ui';
 import { memo } from 'react';
 import { MessageRenderer } from '../channel-view/text/renderer';
 import { UserAvatar } from '../user-avatar';
@@ -65,3 +65,4 @@ const ParentMessagePreview = memo(
 );
 
 export { ParentMessagePreview };
+

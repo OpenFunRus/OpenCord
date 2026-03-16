@@ -1,4 +1,4 @@
-import type { TFile } from '@sharkord/shared';
+import type { TFile } from '@opencord/shared';
 import { eq } from 'drizzle-orm';
 import fs from 'fs/promises';
 import path from 'path';
@@ -31,3 +31,4 @@ const removeFile = async (fileId: number): Promise<TFile | undefined> => {
 };
 
 export { removeFile };
+

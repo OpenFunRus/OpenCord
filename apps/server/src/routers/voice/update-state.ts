@@ -1,4 +1,4 @@
-import { ChannelPermission, Permission, ServerEvents } from '@sharkord/shared';
+import { ChannelPermission, Permission, ServerEvents } from '@opencord/shared';
 import { z } from 'zod';
 import { VoiceRuntime } from '../../runtimes/voice';
 import { invariant } from '../../utils/invariant';
@@ -71,3 +71,4 @@ const updateVoiceStateRoute = protectedProcedure
   });
 
 export { updateVoiceStateRoute };
+

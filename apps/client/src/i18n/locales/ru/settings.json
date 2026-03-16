@@ -297,7 +297,7 @@
   "diskTotalSpace": "Всего места на диске",
   "diskAvailableSpace": "Доступно места",
   "diskSystemUsed": "Занято системой",
-  "diskSharkordUsed": "Занято OpenCord",
+  "diskOpenCordUsed": "Занято OpenCord",
   "diskUsage": "Использование диска",
   "diskUsedPercent": "Использовано {{percent}}%",
 
@@ -424,3 +424,4 @@
   "fileDeletedSuccess": "Файл успешно удален",
   "failedDeleteFile": "Не удалось удалить файл"
 }
+

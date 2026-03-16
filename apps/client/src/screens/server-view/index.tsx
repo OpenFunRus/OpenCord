@@ -19,7 +19,7 @@ import {
   setLocalStorageItemBool
 } from '@/helpers/storage';
 import { cn } from '@/lib/utils';
-import { Permission, TestId } from '@sharkord/shared';
+import { Permission, TestId } from '@opencord/shared';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { ContentWrapper } from './content-wrapper';
 import { PreventBrowser } from './prevent-browser';
@@ -172,3 +172,4 @@ const ServerView = memo(() => {
 });
 
 export { ServerView };
+

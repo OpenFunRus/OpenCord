@@ -4,7 +4,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger
-} from '@sharkord/ui';
+} from '@opencord/ui';
 import { Bug } from 'lucide-react';
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { withTranslation, type WithTranslation } from 'react-i18next';
@@ -127,3 +127,4 @@ class ErrorBoundary extends Component<TErrorBoundaryProps, TState> {
 const TranslatedErrorBoundary = withTranslation('common')(ErrorBoundary);
 
 export { TranslatedErrorBoundary as ErrorBoundary };
+

@@ -4,7 +4,7 @@ import type {
   TJoinedMessageReaction,
   TMessage,
   TMessageReaction
-} from '@sharkord/shared';
+} from '@opencord/shared';
 import { and, count, desc, eq, inArray, notExists } from 'drizzle-orm';
 import { db } from '..';
 import { generateFileToken } from '../../helpers/files-crypto';
@@ -236,3 +236,4 @@ export {
   getReaction,
   joinMessagesWithRelations
 };
+

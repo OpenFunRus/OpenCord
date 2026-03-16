@@ -5,7 +5,7 @@ import {
   getTrpcError,
   OWNER_ROLE_ID,
   type TJoinedRole
-} from '@sharkord/shared';
+} from '@opencord/shared';
 import {
   Alert,
   AlertDescription,
@@ -17,7 +17,7 @@ import {
   Input,
   Label,
   Tooltip
-} from '@sharkord/ui';
+} from '@opencord/ui';
 import { Info, Star, Trash2 } from 'lucide-react';
 import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -188,3 +188,4 @@ const UpdateRole = memo(
 );
 
 export { UpdateRole };
+

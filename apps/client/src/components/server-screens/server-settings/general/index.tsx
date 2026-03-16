@@ -12,7 +12,7 @@ import {
   LoadingCard,
   Switch,
   Textarea
-} from '@sharkord/ui';
+} from '@opencord/ui';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LogoManager } from './logo-manager';
@@ -123,3 +123,4 @@ const General = memo(() => {
 });
 
 export { General };
+

@@ -8,7 +8,7 @@ import {
   PopoverContent,
   PopoverTrigger,
   Slider
-} from '@sharkord/ui';
+} from '@opencord/ui';
 import { Volume2, VolumeX } from 'lucide-react';
 import { memo, useCallback } from 'react';
 
@@ -78,3 +78,4 @@ const VolumeButton = memo(({ volumeKey }: TVolumeButtonProps) => {
 VolumeButton.displayName = 'VolumeButton';
 
 export { VolumeButton };
+

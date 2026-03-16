@@ -1,4 +1,4 @@
-import { ChannelPermission, ChannelType } from '@sharkord/shared';
+import { ChannelPermission, ChannelType } from '@opencord/shared';
 import { describe, expect, test } from 'bun:test';
 import { initTest } from '../../__tests__/helpers';
 import { getChannelsReadStatesForUser } from '../../db/queries/channels';
@@ -1170,3 +1170,4 @@ describe('channels router', () => {
     ).rejects.toThrow('Cannot delete DM channel permissions');
   });
 });
+

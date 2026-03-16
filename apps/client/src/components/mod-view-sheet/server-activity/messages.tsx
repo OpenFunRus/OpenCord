@@ -1,7 +1,7 @@
 import { MessageRenderer } from '@/components/channel-view/text/renderer';
 import { PaginatedList } from '@/components/paginated-list';
 import { useDateLocale } from '@/hooks/use-date-locale';
-import type { TMessage } from '@sharkord/shared';
+import type { TMessage } from '@opencord/shared';
 import { format } from 'date-fns';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -55,3 +55,4 @@ const Messages = memo(() => {
 });
 
 export { Messages };
+

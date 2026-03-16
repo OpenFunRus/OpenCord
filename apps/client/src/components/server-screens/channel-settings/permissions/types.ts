@@ -1,4 +1,4 @@
-import type { ChannelPermission } from '@sharkord/shared';
+import type { ChannelPermission } from '@opencord/shared';
 
 export type TChannelPermission = {
   permission: ChannelPermission;
@@ -6,3 +6,4 @@ export type TChannelPermission = {
 };
 
 export type TChannelPermissionType = 'role' | 'user';
+

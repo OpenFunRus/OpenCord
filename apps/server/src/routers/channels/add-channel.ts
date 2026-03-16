@@ -1,4 +1,4 @@
-import { ActivityLogType, ChannelType, Permission } from '@sharkord/shared';
+import { ActivityLogType, ChannelType, Permission } from '@opencord/shared';
 import { randomUUIDv7 } from 'bun';
 import { desc, eq } from 'drizzle-orm';
 import { z } from 'zod';
@@ -72,3 +72,4 @@ const addChannelRoute = protectedProcedure
   });
 
 export { addChannelRoute };
+

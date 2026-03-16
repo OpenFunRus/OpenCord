@@ -1,6 +1,6 @@
 import { useChannelById } from '@/features/server/channels/hooks';
-import { ChannelType } from '@sharkord/shared';
-import { IconButton } from '@sharkord/ui';
+import { ChannelType } from '@opencord/shared';
+import { IconButton } from '@opencord/ui';
 import { Hash, Volume2, X } from 'lucide-react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -50,3 +50,4 @@ const TextTopbar = memo(
 );
 
 export { TextTopbar };
+

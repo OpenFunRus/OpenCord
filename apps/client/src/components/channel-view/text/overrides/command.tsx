@@ -1,4 +1,4 @@
-import { type TParsedDomCommand } from '@sharkord/shared';
+import { type TParsedDomCommand } from '@opencord/shared';
 import {
   CheckCircle2,
   ChevronDown,
@@ -134,3 +134,4 @@ const CommandOverride = memo(({ command }: TCommandOverrideProps) => {
 });
 
 export { CommandOverride };
+

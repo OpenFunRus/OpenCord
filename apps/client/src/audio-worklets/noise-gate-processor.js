@@ -1,4 +1,4 @@
-const MICROPHONE_NOISE_GATE_WORKLET_NAME = 'sharkord-noise-gate';
+const MICROPHONE_NOISE_GATE_WORKLET_NAME = 'opencord-noise-gate';
 
 class NoiseGateProcessor extends AudioWorkletProcessor {
   constructor() {
@@ -123,3 +123,4 @@ class NoiseGateProcessor extends AudioWorkletProcessor {
 }
 
 registerProcessor(MICROPHONE_NOISE_GATE_WORKLET_NAME, NoiseGateProcessor);
+

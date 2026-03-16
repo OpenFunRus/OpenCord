@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
   LoadingCard
-} from '@sharkord/ui';
+} from '@opencord/ui';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { UsersTable } from './users-table';
@@ -33,3 +33,4 @@ const Users = memo(() => {
 });
 
 export { Users };
+

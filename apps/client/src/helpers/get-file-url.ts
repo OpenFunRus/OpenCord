@@ -1,4 +1,4 @@
-import type { TFile } from '@sharkord/shared';
+import type { TFile } from '@opencord/shared';
 
 const getHostFromServer = () => {
   if (import.meta.env.MODE === 'development') {
@@ -36,3 +36,4 @@ const getFileUrl = (file: TFile | undefined | null) => {
 };
 
 export { getFileUrl, getHostFromServer, getUrlFromServer };
+

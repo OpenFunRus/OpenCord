@@ -10,7 +10,7 @@ import {
   CardTitle,
   Group,
   Input
-} from '@sharkord/ui';
+} from '@opencord/ui';
 import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
@@ -74,3 +74,4 @@ const Password = memo(() => {
 });
 
 export { Password };
+

@@ -1,4 +1,4 @@
-import type { TServerInfo } from '@sharkord/shared';
+import type { TServerInfo } from '@opencord/shared';
 import { describe, expect, test } from 'bun:test';
 import { testsBaseUrl } from '../../__tests__/setup';
 
@@ -22,3 +22,4 @@ describe('/info', () => {
     expect(data.allowNewUsers).toBe(true);
   });
 });
+

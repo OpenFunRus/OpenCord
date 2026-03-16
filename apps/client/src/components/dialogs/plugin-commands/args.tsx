@@ -1,4 +1,4 @@
-import type { TCommandInfo } from '@sharkord/shared';
+import type { TCommandInfo } from '@opencord/shared';
 import {
   Group,
   Input,
@@ -7,7 +7,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue
-} from '@sharkord/ui';
+} from '@opencord/ui';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -71,3 +71,4 @@ const Args = memo(
 );
 
 export { Args };
+

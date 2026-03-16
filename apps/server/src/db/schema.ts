@@ -1,7 +1,7 @@
 import {
   type TActivityLogDetailsMap,
   type TMessageMetadata
-} from '@sharkord/shared';
+} from '@opencord/shared';
 import {
   index,
   integer,
@@ -505,3 +505,4 @@ export {
   userRoles,
   users
 };
+

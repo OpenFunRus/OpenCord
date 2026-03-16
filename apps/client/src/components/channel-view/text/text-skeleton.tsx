@@ -1,4 +1,4 @@
-import { Skeleton } from '@sharkord/ui';
+import { Skeleton } from '@opencord/ui';
 import { memo } from 'react';
 
 const TextSkeleton = memo(() => {
@@ -123,3 +123,4 @@ const TextSkeleton = memo(() => {
 });
 
 export { TextSkeleton };
+

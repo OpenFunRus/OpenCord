@@ -1,4 +1,4 @@
-import type { TJoinedMessage } from '@sharkord/shared';
+import type { TJoinedMessage } from '@opencord/shared';
 
 export type TSearchResultMessage = TJoinedMessage & {
   plainContent: string;
@@ -46,3 +46,4 @@ export type TSearchResults = {
   messages: TSearchResultMessage[];
   files: TSearchResultFile[];
 };
+

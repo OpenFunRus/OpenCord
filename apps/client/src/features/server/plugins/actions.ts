@@ -7,7 +7,7 @@ import {
   type TCommandsMapByPlugin,
   type TPluginComponentsMap,
   type TPluginComponentsMapBySlotId
-} from '@sharkord/shared';
+} from '@opencord/shared';
 import { serverSliceActions } from '../slice';
 
 export const setPluginCommands = (commands: TCommandsMapByPlugin) =>
@@ -65,3 +65,4 @@ export const processPluginComponents = async (pluginIds: string[]) => {
 
   return componentsMap;
 };
+

@@ -6,7 +6,7 @@ import {
 import { useOwnUserId, useUserById } from '@/features/server/users/hooks';
 import { usePinnedCard } from '@/features/server/voice/hooks';
 import type { TRemoteStreams } from '@/types';
-import { IconButton } from '@sharkord/ui';
+import { IconButton } from '@opencord/ui';
 import { ArrowDownLeft, SendToBack, X } from 'lucide-react';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -144,3 +144,4 @@ const FloatingPinnedCard = memo(
 FloatingPinnedCard.displayName = 'FloatingPinnedCard';
 
 export { FloatingPinnedCard };
+

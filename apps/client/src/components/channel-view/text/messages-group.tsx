@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 import {
   DELETED_USER_IDENTITY_AND_NAME,
   type TJoinedMessage
-} from '@sharkord/shared';
+} from '@opencord/shared';
 import { format } from 'date-fns';
 import { memo } from 'react';
 import { Message } from './message';
@@ -81,3 +81,4 @@ const MessagesGroup = memo(
 );
 
 export { MessagesGroup };
+

@@ -1,4 +1,4 @@
-import { OWNER_ROLE_ID, sha256 } from '@sharkord/shared';
+import { OWNER_ROLE_ID, sha256 } from '@opencord/shared';
 import { describe, expect, test } from 'bun:test';
 import { eq } from 'drizzle-orm';
 import jwt from 'jsonwebtoken';
@@ -445,3 +445,4 @@ describe('/login', () => {
     expect(decoded2.userId).toBe(firstUser?.id);
   });
 });
+

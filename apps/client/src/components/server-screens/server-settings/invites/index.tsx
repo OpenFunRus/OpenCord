@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
   LoadingCard
-} from '@sharkord/ui';
+} from '@opencord/ui';
 import { Plus } from 'lucide-react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -50,3 +50,4 @@ const Invites = memo(() => {
 });
 
 export { Invites };
+

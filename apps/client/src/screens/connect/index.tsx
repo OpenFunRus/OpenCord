@@ -14,7 +14,7 @@ import {
 } from '@/helpers/storage';
 import { useForm } from '@/hooks/use-form';
 import { SUPPORTED_LANGUAGES } from '@/i18n';
-import { PluginSlot, TestId } from '@sharkord/shared';
+import { PluginSlot, TestId } from '@opencord/shared';
 import {
   Alert,
   AlertDescription,
@@ -32,7 +32,7 @@ import {
   CardContent,
   Input,
   cn
-} from '@sharkord/ui';
+} from '@opencord/ui';
 import { memo, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
@@ -380,3 +380,4 @@ const Connect = memo(() => {
 });
 
 export { Connect };
+

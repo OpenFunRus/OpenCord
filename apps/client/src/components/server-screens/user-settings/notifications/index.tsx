@@ -16,7 +16,7 @@ import {
   CardTitle,
   Group,
   Switch
-} from '@sharkord/ui';
+} from '@opencord/ui';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -65,3 +65,4 @@ const Notifications = memo(() => {
 });
 
 export { Notifications };
+

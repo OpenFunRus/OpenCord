@@ -1,7 +1,7 @@
 import { useVolumeControl } from '@/components/voice-provider/volume-control-context';
 import { cn } from '@/lib/utils';
-import type { TExternalStream } from '@sharkord/shared';
-import { Avatar, AvatarFallback, AvatarImage, IconButton } from '@sharkord/ui';
+import type { TExternalStream } from '@opencord/shared';
+import { Avatar, AvatarFallback, AvatarImage, IconButton } from '@opencord/ui';
 import { Headphones, Router, Video, ZoomIn, ZoomOut } from 'lucide-react';
 import { memo, useCallback } from 'react';
 import { CardControls } from './card-controls';
@@ -259,3 +259,4 @@ const ExternalStreamCard = memo(
 ExternalStreamCard.displayName = 'ExternalStreamCard';
 
 export { ExternalStreamCard };
+

@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { IconButton } from '@sharkord/ui';
+import { IconButton } from '@opencord/ui';
 import { Video, ZoomIn, ZoomOut } from 'lucide-react';
 import { memo, useCallback } from 'react';
 import { CardControls } from './card-controls';
@@ -153,3 +153,4 @@ const ExternalVideoCard = memo(
 ExternalVideoCard.displayName = 'ExternalVideoCard';
 
 export { ExternalVideoCard };
+

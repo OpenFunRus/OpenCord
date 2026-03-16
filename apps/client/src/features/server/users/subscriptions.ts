@@ -1,6 +1,6 @@
 import { logDebug } from '@/helpers/browser-logger';
 import { getTRPCClient } from '@/lib/trpc';
-import { UserStatus, type TJoinedPublicUser } from '@sharkord/shared';
+import { UserStatus, type TJoinedPublicUser } from '@opencord/shared';
 import {
   addUser,
   handleUserJoin,
@@ -67,3 +67,4 @@ const subscribeToUsers = () => {
 };
 
 export { subscribeToUsers };
+

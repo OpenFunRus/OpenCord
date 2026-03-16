@@ -1,4 +1,4 @@
-import { ActivityLogType, Permission } from '@sharkord/shared';
+import { ActivityLogType, Permission } from '@opencord/shared';
 import { asc, eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '../../db';
@@ -75,3 +75,4 @@ const reorderChannelsRoute = protectedProcedure
   });
 
 export { reorderChannelsRoute };
+

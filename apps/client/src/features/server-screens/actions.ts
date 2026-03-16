@@ -1,5 +1,5 @@
 import type { ServerScreen } from '@/components/server-screens/screens';
-import type { TGenericObject } from '@sharkord/shared';
+import type { TGenericObject } from '@opencord/shared';
 import { store } from '../store';
 import { serverScreenSliceActions } from './slice';
 
@@ -19,3 +19,4 @@ export const closeServerScreens = () => {
 export const resetServerScreens = () => {
   store.dispatch(serverScreenSliceActions.resetServerScreens());
 };
+

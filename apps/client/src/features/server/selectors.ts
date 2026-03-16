@@ -1,5 +1,5 @@
 import { createSelector } from '@reduxjs/toolkit';
-import { ChannelPermission, OWNER_ROLE_ID, hasMention } from '@sharkord/shared';
+import { ChannelPermission, OWNER_ROLE_ID, hasMention } from '@opencord/shared';
 import { createCachedSelector } from 're-reselect';
 import type { IRootState } from '../store';
 import {
@@ -207,3 +207,4 @@ export const hasUnreadMentionsSelector = createCachedSelector(
     });
   }
 )((_, channelId: number) => channelId);
+

@@ -19,8 +19,8 @@ import {
   TYPING_MS,
   getTrpcError,
   prepareMessageHtml
-} from '@sharkord/shared';
-import { Button, Spinner } from '@sharkord/ui';
+} from '@opencord/shared';
+import { Button, Spinner } from '@opencord/ui';
 import { throttle } from 'lodash-es';
 import { ArrowDown } from 'lucide-react';
 import { memo, useCallback, useMemo, useRef, useState } from 'react';
@@ -203,3 +203,4 @@ const TextChannel = memo(({ channelId, onClose }: TChannelProps) => {
 });
 
 export { TextChannel };
+

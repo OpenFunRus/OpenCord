@@ -2,7 +2,7 @@ import {
   ChannelPermission,
   ServerEvents,
   type TChannelUserPermissionsMap
-} from '@sharkord/shared';
+} from '@opencord/shared';
 import { count, eq } from 'drizzle-orm';
 import { db } from '.';
 import { pluginManager } from '../plugins';
@@ -293,3 +293,4 @@ export {
   publishSettings,
   publishUser
 };
+

@@ -1,4 +1,4 @@
-import { type TConnectionParams } from '@sharkord/shared';
+import { type TConnectionParams } from '@opencord/shared';
 import type { CreateWSSContextFnOptions } from '@trpc/server/adapters/ws';
 import type { IncomingMessage } from 'http';
 import { createContext } from '../utils/wss';
@@ -41,3 +41,4 @@ const createMockContext = async (opts?: { customToken?: string }) => {
 };
 
 export { createMockContext };
+

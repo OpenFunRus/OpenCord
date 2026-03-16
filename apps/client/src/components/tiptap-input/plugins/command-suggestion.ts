@@ -1,5 +1,5 @@
 import { computePosition, flip, offset, shift } from '@floating-ui/dom';
-import type { TCommandInfo } from '@sharkord/shared';
+import type { TCommandInfo } from '@opencord/shared';
 import type { Editor } from '@tiptap/core';
 import { ReactRenderer } from '@tiptap/react';
 import { CommandList, type CommandListRef } from './command-list';
@@ -167,3 +167,4 @@ export const CommandSuggestion = {
 };
 
 export { COMMANDS_STORAGE_KEY };
+

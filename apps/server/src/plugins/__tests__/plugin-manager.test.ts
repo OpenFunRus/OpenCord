@@ -1,4 +1,4 @@
-import { type TInvokerContext } from '@sharkord/shared';
+import { type TInvokerContext } from '@opencord/shared';
 import { beforeAll, beforeEach, describe, expect, test } from 'bun:test';
 import { eq } from 'drizzle-orm';
 import fs from 'fs/promises';
@@ -838,3 +838,4 @@ describe('plugin-manager', () => {
     });
   });
 });
+

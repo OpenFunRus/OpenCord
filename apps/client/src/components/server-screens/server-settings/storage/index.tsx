@@ -12,7 +12,7 @@ import {
   STORAGE_MIN_QUOTA,
   STORAGE_MIN_QUOTA_PER_USER,
   StorageOverflowAction
-} from '@sharkord/shared';
+} from '@opencord/shared';
 import {
   Button,
   Card,
@@ -29,7 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
   Switch
-} from '@sharkord/ui';
+} from '@opencord/ui';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DiskMetrics } from './metrics';
@@ -292,3 +292,4 @@ const Storage = memo(() => {
 });
 
 export { Storage };
+

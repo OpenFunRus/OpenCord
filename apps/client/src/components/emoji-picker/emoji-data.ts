@@ -35,9 +35,10 @@ const processEmojis = () => {
 
   for (const emoji of STANDARD_TWEMOJI_EMOJIS) {
     const converted = toTEmojiItem(emoji);
+    const categoryGroup = emoji.group;
 
-    if (grouped[emoji.group]) {
-      grouped[emoji.group].push(converted);
+    if (categoryGroup && grouped[categoryGroup]) {
+      grouped[categoryGroup].push(converted);
       all.push(converted);
     }
   }

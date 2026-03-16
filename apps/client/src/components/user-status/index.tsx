@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { UserStatus } from '@sharkord/shared';
+import { UserStatus } from '@opencord/shared';
 import { memo } from 'react';
 
 type TUserStatusBadgeProps = {
@@ -22,3 +22,4 @@ const UserStatusBadge = memo(({ status, className }: TUserStatusBadgeProps) => {
 });
 
 export { UserStatusBadge };
+

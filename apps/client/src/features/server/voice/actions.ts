@@ -10,7 +10,7 @@ import {
   getTrpcError,
   type TExternalStream,
   type TVoiceUserState
-} from '@sharkord/shared';
+} from '@opencord/shared';
 import type { RtpCapabilities } from 'mediasoup-client/types';
 import { toast } from 'sonner';
 import {
@@ -230,3 +230,4 @@ export const setShowUserBannersInVoice = (value: boolean): void => {
     console.error('Failed to save voice options:', error);
   }
 };
+

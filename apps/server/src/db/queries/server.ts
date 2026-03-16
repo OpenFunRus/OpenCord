@@ -1,4 +1,4 @@
-import type { TJoinedSettings, TPublicServerSettings } from '@sharkord/shared';
+import type { TJoinedSettings, TPublicServerSettings } from '@opencord/shared';
 import { eq } from 'drizzle-orm';
 import { db } from '..';
 import { config } from '../../config';
@@ -6,9 +6,30 @@ import { files, settings } from '../schema';
 
 // since this is static, we can keep it in memory to avoid querying the DB every time
 let token: string;
+const LEGACY_GARBLED_SERVER_DESCRIPTION = '��������� ������ OpenCord';
+const DEFAULT_SERVER_DESCRIPTION = 'Приватный сервер OpenCord';
+
+const normalizeServerDescription = (description: string | null) => {
+  if (description === LEGACY_GARBLED_SERVER_DESCRIPTION) {
+    return DEFAULT_SERVER_DESCRIPTION;
+  }
+
+  return description;
+};
 
 const getSettings = async (): Promise<TJoinedSettings> => {
   const serverSettings = await db.select().from(settings).get()!;
+  const normalizedDescription = normalizeServerDescription(
+    serverSettings.description
+  );
+
+  if (normalizedDescription !== serverSettings.description) {
+    await db
+      .update(settings)
+      .set({ description: normalizedDescription })
+      .where(eq(settings.serverId, serverSettings.serverId))
+      .execute();
+  }
 
   const logo = serverSettings.logoId
     ? await db
@@ -20,6 +41,7 @@ const getSettings = async (): Promise<TJoinedSettings> => {
 
   return {
     ...serverSettings,
+    description: normalizedDescription,
     logo: logo ?? null
   };
 };
@@ -73,3 +95,4 @@ const getServerToken = async (): Promise<string> => {
 };
 
 export { getPublicSettings, getServerToken, getServerTokenSync, getSettings };
+

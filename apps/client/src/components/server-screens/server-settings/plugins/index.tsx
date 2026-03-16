@@ -4,8 +4,8 @@ import { useAdminPlugins } from '@/features/server/admin/hooks';
 import { usePluginsEnabled } from '@/features/server/hooks';
 import { getTRPCClient } from '@/lib/trpc';
 import { cn } from '@/lib/utils';
-import type { TPluginInfo } from '@sharkord/shared';
-import { getTrpcError } from '@sharkord/shared';
+import type { TPluginInfo } from '@opencord/shared';
+import { getTrpcError } from '@opencord/shared';
 import {
   Alert,
   AlertDescription,
@@ -19,7 +19,7 @@ import {
   LoadingCard,
   Separator,
   Switch
-} from '@sharkord/ui';
+} from '@opencord/ui';
 import {
   AlertCircle,
   FileText,
@@ -296,3 +296,4 @@ const Plugins = memo(() => {
 });
 
 export { Plugins };
+

@@ -7,7 +7,7 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger
-} from '@sharkord/ui';
+} from '@opencord/ui';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TServerScreenBaseProps } from '../screens';
@@ -85,3 +85,4 @@ const ChannelSettings = memo(({ close, isOpen, channelId }: TChannelSettingsProp
 });
 
 export { ChannelSettings };
+

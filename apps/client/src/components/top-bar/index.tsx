@@ -6,8 +6,8 @@ import {
 } from '@/features/server/channels/hooks';
 import { usePublicServerSettings } from '@/features/server/hooks';
 import { cn } from '@/lib/utils';
-import { PluginSlot } from '@sharkord/shared';
-import { Button, Tooltip } from '@sharkord/ui';
+import { PluginSlot } from '@opencord/shared';
+import { Button, Tooltip } from '@opencord/ui';
 import {
   MessageSquare,
   PanelRight,
@@ -136,3 +136,4 @@ const TopBar = memo(
 });
 
 export { TopBar };
+

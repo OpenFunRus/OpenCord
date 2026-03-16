@@ -3,7 +3,7 @@ import { useOwnUserId } from '@/features/server/users/hooks';
 import { logVoice } from '@/helpers/browser-logger';
 import { getTRPCClient } from '@/lib/trpc';
 import type { TRemoteUserStreamKinds } from '@/types';
-import { StreamKind } from '@sharkord/shared';
+import { StreamKind } from '@opencord/shared';
 import type { RtpCapabilities } from 'mediasoup-client/types';
 import { useEffect } from 'react';
 
@@ -188,3 +188,4 @@ const useVoiceEvents = ({
 };
 
 export { useVoiceEvents };
+

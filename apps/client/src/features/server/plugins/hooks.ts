@@ -1,5 +1,5 @@
 import type { IRootState } from '@/features/store';
-import type { PluginSlot } from '@sharkord/shared';
+import type { PluginSlot } from '@opencord/shared';
 import { useSelector } from 'react-redux';
 import {
   commandsSelector,
@@ -15,3 +15,4 @@ export const usePluginComponentsBySlot = (slotId: PluginSlot) =>
   useSelector((state: IRootState) =>
     pluginComponentsBySlotSelector(state, slotId)
   );
+

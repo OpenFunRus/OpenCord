@@ -7,7 +7,7 @@ import {
   type TTransportParams,
   type TVoiceMap,
   type TVoiceUserState
-} from '@sharkord/shared';
+} from '@opencord/shared';
 import type {
   AppData,
   Consumer,
@@ -198,6 +198,10 @@ class VoiceRuntime {
     });
 
     return map;
+  };
+
+  public static getAllRuntimes = (): VoiceRuntime[] => {
+    return Array.from(voiceRuntimes.values());
   };
 
   public init = async (): Promise<void> => {
@@ -819,3 +823,4 @@ class VoiceRuntime {
 }
 
 export { VoiceRuntime };
+

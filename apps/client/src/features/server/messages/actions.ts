@@ -14,7 +14,7 @@ import {
   hasMention,
   TYPING_MS,
   type TJoinedMessage
-} from '@sharkord/shared';
+} from '@opencord/shared';
 import {
   channelByIdSelector,
   selectedChannelIdSelector
@@ -292,3 +292,4 @@ export const updateReplyCount = (
     serverSliceActions.updateReplyCount({ channelId, messageId, replyCount })
   );
 };
+

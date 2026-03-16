@@ -1,4 +1,4 @@
-import type { TIpInfo } from '@sharkord/shared';
+import type { TIpInfo } from '@opencord/shared';
 import { ipCache } from './ip-cache';
 
 const getIpInfo = async (ip: string) => {
@@ -24,3 +24,4 @@ const getIpInfo = async (ip: string) => {
 };
 
 export { getIpInfo };
+

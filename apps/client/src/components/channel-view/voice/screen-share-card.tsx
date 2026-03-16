@@ -5,8 +5,8 @@ import {
 import { useOwnUserId, useUserById } from '@/features/server/users/hooks';
 import { useVoice } from '@/features/server/voice/hooks';
 import { cn } from '@/lib/utils';
-import { StreamKind } from '@sharkord/shared';
-import { IconButton } from '@sharkord/ui';
+import { StreamKind } from '@opencord/shared';
+import { IconButton } from '@opencord/ui';
 import { Monitor, ZoomIn, ZoomOut } from 'lucide-react';
 import { memo, useCallback, useMemo } from 'react';
 import { CardControls } from './card-controls';
@@ -224,3 +224,4 @@ const ScreenShareCard = memo(
 ScreenShareCard.displayName = 'ScreenShareCard';
 
 export { ScreenShareCard };
+

@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { Button, Tooltip } from '@sharkord/ui';
+import { Button, Tooltip } from '@opencord/ui';
 import { memo } from 'react';
 
 type TIconComponent = React.ComponentType<{
@@ -63,3 +63,4 @@ ControlToggleButton.displayName = 'ControlToggleButton';
 
 export { ControlToggleButton };
 export type { TControlToggleButtonProps };
+

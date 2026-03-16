@@ -2,7 +2,7 @@ import { UserAvatar } from '@/components/user-avatar';
 import { getRenderedUsername } from '@/helpers/get-rendered-username';
 import i18n from '@/i18n';
 import { computePosition, flip, offset, shift } from '@floating-ui/dom';
-import { UserStatus, type TJoinedPublicUser } from '@sharkord/shared';
+import { UserStatus, type TJoinedPublicUser } from '@opencord/shared';
 import type { Editor } from '@tiptap/core';
 import { ReactRenderer } from '@tiptap/react';
 import {
@@ -286,3 +286,4 @@ const MentionSuggestion = {
 };
 
 export { MENTION_STORAGE_KEY, MentionSuggestion };
+

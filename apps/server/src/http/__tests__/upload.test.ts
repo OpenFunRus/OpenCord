@@ -1,4 +1,4 @@
-import { UploadHeaders, type TTempFile } from '@sharkord/shared';
+import { UploadHeaders, type TTempFile } from '@opencord/shared';
 import { afterAll, beforeEach, describe, expect, test } from 'bun:test';
 import fs from 'fs/promises';
 import path from 'path';
@@ -477,3 +477,4 @@ describe('sanitizeFileName', () => {
     expect(sanitizeFileName('file.backup.old.txt')).toBe('file.backup.old.txt');
   });
 });
+

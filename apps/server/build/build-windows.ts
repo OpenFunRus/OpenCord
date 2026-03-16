@@ -1,8 +1,8 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { parseArgs } from 'util';
-import { zipDirectory } from '../src/helpers/zip';
-import { compile, getVersionInfo, rmIfExists, type TTarget } from './helpers';
+import { zipDirectory } from '../src/helpers/zip.js';
+import { compile, getVersionInfo, rmIfExists, type TTarget } from './helpers.js';
 
 const clientCwd = path.resolve(process.cwd(), '..', 'client');
 const serverCwd = process.cwd();

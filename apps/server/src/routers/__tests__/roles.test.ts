@@ -1,4 +1,4 @@
-import { Permission } from '@sharkord/shared';
+import { Permission } from '@opencord/shared';
 import { describe, expect, test } from 'bun:test';
 import { initTest } from '../../__tests__/helpers';
 
@@ -256,3 +256,4 @@ describe('roles router', () => {
     });
   });
 });
+

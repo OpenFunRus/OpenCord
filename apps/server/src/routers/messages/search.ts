@@ -1,4 +1,4 @@
-import { getPlainTextFromHtml, type TFile } from '@sharkord/shared';
+import { getPlainTextFromHtml, type TFile } from '@opencord/shared';
 import { and, desc, eq, inArray, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import { config } from '../../config';
@@ -196,3 +196,4 @@ const searchMessagesRoute = rateLimitedProcedure(protectedProcedure, {
   });
 
 export { searchMessagesRoute };
+

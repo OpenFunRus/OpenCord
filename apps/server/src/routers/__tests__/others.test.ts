@@ -1,4 +1,4 @@
-import type { TTempFile } from '@sharkord/shared';
+import type { TTempFile } from '@opencord/shared';
 import { describe, expect, test } from 'bun:test';
 import {
   getCaller,
@@ -190,3 +190,4 @@ describe('others router', () => {
     ).rejects.toThrow('Too many requests. Please try again shortly.');
   });
 });
+

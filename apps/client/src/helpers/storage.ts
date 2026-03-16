@@ -1,37 +1,37 @@
 export enum LocalStorageKey {
-  IDENTITY = 'sharkord-identity',
-  REMEMBER_CREDENTIALS = 'sharkord-remember-identity',
-  USER_PASSWORD = 'sharkord-user-password',
-  SERVER_PASSWORD = 'sharkord-server-password',
+  IDENTITY = 'opencord-identity',
+  REMEMBER_CREDENTIALS = 'opencord-remember-identity',
+  USER_PASSWORD = 'opencord-user-password',
+  SERVER_PASSWORD = 'opencord-server-password',
   VITE_UI_THEME = 'vite-ui-theme',
-  DEVICES_SETTINGS = 'sharkord-devices-settings',
-  FLOATING_CARD_POSITION = 'sharkord-floating-card-position',
-  RIGHT_SIDEBAR_STATE = 'sharkord-right-sidebar-state',
-  VOICE_CHAT_SIDEBAR_STATE = 'sharkord-voice-chat-sidebar-state',
-  VOICE_CHAT_SIDEBAR_CHANNEL_ID = 'sharkord-voice-chat-sidebar-channel-id',
-  VOICE_CHAT_SIDEBAR_WIDTH = 'sharkord-voice-chat-sidebar-width',
-  VOICE_CHAT_SHOW_USER_BANNERS = 'sharkord-voice-chat-show-user-banners',
-  VOLUME_SETTINGS = 'sharkord-volume-settings',
-  RECENT_EMOJIS = 'sharkord-recent-emojis',
-  DEBUG = 'sharkord-debug',
-  DRAFT_MESSAGES = 'sharkord-draft-messages',
-  HIDE_NON_VIDEO_PARTICIPANTS = 'sharkord-hide-non-video-participants',
-  THREAD_SIDEBAR_WIDTH = 'sharkord-thread-sidebar-width',
-  LEFT_SIDEBAR_WIDTH = 'sharkord-left-sidebar-width',
-  RIGHT_SIDEBAR_WIDTH = 'sharkord-right-sidebar-width',
-  CATEGORIES_EXPANDED = 'sharkord-categories-expanded',
-  AUTO_LOGIN = 'sharkord-auto-login',
-  AUTO_LOGIN_TOKEN = 'sharkord-auto-login-token',
-  LAST_SELECTED_CHANNEL = 'sharkord-last-selected-channel',
-  AUTO_JOIN_LAST_CHANNEL = 'sharkord-auto-join-last-channel',
-  BROWSER_NOTIFICATIONS = 'sharkord-browser-notifications',
-  BROWSER_NOTIFICATIONS_FOR_MENTIONS = 'sharkord-browser-notifications-for-mentions',
-  BROWSER_NOTIFICATIONS_FOR_DMS = 'sharkord-browser-notifications-for-dms',
+  DEVICES_SETTINGS = 'opencord-devices-settings',
+  FLOATING_CARD_POSITION = 'opencord-floating-card-position',
+  RIGHT_SIDEBAR_STATE = 'opencord-right-sidebar-state',
+  VOICE_CHAT_SIDEBAR_STATE = 'opencord-voice-chat-sidebar-state',
+  VOICE_CHAT_SIDEBAR_CHANNEL_ID = 'opencord-voice-chat-sidebar-channel-id',
+  VOICE_CHAT_SIDEBAR_WIDTH = 'opencord-voice-chat-sidebar-width',
+  VOICE_CHAT_SHOW_USER_BANNERS = 'opencord-voice-chat-show-user-banners',
+  VOLUME_SETTINGS = 'opencord-volume-settings',
+  RECENT_EMOJIS = 'opencord-recent-emojis',
+  DEBUG = 'opencord-debug',
+  DRAFT_MESSAGES = 'opencord-draft-messages',
+  HIDE_NON_VIDEO_PARTICIPANTS = 'opencord-hide-non-video-participants',
+  THREAD_SIDEBAR_WIDTH = 'opencord-thread-sidebar-width',
+  LEFT_SIDEBAR_WIDTH = 'opencord-left-sidebar-width',
+  RIGHT_SIDEBAR_WIDTH = 'opencord-right-sidebar-width',
+  CATEGORIES_EXPANDED = 'opencord-categories-expanded',
+  AUTO_LOGIN = 'opencord-auto-login',
+  AUTO_LOGIN_TOKEN = 'opencord-auto-login-token',
+  LAST_SELECTED_CHANNEL = 'opencord-last-selected-channel',
+  AUTO_JOIN_LAST_CHANNEL = 'opencord-auto-join-last-channel',
+  BROWSER_NOTIFICATIONS = 'opencord-browser-notifications',
+  BROWSER_NOTIFICATIONS_FOR_MENTIONS = 'opencord-browser-notifications-for-mentions',
+  BROWSER_NOTIFICATIONS_FOR_DMS = 'opencord-browser-notifications-for-dms',
   LANGUAGE = 'opencord-language'
 }
 
 export enum SessionStorageKey {
-  TOKEN = 'sharkord-token'
+  TOKEN = 'opencord-token'
 }
 
 const getLocalStorageItem = (key: LocalStorageKey): string | null => {
@@ -123,3 +123,4 @@ export {
   setLocalStorageItemBool,
   setSessionStorageItem
 };
+

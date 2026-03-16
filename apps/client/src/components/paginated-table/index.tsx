@@ -1,4 +1,4 @@
-import { Button, Input } from '@sharkord/ui';
+import { Button, Input } from '@opencord/ui';
 import { ChevronLeft, ChevronRight, Search } from 'lucide-react';
 import { memo, useCallback, useMemo, useState } from 'react';
 
@@ -174,3 +174,4 @@ const PaginatedTable = memo(PaginatedTableComponent) as <T>(
 ) => React.ReactElement;
 
 export { PaginatedTable };
+

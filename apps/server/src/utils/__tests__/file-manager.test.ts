@@ -1,4 +1,4 @@
-import { StorageOverflowAction } from '@sharkord/shared';
+import { StorageOverflowAction } from '@opencord/shared';
 import { beforeEach, describe, expect, test } from 'bun:test';
 import { eq } from 'drizzle-orm';
 import fs from 'fs/promises';
@@ -673,3 +673,4 @@ describe('file manager', () => {
     expect(saved2.name).toBe('report-2.txt');
   });
 });
+

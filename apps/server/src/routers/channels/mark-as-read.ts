@@ -1,4 +1,4 @@
-import { type TMessage } from '@sharkord/shared';
+import { type TMessage } from '@opencord/shared';
 import { and, desc, eq, isNull } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '../../db';
@@ -69,3 +69,4 @@ const markAsReadRoute = protectedProcedure
   });
 
 export { markAsReadRoute };
+

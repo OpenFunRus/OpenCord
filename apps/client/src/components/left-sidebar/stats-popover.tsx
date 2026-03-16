@@ -1,6 +1,6 @@
 import { useVoice } from '@/features/server/voice/hooks';
 import { formatBigNumber } from '@/helpers/format-big-number';
-import { Popover, PopoverContent, PopoverTrigger } from '@sharkord/ui';
+import { Popover, PopoverContent, PopoverTrigger } from '@opencord/ui';
 import { filesize } from 'filesize';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -187,8 +187,8 @@ const StatsPopover = memo(({ children }: StatsPopoverProps) => {
               {t('sessionTotals')}
             </h4>
             <div className="grid grid-cols-2 gap-2 text-[#8fa2bb]">
-              <div>↑ {filesize(totalBytesSent)}</div>
-              <div>↓ {filesize(totalBytesReceived)}</div>
+              <div>в†‘ {filesize(totalBytesSent)}</div>
+              <div>в†“ {filesize(totalBytesReceived)}</div>
             </div>
           </div>
         </div>
@@ -198,3 +198,4 @@ const StatsPopover = memo(({ children }: StatsPopoverProps) => {
 });
 
 export { StatsPopover };
+

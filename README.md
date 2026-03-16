@@ -1,92 +1,56 @@
-<div align="center">
-  <h1>Sharkord</h1>
-  <p><strong>A lightweight, self-hosted real-time communication platform</strong></p>
-  
-  [![Version](https://img.shields.io/github/v/release/Sharkord/sharkord)](https://github.com/Sharkord/sharkord/releases)
-  [![License](https://img.shields.io/github/license/Sharkord/sharkord)](LICENSE)
-  [![Downloads](https://img.shields.io/github/downloads/Sharkord/sharkord/total)](https://github.com/Sharkord/sharkord/releases)
-  [![Last Commit](https://img.shields.io/github/last-commit/Sharkord/sharkord)](https://github.com/Sharkord/sharkord/commits)
-  
-  [![Bun](https://img.shields.io/badge/Bun-v1.3.10-green.svg)](https://bun.sh)
-  [![Mediasoup](https://img.shields.io/badge/Mediasoup-v3.19.11-green.svg)](https://mediasoup.org)
-</div>
+# OpenCord
 
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/B0B71U3476)
+Минимально очищенный репозиторий OpenCord под два сценария:
 
-## What is Sharkord?
+- Windows test build
+- production-запуск на Ubuntu 22.04.5 через Docker
 
-> [!NOTE]
-> Sharkord is in alpha stage. Bugs, incomplete features and breaking changes are to be expected.
+Основной документ проекта: `ROADMAP.md`.
 
-Sharkord is a self-hosted communication platform that brings the most important Discord-like features to your own infrastructure. Host voice channels, text chat, and file sharing on your terms—no third-party dependencies, complete data ownership, and full control over your group's communication.
+## Что оставлено
 
-## Docs
+- `apps/client` и `apps/server`
+- `packages/shared`, `packages/ui`, `packages/plugin-sdk`
+- Windows-сборка через `apps/server/build/build-windows.ts`
+- Linux production path через `Dockerfile`, `docker-entrypoint.sh` и `docker-compose.yml`
+- снапшот исходного состояния рядом с проектом: `../sharkord-development.zip`
 
-For detailed documentation, please visit our [Documentation](https://sharkord.com/docs).
+## Быстрый production запуск на Ubuntu
 
-## Wanna Try It Out?
-
-Check out the Live Demo at [demo.sharkord.com](https://demo.sharkord.com). The amount of ports opened for the demo is limited, so voice and video features will only work for a couple of users at a time. If you want to test it with a larger group, we recommend running your own instance.
-
-## Getting Started
-
-Sharkord is distributed as a standalone binary that bundles both server and client components. Get started by downloading the latest release for your platform from the [Releases](https://github.com/Sharkord/sharkord/releases) page. We ship binaries for Windows, macOS, and Linux.
-
-#### Linux x64
+1. Установить Docker Engine и Docker Compose Plugin.
+2. В `docker-compose.yml` указать реальный публичный IP или домен в `OPENCORD_WEBRTC_ANNOUNCED_ADDRESS`.
+3. Из корня проекта выполнить:
 
 ```bash
-curl -L https://github.com/sharkord/sharkord/releases/latest/download/sharkord-linux-x64 -o sharkord
-chmod +x sharkord
-./sharkord
+docker compose up -d --build
 ```
 
-#### Docker
+После старта интерфейс будет доступен по адресу `http://SERVER_IP:4991`.
 
-Sharkord can also be run using Docker. Here's how to run it:
+Данные сервера сохраняются в `./data` и монтируются в `/home/bun/.config/opencord`.
+
+## Windows test build
+
+Выполнить из `apps/server`:
 
 ```bash
-docker run \
-  -p 4991:4991/tcp \
-  -p 40000:40000/tcp \
-  -p 40000:40000/udp \
-  -v ./data:/home/bun/.config/sharkord \
-  --name sharkord \
-  sharkord/sharkord:latest
+bun run build:windows
 ```
 
-> [!NOTE]
-> Upon first launch, Sharkord will create a secure token and print it to the console. This token allows ANYONE to gain owner access to your server, so make sure to store it securely and do not lose it!
+Результат сборки: `apps/server/build/out/opencord-server.exe`.
 
-Once the server is running, open your web browser and navigate to [http://localhost:4991](http://localhost:4991) to access the Sharkord client interface. If you're running the server on a different machine, replace `localhost` with the server's IP address or domain name.
+## Переменные окружения
 
-Check out our [Documentation](https://sharkord.com/docs) for more detailed setup instructions, configuration options, and troubleshooting tips.
+- `OPENCORD_PORT`
+- `OPENCORD_DEBUG`
+- `OPENCORD_WEBRTC_PORT`
+- `OPENCORD_WEBRTC_ANNOUNCED_ADDRESS`
+- `OPENCORD_WEBRTC_MAX_BITRATE`
+- `OPENCORD_DATA_PATH`
 
-## Contributing
+## Примечания
 
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+- При первом запуске OpenCord автоматически создаёт `config.ini` и структуру данных.
+- Для общего контекста, списка задач и истории изменений используй `ROADMAP.md`.
+- Лицензия проекта находится в `LICENSE`.
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-Built with amazing open-source technologies:
-
-- [Bun](https://bun.sh)
-- [tRPC](https://trpc.io)
-- [Mediasoup](https://mediasoup.org)
-- [Drizzle ORM](https://orm.drizzle.team)
-- [React](https://react.dev)
-- [Radix UI](https://www.radix-ui.com)
-- [ShadCN UI](https://ui.shadcn.com/)
-- [Tailwind CSS](https://tailwindcss.com)
-
-<div align="center">
-  <p>Made with ❤️ by the Sharkord team</p>
-  <p>
-    <a href="https://github.com/Sharkord/sharkord">GitHub</a> •
-    <a href="https://github.com/Sharkord/sharkord/issues">Issues</a> •
-    <a href="https://github.com/Sharkord/sharkord/discussions">Discussions</a>
-  </p>
-</div>

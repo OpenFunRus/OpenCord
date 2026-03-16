@@ -1,4 +1,4 @@
-import type { TInvite, TJoinedInvite } from '@sharkord/shared';
+import type { TInvite, TJoinedInvite } from '@opencord/shared';
 import { eq } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/sqlite-core';
 import { db } from '..';
@@ -93,3 +93,4 @@ const getInvites = async (): Promise<TJoinedInvite[]> => {
 };
 
 export { getInvites, isInviteValid };
+

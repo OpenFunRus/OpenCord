@@ -4,8 +4,8 @@ import { requestConfirmation } from '@/features/dialogs/actions';
 import { useDateLocale } from '@/hooks/use-date-locale';
 import { getTRPCClient } from '@/lib/trpc';
 import { cn } from '@/lib/utils';
-import type { TJoinedInvite } from '@sharkord/shared';
-import { getTrpcError } from '@sharkord/shared';
+import type { TJoinedInvite } from '@opencord/shared';
+import { getTrpcError } from '@opencord/shared';
 import {
   Badge,
   Button,
@@ -13,7 +13,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger
-} from '@sharkord/ui';
+} from '@opencord/ui';
 import { format, formatDistanceToNow } from 'date-fns';
 import { Copy, MoreVertical, Trash2 } from 'lucide-react';
 import { memo, useCallback, useMemo } from 'react';
@@ -116,7 +116,7 @@ const TableInvite = memo(({ invite, refetch }: TTableInviteProps) => {
 
   const usesText = useMemo(() => {
     if (!invite.maxUses) {
-      return `${invite.uses} / ∞`;
+      return `${invite.uses} / в€ћ`;
     }
     return `${invite.uses} / ${invite.maxUses}`;
   }, [invite.uses, invite.maxUses]);
@@ -255,3 +255,4 @@ const TableInvite = memo(({ invite, refetch }: TTableInviteProps) => {
 });
 
 export { TableInvite };
+

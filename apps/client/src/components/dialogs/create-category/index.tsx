@@ -10,7 +10,7 @@ import {
   DialogTitle,
   Group,
   Input
-} from '@sharkord/ui';
+} from '@opencord/ui';
 import { memo, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TDialogBaseProps } from '../types';
@@ -92,3 +92,4 @@ const CreateCategoryDialog = memo(
 );
 
 export { CreateCategoryDialog };
+

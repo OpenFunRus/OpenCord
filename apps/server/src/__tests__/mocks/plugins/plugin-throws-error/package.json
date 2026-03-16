@@ -1,7 +1,7 @@
 {
   "name": "plugin-throws-error",
   "version": "1.0.0",
-  "sharkord": {
+  "opencord": {
     "entry": {
       "server": "index.js",
       "client": "index.js"
@@ -10,3 +10,4 @@
     "description": "Plugin that throws error on load"
   }
 }
+

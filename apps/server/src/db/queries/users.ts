@@ -2,7 +2,7 @@ import {
   type TJoinedPublicUser,
   type TJoinedUser,
   type TStorageData
-} from '@sharkord/shared';
+} from '@opencord/shared';
 import { count, eq, sum } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/sqlite-core';
 import jwt from 'jsonwebtoken';
@@ -378,3 +378,4 @@ export {
   getUserByToken,
   getUsers
 };
+

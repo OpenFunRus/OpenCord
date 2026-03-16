@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@sharkord/ui';
+import { Card, CardContent, CardHeader, CardTitle } from '@opencord/ui';
 import { Activity, File, Link, MessageSquareText } from 'lucide-react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -57,3 +57,4 @@ const ServerActivity = memo(() => {
 });
 
 export { ServerActivity };
+

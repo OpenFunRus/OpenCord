@@ -1,4 +1,4 @@
-import { stripZalgo } from '@sharkord/shared';
+import { stripZalgo } from '@opencord/shared';
 import sanitize from 'sanitize-html';
 
 const sanitizeMessageHtml = (html: string): string => {
@@ -56,3 +56,4 @@ const sanitizeMessageHtml = (html: string): string => {
 };
 
 export { sanitizeMessageHtml };
+

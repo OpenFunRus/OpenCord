@@ -1,6 +1,6 @@
 import type { ServerScreen } from '@/components/server-screens/screens';
 import { createSlice } from '@reduxjs/toolkit';
-import type { TGenericObject } from '@sharkord/shared';
+import type { TGenericObject } from '@opencord/shared';
 
 type TServerScreenState = {
   openServerScreen: ServerScreen | undefined;
@@ -41,3 +41,4 @@ const serverScreenSliceActions = serverScreenSlice.actions;
 const serverScreenSliceReducer = serverScreenSlice.reducer;
 
 export { serverScreenSliceActions, serverScreenSliceReducer };
+

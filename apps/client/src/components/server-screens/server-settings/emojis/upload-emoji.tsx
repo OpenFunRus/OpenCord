@@ -1,4 +1,4 @@
-import { Button, Card, CardContent } from '@sharkord/ui';
+import { Button, Card, CardContent } from '@opencord/ui';
 import { Upload } from 'lucide-react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -14,7 +14,7 @@ const UploadEmoji = memo(({ uploadEmoji, isUploading }: TUploadEmojiProps) => {
   return (
     <Card className="flex flex-1 items-center justify-center">
       <CardContent className="max-w-md py-12 text-center text-[#8fa2bb]">
-        <div className="mb-4 text-4xl">😀</div>
+        <div className="mb-4 text-4xl">:)</div>
         <h3 className="mb-2 font-medium text-white">{t('uploadEmojiTitle')}</h3>
         <p className="mb-4 text-sm">{t('uploadEmojiDesc')}</p>
         <Button
@@ -31,3 +31,4 @@ const UploadEmoji = memo(({ uploadEmoji, isUploading }: TUploadEmojiProps) => {
 });
 
 export { UploadEmoji };
+

@@ -7,7 +7,7 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger
-} from '@sharkord/ui';
+} from '@opencord/ui';
 import {
   Bell,
   LockKeyhole,
@@ -123,3 +123,4 @@ const UserSettings = memo(({ close, isOpen }: TUserSettingsProps) => {
 });
 
 export { UserSettings };
+

@@ -1,4 +1,4 @@
-import { ServerEvents } from '@sharkord/shared';
+import { ServerEvents } from '@opencord/shared';
 import { protectedProcedure } from '../../utils/trpc';
 
 const onRoleCreateRoute = protectedProcedure.subscription(async ({ ctx }) => {
@@ -14,3 +14,4 @@ const onRoleUpdateRoute = protectedProcedure.subscription(async ({ ctx }) => {
 });
 
 export { onRoleCreateRoute, onRoleDeleteRoute, onRoleUpdateRoute };
+

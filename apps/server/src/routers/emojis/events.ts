@@ -1,4 +1,4 @@
-import { ServerEvents } from '@sharkord/shared';
+import { ServerEvents } from '@opencord/shared';
 import { protectedProcedure } from '../../utils/trpc';
 
 const onEmojiCreateRoute = protectedProcedure.subscription(async ({ ctx }) => {
@@ -14,3 +14,4 @@ const onEmojiUpdateRoute = protectedProcedure.subscription(async ({ ctx }) => {
 });
 
 export { onEmojiCreateRoute, onEmojiDeleteRoute, onEmojiUpdateRoute };
+

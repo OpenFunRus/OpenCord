@@ -3,7 +3,7 @@ import {
   ChannelType,
   Permission,
   ServerEvents
-} from '@sharkord/shared';
+} from '@opencord/shared';
 import { eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { config } from '../../config';
@@ -87,3 +87,4 @@ const joinVoiceRoute = rateLimitedProcedure(protectedProcedure, {
   });
 
 export { joinVoiceRoute };
+

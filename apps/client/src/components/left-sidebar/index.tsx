@@ -21,8 +21,8 @@ const MAX_WIDTH = 400;
 const DEFAULT_WIDTH = 288; // w-72 = 288px
 
 const DEFAULT_SERVER_NAMES = new Set([
-  'sharkord Server',
-  'Sharkord Server',
+  'opencord Server',
+  'OpenCord Server',
   'OpenCord Server'
 ]);
 
@@ -77,3 +77,4 @@ const LeftSidebar = memo(({ className, isOpen = true }: TLeftSidebarProps) => {
 
 export { UserControl } from './user-control';
 export { LeftSidebar };
+

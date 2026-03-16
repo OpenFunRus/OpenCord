@@ -4,7 +4,7 @@ import {
   selectedDmChannelIdSelector
 } from '@/features/app/selectors';
 import { store } from '@/features/store';
-import type { TChannel, TChannelUserPermissionsMap } from '@sharkord/shared';
+import type { TChannel, TChannelUserPermissionsMap } from '@opencord/shared';
 import { serverSliceActions } from '../slice';
 import {
   channelByIdSelector,
@@ -105,3 +105,4 @@ export const setChannelReadState = (
     serverSliceActions.setChannelReadState({ channelId, count: actualCount })
   );
 };
+

@@ -1,4 +1,4 @@
-import { Button, cn, Input } from '@sharkord/ui';
+import { Button, cn, Input } from '@opencord/ui';
 import { ChevronsLeft, ChevronsRight } from 'lucide-react';
 import {
   createContext,
@@ -365,3 +365,4 @@ const PaginatedList = Object.assign(
 );
 
 export { PaginatedList };
+

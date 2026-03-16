@@ -1,4 +1,4 @@
-import { ActivityLogType, Permission } from '@sharkord/shared';
+import { ActivityLogType, Permission } from '@opencord/shared';
 import { z } from 'zod';
 import {
   publishPluginCommands,
@@ -34,3 +34,4 @@ const togglePluginRoute = protectedProcedure
   });
 
 export { togglePluginRoute };
+

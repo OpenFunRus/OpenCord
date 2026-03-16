@@ -1,4 +1,4 @@
-import type { TFile, TJoinedUser, TLogin, TMessage } from '@sharkord/shared';
+import type { TFile, TJoinedUser, TLogin, TMessage } from '@opencord/shared';
 import { createContext, useContext } from 'react';
 
 enum ModViewScreen {
@@ -36,3 +36,4 @@ const useModViewContext = () => useContext(ModViewContext);
 
 export { ModViewContext, ModViewScreen, useModViewContext };
 export type { TModViewContext };
+

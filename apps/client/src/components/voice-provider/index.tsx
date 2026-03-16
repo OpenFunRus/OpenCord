@@ -20,7 +20,7 @@ import {
   DEFAULT_BITRATE,
   StreamKind,
   type TVoiceUserState
-} from '@sharkord/shared';
+} from '@opencord/shared';
 import { Device } from 'mediasoup-client';
 import type {
   RtpCapabilities,
@@ -878,3 +878,4 @@ const VoiceProvider = memo(({ children }: TVoiceProviderProps) => {
 });
 
 export { VoiceProvider, VoiceProviderContext };
+

@@ -1,4 +1,4 @@
-import { ChannelPermission } from '@sharkord/shared';
+import { ChannelPermission } from '@opencord/shared';
 import { and, desc, eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '../../db';
@@ -49,3 +49,4 @@ const getPinnedRoute = protectedProcedure
   });
 
 export { getPinnedRoute };
+

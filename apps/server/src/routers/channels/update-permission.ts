@@ -2,7 +2,7 @@ import {
   ActivityLogType,
   ChannelPermission,
   Permission
-} from '@sharkord/shared';
+} from '@opencord/shared';
 import { and, eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '../../db';
@@ -109,3 +109,4 @@ const updatePermissionsRoute = protectedProcedure
   });
 
 export { updatePermissionsRoute };
+

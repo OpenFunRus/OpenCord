@@ -1,6 +1,6 @@
 import { useTypingUsersByThreadId } from '@/features/server/hooks';
 import { useThreadMessages } from '@/features/server/messages/hooks';
-import { Spinner } from '@sharkord/ui';
+import { Spinner } from '@opencord/ui';
 import { MessageSquareText } from 'lucide-react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -83,3 +83,4 @@ const ThreadContent = memo(
 );
 
 export { ThreadContent };
+

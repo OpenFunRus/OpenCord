@@ -1,4 +1,4 @@
-import { Permission } from '@sharkord/shared';
+import { Permission } from '@opencord/shared';
 import { and, eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '../../db';
@@ -46,3 +46,4 @@ const removeRoleRoute = protectedProcedure
   });
 
 export { removeRoleRoute };
+

@@ -1,5 +1,5 @@
 import { getTRPCClient } from '@/lib/trpc';
-import { getTrpcError, type TJoinedUser } from '@sharkord/shared';
+import { getTrpcError, type TJoinedUser } from '@opencord/shared';
 import {
   Alert,
   AlertDescription,
@@ -13,7 +13,7 @@ import {
   AutoFocus,
   Group,
   Switch
-} from '@sharkord/ui';
+} from '@opencord/ui';
 import { AlertCircleIcon } from 'lucide-react';
 import { memo, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -118,3 +118,4 @@ const DeleteUserDialog = memo(
 );
 
 export { DeleteUserDialog };
+

@@ -1,4 +1,4 @@
-import type { TDiskMetrics } from '@sharkord/shared';
+import type { TDiskMetrics } from '@opencord/shared';
 import { filesize } from 'filesize';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -38,10 +38,10 @@ const DiskMetrics = memo(({ diskMetrics }: DiskMetricsProps) => {
       </div>
       <div>
         <div className="text-sm font-medium text-[#8fa2bb]">
-          {t('diskSharkordUsed')}
+          {t('diskOpenCordUsed')}
         </div>
         <div className="text-lg font-semibold text-white">
-          {filesize(diskMetrics.sharkordUsedSpace, { standard: 'jedec' })}
+          {filesize(diskMetrics.opencordUsedSpace, { standard: 'jedec' })}
         </div>
       </div>
       <div className="col-span-2 mt-2">
@@ -75,3 +75,4 @@ const DiskMetrics = memo(({ diskMetrics }: DiskMetricsProps) => {
 DiskMetrics.displayName = 'DiskMetrics';
 
 export { DiskMetrics };
+

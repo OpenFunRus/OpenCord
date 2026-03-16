@@ -1,4 +1,4 @@
-import { ActivityLogType, getRandomString, Permission } from '@sharkord/shared';
+import { ActivityLogType, getRandomString, Permission } from '@opencord/shared';
 import { eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '../../db';
@@ -72,3 +72,4 @@ const addInviteRoute = protectedProcedure
   });
 
 export { addInviteRoute };
+

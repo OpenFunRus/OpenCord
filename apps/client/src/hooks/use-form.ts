@@ -1,4 +1,4 @@
-import { parseTrpcErrors, type TTrpcErrors } from '@sharkord/shared';
+import { parseTrpcErrors, type TTrpcErrors } from '@opencord/shared';
 import { useCallback, useState } from 'react';
 
 const useForm = <T extends Record<string, unknown>>(initialValues: T) => {
@@ -110,3 +110,4 @@ const useForm = <T extends Record<string, unknown>>(initialValues: T) => {
 };
 
 export { useForm };
+

@@ -1,4 +1,4 @@
-import type { TSettings } from '@sharkord/shared';
+import type { TSettings } from '@opencord/shared';
 import { isNotNull } from 'drizzle-orm';
 import { db } from '..';
 import { settings } from '../schema';
@@ -12,3 +12,4 @@ const updateSettings = async (serverSettings: Partial<TSettings>) =>
     .get();
 
 export { updateSettings };
+

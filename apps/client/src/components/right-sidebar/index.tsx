@@ -3,7 +3,7 @@ import { UserAvatar } from '@/components/user-avatar';
 import { useUsers } from '@/features/server/users/hooks';
 import { LocalStorageKey } from '@/helpers/storage';
 import { cn } from '@/lib/utils';
-import { DELETED_USER_IDENTITY_AND_NAME } from '@sharkord/shared';
+import { DELETED_USER_IDENTITY_AND_NAME } from '@opencord/shared';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { UserPopover } from '../user-popover';
@@ -98,3 +98,4 @@ const RightSidebar = memo(
 );
 
 export { RightSidebar };
+

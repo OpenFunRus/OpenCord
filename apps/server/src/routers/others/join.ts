@@ -1,4 +1,4 @@
-import { ActivityLogType, ServerEvents, UserStatus } from '@sharkord/shared';
+import { ActivityLogType, ServerEvents, UserStatus } from '@opencord/shared';
 import { eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '../../db';
@@ -146,3 +146,4 @@ const joinServerRoute = rateLimitedProcedure(t.procedure, {
   });
 
 export { joinServerRoute };
+

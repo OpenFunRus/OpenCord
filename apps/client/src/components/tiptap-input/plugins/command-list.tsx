@@ -1,4 +1,4 @@
-import type { TCommandInfo } from '@sharkord/shared';
+import type { TCommandInfo } from '@opencord/shared';
 import {
   forwardRef,
   useCallback,
@@ -108,3 +108,4 @@ const CommandList = forwardRef<CommandListRef, CommandListProps>(
 );
 
 export { CommandList };
+

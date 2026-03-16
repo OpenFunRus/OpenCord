@@ -1,5 +1,5 @@
 import { store } from '@/features/store';
-import type { TJoinedRole } from '@sharkord/shared';
+import type { TJoinedRole } from '@opencord/shared';
 import { serverSliceActions } from '../slice';
 
 export const setRoles = (roles: TJoinedRole[]) =>
@@ -13,3 +13,4 @@ export const updateRole = (roleId: number, role: Partial<TJoinedRole>) =>
 
 export const removeRole = (roleId: number) =>
   store.dispatch(serverSliceActions.removeRole({ roleId }));
+

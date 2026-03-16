@@ -3,7 +3,7 @@ import {
   OWNER_ROLE_ID,
   Permission,
   type TTempFile
-} from '@sharkord/shared';
+} from '@opencord/shared';
 import { describe, expect, test } from 'bun:test';
 import { and, eq } from 'drizzle-orm';
 import { initTest, uploadFile } from '../../__tests__/helpers';
@@ -717,7 +717,7 @@ describe('users router', () => {
     await tdb.insert(messageReactions).values({
       messageId: messageBeforeDelete!.id,
       userId: targetUserId,
-      emoji: '👍',
+      emoji: '\u{1F44D}',
       fileId: null,
       createdAt: now
     });
@@ -776,7 +776,7 @@ describe('users router', () => {
       .where(
         and(
           eq(messageReactions.messageId, messageBeforeDelete!.id),
-          eq(messageReactions.emoji, '👍')
+          eq(messageReactions.emoji, '\u{1F44D}')
         )
       )
       .get();
@@ -861,7 +861,7 @@ describe('users router', () => {
     await tdb.insert(messageReactions).values({
       messageId: targetMessage!.id,
       userId: targetUserId,
-      emoji: '🧪',
+      emoji: '\u{1F9EA}',
       fileId: null,
       createdAt: now
     });
@@ -1031,7 +1031,8 @@ describe('users router', () => {
   test('should handle bio with special characters', async () => {
     const { caller } = await initTest();
 
-    const specialBio = 'Hello! 👋 This is my bio with émojis & spëcial çhars';
+    const specialBio =
+      'Hello! \u{1F44B} This is my bio with \u00E9mojis & sp\u00EBcial \u00E7hars';
 
     await caller.users.update({
       name: 'Test User',
@@ -1089,3 +1090,4 @@ describe('users router', () => {
     expect(dbMessages.length).toBeGreaterThan(0);
   });
 });
+

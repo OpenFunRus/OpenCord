@@ -4,7 +4,7 @@ import {
   PopoverContent,
   PopoverTrigger,
   Slider
-} from '@sharkord/ui';
+} from '@opencord/ui';
 import { Settings, Volume2, VolumeX } from 'lucide-react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -81,3 +81,4 @@ const StreamSettingsPopover = memo(
 StreamSettingsPopover.displayName = 'StreamSettingsPopover';
 
 export { StreamSettingsPopover };
+

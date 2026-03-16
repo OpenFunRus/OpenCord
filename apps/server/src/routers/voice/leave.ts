@@ -1,4 +1,4 @@
-import { ChannelType, Permission, ServerEvents } from '@sharkord/shared';
+import { ChannelType, Permission, ServerEvents } from '@opencord/shared';
 import { eq } from 'drizzle-orm';
 import { db } from '../../db';
 import { channels } from '../../db/schema';
@@ -57,3 +57,4 @@ const leaveVoiceRoute = protectedProcedure.mutation(async ({ ctx }) => {
 });
 
 export { leaveVoiceRoute };
+

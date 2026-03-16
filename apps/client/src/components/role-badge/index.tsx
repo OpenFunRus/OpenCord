@@ -1,5 +1,5 @@
-import type { TRole } from '@sharkord/shared';
-import { Badge, IconButton } from '@sharkord/ui';
+import type { TRole } from '@opencord/shared';
+import { Badge, IconButton } from '@opencord/ui';
 import { X } from 'lucide-react';
 import { memo } from 'react';
 
@@ -42,3 +42,4 @@ const RoleBadge = memo(({ role, onRemoveRole }: TRoleBadgeProps) => {
 });
 
 export { RoleBadge };
+

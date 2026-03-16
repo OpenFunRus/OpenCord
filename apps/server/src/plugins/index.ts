@@ -4,7 +4,7 @@ import type {
   TCreateStreamOptions,
   TExternalStreamHandle,
   UnloadPluginContext
-} from '@sharkord/plugin-sdk';
+} from '@opencord/plugin-sdk';
 import {
   ServerEvents,
   StreamKind,
@@ -17,7 +17,7 @@ import {
   type TPluginInfo,
   type TPluginSettingDefinition,
   type TPluginSettingsResponse
-} from '@sharkord/shared';
+} from '@opencord/shared';
 import chalk from 'chalk';
 import { eq } from 'drizzle-orm';
 import fs from 'fs/promises';
@@ -467,12 +467,12 @@ class PluginManager {
 
     const serverEntryPath = path.join(
       pluginPath,
-      packageJson.sharkord.entry.server
+      packageJson.opencord.entry.server
     );
 
     const clientEntryPath = path.join(
       pluginPath,
-      packageJson.sharkord.entry.client
+      packageJson.opencord.entry.client
     );
 
     if (!(await fs.exists(serverEntryPath))) {
@@ -490,11 +490,11 @@ class PluginManager {
       enabled: this.isPluginEnabled(pluginId),
       name: packageJson.name,
       path: pluginPath,
-      description: packageJson.sharkord.description,
+      description: packageJson.opencord.description,
       version: packageJson.version,
-      logo: packageJson.sharkord.logo,
-      author: packageJson.sharkord.author,
-      homepage: packageJson.sharkord.homepage,
+      logo: packageJson.opencord.logo,
+      author: packageJson.opencord.author,
+      homepage: packageJson.opencord.homepage,
       entry: {
         server: serverEntryPath,
         client: clientEntryPath
@@ -884,3 +884,4 @@ class PluginManager {
 const pluginManager = new PluginManager();
 
 export { pluginManager };
+

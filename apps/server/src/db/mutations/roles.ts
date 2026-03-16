@@ -1,4 +1,4 @@
-import type { Permission, TRole } from '@sharkord/shared';
+import type { Permission, TRole } from '@opencord/shared';
 import { eq } from 'drizzle-orm';
 import { db } from '..';
 import { rolePermissions, roles } from '../schema';
@@ -34,3 +34,4 @@ const syncRolePermissions = async (
 };
 
 export { syncRolePermissions };
+

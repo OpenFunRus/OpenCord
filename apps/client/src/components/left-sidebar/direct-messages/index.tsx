@@ -14,8 +14,8 @@ import { cn } from '@/lib/utils';
 import {
   DELETED_USER_IDENTITY_AND_NAME,
   type TDirectMessageConversation
-} from '@sharkord/shared';
-import { Spinner } from '@sharkord/ui';
+} from '@opencord/shared';
+import { Spinner } from '@opencord/ui';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
@@ -166,3 +166,4 @@ const DirectMessages = memo(() => {
 });
 
 export { DirectMessages };
+

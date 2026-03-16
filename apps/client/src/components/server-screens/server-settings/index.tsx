@@ -1,5 +1,5 @@
 import { useCan } from '@/features/server/hooks';
-import { Permission } from '@sharkord/shared';
+import { Permission } from '@opencord/shared';
 import {
   Dialog,
   DialogContent,
@@ -9,7 +9,7 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger
-} from '@sharkord/ui';
+} from '@opencord/ui';
 import {
   HardDrive,
   Link2,
@@ -164,3 +164,4 @@ const ServerSettings = memo(({ close, isOpen }: TServerSettingsProps) => {
 });
 
 export { ServerSettings };
+

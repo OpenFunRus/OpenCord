@@ -1,4 +1,4 @@
-import type { EventPayloads, ServerEvent } from '@sharkord/plugin-sdk';
+import type { EventPayloads, ServerEvent } from '@opencord/plugin-sdk';
 import { getErrorMessage } from '../helpers/get-error-message';
 import { logger } from '../logger';
 
@@ -125,3 +125,4 @@ class EventBus {
 const eventBus = new EventBus();
 
 export { eventBus, EventBus };
+

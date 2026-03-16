@@ -1,4 +1,4 @@
-import { Permission } from '@sharkord/shared';
+import { Permission } from '@opencord/shared';
 import { VoiceRuntime } from '../../runtimes/voice';
 import { invariant } from '../../utils/invariant';
 import { protectedProcedure } from '../../utils/trpc';
@@ -22,3 +22,4 @@ const getProducersRoute = protectedProcedure.query(async ({ ctx }) => {
 });
 
 export { getProducersRoute };
+

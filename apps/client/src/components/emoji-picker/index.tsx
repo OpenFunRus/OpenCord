@@ -9,7 +9,7 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger
-} from '@sharkord/ui';
+} from '@opencord/ui';
 import { memo, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CustomEmojiTab } from './custom-emoji-tab';
@@ -150,3 +150,4 @@ const EmojiPicker = memo(
 EmojiPicker.displayName = 'EmojiPicker';
 
 export { EmojiPicker };
+

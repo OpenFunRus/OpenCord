@@ -1,4 +1,4 @@
-import { ChannelPermission, Permission, ServerEvents } from '@sharkord/shared';
+import { ChannelPermission, Permission, ServerEvents } from '@opencord/shared';
 import { z } from 'zod';
 import { getAffectedUserIdsForChannel } from '../../db/queries/channels';
 import { assertDmChannel } from '../../db/queries/dms';
@@ -32,3 +32,4 @@ const signalTypingRoute = protectedProcedure
   });
 
 export { signalTypingRoute };
+

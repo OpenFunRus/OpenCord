@@ -1,7 +1,7 @@
 {
   "name": "client",
   "private": true,
-  "version": "0.0.12",
+  "version": "0.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite --host",
@@ -20,8 +20,8 @@
     "@floating-ui/dom": "^1.7.4",
     "@radix-ui/react-avatar": "^1.1.10",
     "@reduxjs/toolkit": "^2.9.0",
-    "@sharkord/shared": "workspace:*",
-    "@sharkord/ui": "workspace:*",
+    "@opencord/shared": "workspace:*",
+    "@opencord/ui": "workspace:*",
     "@tailwindcss/vite": "^4.1.13",
     "@tiptap/core": "^3.7.2",
     "@tiptap/extension-emoji": "^3.7.2",

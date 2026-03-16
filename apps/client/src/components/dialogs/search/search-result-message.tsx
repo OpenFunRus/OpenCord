@@ -2,7 +2,7 @@ import { MessageRenderer } from '@/components/channel-view/text/renderer';
 import { RelativeTime } from '@/components/relative-time';
 import { UserAvatar } from '@/components/user-avatar';
 import type { TMessageJumpToTarget } from '@/types';
-import { IconButton, Tooltip } from '@sharkord/ui';
+import { IconButton, Tooltip } from '@opencord/ui';
 import { ArrowRight, Hash } from 'lucide-react';
 import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -35,11 +35,11 @@ const SearchResultMessageCard = memo(
               <span className="max-w-55 truncate font-medium text-white">
                 {userName}
               </span>
-              <span>•</span>
+              <span>|</span>
               <RelativeTime date={new Date(message.createdAt)}>
                 {(relativeTime) => <span>{relativeTime}</span>}
               </RelativeTime>
-              <span>•</span>
+              <span>|</span>
               <span className="inline-flex min-w-0 max-w-full items-center gap-1">
                 <Hash className="h-3 w-3" />
                 <span className="truncate wrap-anywhere">
@@ -48,7 +48,7 @@ const SearchResultMessageCard = memo(
               </span>
               {!!message.parentMessageId && (
                 <>
-                  <span>•</span>
+                  <span>|</span>
                   <span>{t('inThread')}</span>
                 </>
               )}
@@ -85,3 +85,4 @@ const SearchResultMessageCard = memo(
 );
 
 export { SearchResultMessageCard };
+

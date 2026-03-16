@@ -1,4 +1,4 @@
-import type { TDirectMessageConversation } from '@sharkord/shared';
+import type { TDirectMessageConversation } from '@opencord/shared';
 import { TRPCError } from '@trpc/server';
 import { and, eq, inArray, max, or } from 'drizzle-orm';
 import { db } from '..';
@@ -205,3 +205,4 @@ export {
   isUserDmParticipant,
   normalizePair
 };
+

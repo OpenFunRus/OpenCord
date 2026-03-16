@@ -2,7 +2,7 @@ import {
   extractUrls,
   type TGenericObject,
   type TMessageMetadata
-} from '@sharkord/shared';
+} from '@opencord/shared';
 import dns from 'dns';
 import { eq } from 'drizzle-orm';
 import ipaddr from 'ipaddr.js';
@@ -135,3 +135,4 @@ export const processMessageMetadata = async (
     .returning()
     .get();
 };
+

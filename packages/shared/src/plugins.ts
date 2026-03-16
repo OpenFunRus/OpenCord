@@ -6,7 +6,7 @@ export const zPluginPackageJson = z.object({
     .string()
     .regex(/^\d+\.\d+\.\d+(-[a-zA-Z0-9-.]+)?$/, 'Invalid version format'),
   name: z.string().min(1, 'Package name is required'),
-  sharkord: z.object({
+  opencord: z.object({
     entry: z.object({
       server: z.string().min(1, 'Server entry point is required'),
       client: z.string().min(1, 'Client entry point is required')
@@ -24,14 +24,14 @@ export type TPluginInfo = {
   id: string;
   enabled: boolean;
   loadError?: string;
-  author: TPluginPackageJson['sharkord']['author'];
-  description: TPluginPackageJson['sharkord']['description'];
+  author: TPluginPackageJson['opencord']['author'];
+  description: TPluginPackageJson['opencord']['description'];
   version: TPluginPackageJson['version'];
-  logo: TPluginPackageJson['sharkord']['logo'];
+  logo: TPluginPackageJson['opencord']['logo'];
   name: TPluginPackageJson['name'];
-  homepage: TPluginPackageJson['sharkord']['homepage'];
+  homepage: TPluginPackageJson['opencord']['homepage'];
   path: string;
-  entry: TPluginPackageJson['sharkord']['entry'];
+  entry: TPluginPackageJson['opencord']['entry'];
 };
 
 export type TLogEntry = {
@@ -160,3 +160,4 @@ export type TPluginSlotContext = {
   currentVoiceChannelId: number | undefined;
   sendMessage: (channelId: number, content: string) => void;
 };
+

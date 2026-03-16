@@ -8,7 +8,7 @@ import {
 import { joinVoice } from '@/features/server/voice/actions';
 import { useVoice } from '@/features/server/voice/hooks';
 import { getLocalStorageItemAsJSON, LocalStorageKey } from '@/helpers/storage';
-import { ChannelType } from '@sharkord/shared';
+import { ChannelType } from '@opencord/shared';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -129,3 +129,4 @@ const useSelectChannel = () => {
 };
 
 export { useCategoryExpanded, useSelectChannel };
+

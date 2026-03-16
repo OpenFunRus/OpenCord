@@ -1,4 +1,4 @@
-import type { TFile } from '@sharkord/shared';
+import type { TFile } from '@opencord/shared';
 import { getFileUrl } from './get-file-url';
 
 const downloadFile = async (file: TFile) => {
@@ -25,3 +25,4 @@ const downloadFile = async (file: TFile) => {
 };
 
 export { downloadFile };
+

@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
-import { FileCategory, getFileCategory } from '@sharkord/shared';
-import { Button } from '@sharkord/ui';
+import { FileCategory, getFileCategory } from '@opencord/shared';
+import { Button } from '@opencord/ui';
 import { filesize } from 'filesize';
 import {
   File,
@@ -92,3 +92,4 @@ const FileCard = ({
 };
 
 export { FileCard };
+

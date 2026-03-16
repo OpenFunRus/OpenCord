@@ -1,4 +1,4 @@
-import { ActivityLogType, OWNER_ROLE_ID, Permission } from '@sharkord/shared';
+import { ActivityLogType, OWNER_ROLE_ID, Permission } from '@opencord/shared';
 import { eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '../../db';
@@ -49,3 +49,4 @@ const updateRoleRoute = protectedProcedure
   });
 
 export { updateRoleRoute };
+

@@ -6,7 +6,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue
-} from '@sharkord/ui';
+} from '@opencord/ui';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -81,3 +81,4 @@ const ResolutionFpsControl = memo(
 );
 
 export default ResolutionFpsControl;
+

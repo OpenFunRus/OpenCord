@@ -1,4 +1,4 @@
-import { Button, Input, Slider } from '@sharkord/ui';
+import { Button, Input, Slider } from '@opencord/ui';
 import { memo, useCallback, type ReactNode } from 'react';
 import { FILE_SIZE_STEP, MEGABYTE } from './presets';
 
@@ -92,3 +92,4 @@ const StorageSizeControl = memo(
 );
 
 export { StorageSizeControl };
+

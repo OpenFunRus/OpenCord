@@ -3,12 +3,12 @@ import {
   IS_DEVELOPMENT,
   IS_TEST,
   SERVER_VERSION,
-  SHARKORD_MEDIASOUP_BIN_NAME
+  OPENCORD_MEDIASOUP_BIN_NAME
 } from '../utils/env';
 import { getAppDataPath } from './fs';
 
 const getDataPath = (): string => {
-  const INJECTED_DATA_PATH = process.env.SHARKORD_DATA_PATH;
+  const INJECTED_DATA_PATH = process.env.OPENCORD_DATA_PATH;
 
   if (INJECTED_DATA_PATH) {
     return path.resolve(INJECTED_DATA_PATH);
@@ -22,7 +22,7 @@ const getDataPath = (): string => {
     return path.resolve(process.cwd(), './data');
   }
 
-  return path.join(getAppDataPath(), 'sharkord');
+  return path.join(getAppDataPath(), 'opencord');
 };
 
 const getMediasoupBinaryPath = (): string | undefined => {
@@ -33,7 +33,7 @@ const getMediasoupBinaryPath = (): string | undefined => {
   return path.join(
     getDataPath(),
     'mediasoup',
-    SHARKORD_MEDIASOUP_BIN_NAME || 'mediasoup-worker'
+    OPENCORD_MEDIASOUP_BIN_NAME || 'mediasoup-worker'
   );
 };
 
@@ -66,3 +66,4 @@ export {
   TMP_PATH,
   UPLOADS_PATH
 };
+

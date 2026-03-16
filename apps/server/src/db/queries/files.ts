@@ -1,4 +1,4 @@
-import type { TFile } from '@sharkord/shared';
+import type { TFile } from '@opencord/shared';
 import { asc, eq, sql, sum } from 'drizzle-orm';
 import { db } from '..';
 import { generateFileToken } from '../../helpers/files-crypto';
@@ -153,3 +153,4 @@ export {
   getUsedFileQuota,
   isFileOrphaned
 };
+

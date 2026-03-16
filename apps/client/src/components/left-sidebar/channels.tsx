@@ -36,7 +36,7 @@ import {
   Permission,
   type TChannel,
   getTrpcError
-} from '@sharkord/shared';
+} from '@opencord/shared';
 import { Hash, Volume2 } from 'lucide-react';
 import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -337,3 +337,4 @@ const Channels = memo(({ categoryId }: TChannelsProps) => {
 });
 
 export { Channels };
+

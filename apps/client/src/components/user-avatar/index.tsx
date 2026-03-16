@@ -5,8 +5,8 @@ import { getInitialsFromName } from '@/helpers/get-initials-from-name';
 import { getRenderedUsername } from '@/helpers/get-rendered-username';
 import { cn } from '@/lib/utils';
 import { AvatarImage } from '@radix-ui/react-avatar';
-import { UserStatus } from '@sharkord/shared';
-import { Avatar, AvatarFallback } from '@sharkord/ui';
+import { UserStatus } from '@opencord/shared';
+import { Avatar, AvatarFallback } from '@opencord/ui';
 import { memo } from 'react';
 import { UserPopover } from '../user-popover';
 import { UserStatusBadge } from '../user-status';
@@ -61,3 +61,4 @@ const UserAvatar = memo(
 );
 
 export { UserAvatar };
+

@@ -2,8 +2,8 @@ import { ImagePicker } from '@/components/image-picker';
 import { uploadFile } from '@/helpers/upload-file';
 import { useFilePicker } from '@/hooks/use-file-picker';
 import { getTRPCClient } from '@/lib/trpc';
-import type { TFile } from '@sharkord/shared';
-import { Group } from '@sharkord/ui';
+import type { TFile } from '@opencord/shared';
+import { Group } from '@opencord/ui';
 import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
@@ -69,3 +69,4 @@ const LogoManager = memo(({ logo, refetch }: TLogoManagerProps) => {
 });
 
 export { LogoManager };
+

@@ -1,5 +1,5 @@
 import { FullScreenImage } from '@/components/fullscreen-image/content';
-import { Skeleton } from '@sharkord/ui';
+import { Skeleton } from '@opencord/ui';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { OverrideLayout } from './layout';
@@ -63,3 +63,4 @@ const ImageOverride = memo(({ src, alt }: TImageOverrideProps) => {
 });
 
 export { ImageOverride };
+

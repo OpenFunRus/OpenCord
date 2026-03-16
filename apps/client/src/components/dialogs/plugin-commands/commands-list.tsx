@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import type { TCommandInfo } from '@sharkord/shared';
+import type { TCommandInfo } from '@opencord/shared';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -76,3 +76,4 @@ const CommandsList = memo(
 );
 
 export { CommandsList };
+

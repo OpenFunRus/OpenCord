@@ -7,7 +7,7 @@ import {
   patchSpawnForMediasoup,
   restoreSpawn
 } from './bun-mediasoup-workaround.js';
-import { IS_PRODUCTION } from './env.js';
+import { IS_DOCKER, IS_PRODUCTION } from './env.js';
 
 let mediaSoupWorker: mediasoup.types.Worker<mediasoup.types.AppData>;
 let webRtcServer: mediasoup.types.WebRtcServer<mediasoup.types.AppData>;
@@ -15,6 +15,7 @@ let webRtcServerListenInfo: { ip: string; announcedAddress?: string };
 
 const loadMediasoup = async () => {
   const port = +config.webRtc.port;
+  const useLocalhostWebRtc = process.platform === 'win32' && !IS_DOCKER;
 
   const workerConfig: mediasoup.types.WorkerSettings = {
     logLevel: 'debug',
@@ -46,7 +47,7 @@ const loadMediasoup = async () => {
 
   logger.debug('Mediasoup worker loaded');
 
-  if (IS_PRODUCTION) {
+  if (IS_PRODUCTION && !useLocalhostWebRtc) {
     const announcedAddress = config.webRtc.announcedAddress || SERVER_PUBLIC_IP;
 
     webRtcServer = await mediaSoupWorker.createWebRtcServer({
@@ -71,8 +72,26 @@ const loadMediasoup = async () => {
 
     webRtcServerListenInfo = { ip: '127.0.0.1' };
 
-    logger.debug(`WebRtcServer created on 127.0.0.1:${port} (dev mode)`);
+    logger.debug(
+      `WebRtcServer created on 127.0.0.1:${port} (${useLocalhostWebRtc ? 'windows test mode' : 'dev mode'})`
+    );
   }
 };
 
-export { loadMediasoup, mediaSoupWorker, webRtcServer, webRtcServerListenInfo };
+const shutdownMediasoup = async () => {
+  if (webRtcServer && !webRtcServer.closed) {
+    await webRtcServer.close();
+  }
+
+  if (mediaSoupWorker && !mediaSoupWorker.closed) {
+    await mediaSoupWorker.close();
+  }
+};
+
+export {
+  loadMediasoup,
+  mediaSoupWorker,
+  shutdownMediasoup,
+  webRtcServer,
+  webRtcServerListenInfo
+};

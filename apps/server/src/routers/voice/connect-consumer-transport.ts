@@ -1,4 +1,4 @@
-import { Permission } from '@sharkord/shared';
+import { Permission } from '@opencord/shared';
 import { z } from 'zod';
 import { VoiceRuntime } from '../../runtimes/voice';
 import { invariant } from '../../utils/invariant';
@@ -36,3 +36,4 @@ const connectConsumerTransportRoute = protectedProcedure
   });
 
 export { connectConsumerTransportRoute };
+

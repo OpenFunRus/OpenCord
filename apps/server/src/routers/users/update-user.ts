@@ -1,4 +1,4 @@
-import { DELETED_USER_IDENTITY_AND_NAME } from '@sharkord/shared';
+import { DELETED_USER_IDENTITY_AND_NAME } from '@opencord/shared';
 import { eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '../../db';
@@ -38,3 +38,4 @@ const updateUserRoute = protectedProcedure
   });
 
 export { updateUserRoute };
+

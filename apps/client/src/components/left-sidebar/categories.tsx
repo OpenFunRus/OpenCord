@@ -22,8 +22,8 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Permission, getTrpcError } from '@sharkord/shared';
-import { IconButton } from '@sharkord/ui';
+import { Permission, getTrpcError } from '@opencord/shared';
+import { IconButton } from '@opencord/ui';
 import { ChevronDown, ChevronRight, Plus } from 'lucide-react';
 import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -202,3 +202,4 @@ const Categories = memo(() => {
 });
 
 export { Categories };
+

@@ -8,7 +8,7 @@ await loadEmbeds();
 // ----------------------------------------
 import { IS_PRODUCTION, SERVER_VERSION } from './utils/env';
 // ----------------------------------------
-import { ActivityLogType } from '@sharkord/shared';
+import { ActivityLogType } from '@opencord/shared';
 import chalk from 'chalk';
 import { config, SERVER_PRIVATE_IP } from './config';
 import { loadCrons } from './crons';
@@ -19,20 +19,22 @@ import { initVoiceRuntimes } from './runtimes';
 import { createServers } from './utils/create-servers';
 import { loadMediasoup } from './utils/mediasoup';
 import { printDebug } from './utils/print-debug';
+import { registerGracefulShutdown } from './utils/shutdown';
 
 await loadDb();
 await pluginManager.loadPlugins();
-await createServers();
+const { httpServer } = await createServers();
 await loadMediasoup();
 await initVoiceRuntimes();
 await loadCrons();
+registerGracefulShutdown({ httpServer });
 
 const host = IS_PRODUCTION ? SERVER_PRIVATE_IP : 'localhost';
 const url = `http://${host}:${config.server.port}/`;
 
 const message = [
-  chalk.green.bold('SHARKORD') + ' ' + chalk.white.bold(`v${SERVER_VERSION}`),
-  chalk.dim('────────────────────────────────────────────────────'),
+  chalk.green.bold('OpenCord') + ' ' + chalk.white.bold(`v${SERVER_VERSION}`),
+  chalk.dim('----------------------------------------------------'),
   `${chalk.yellow('Port:')} ${chalk.bold(String(config.server.port))}`,
   `${chalk.yellow('Interface:')} ${chalk.underline.cyan(url)}`
 ].join('\n');
@@ -44,3 +46,4 @@ printDebug();
 enqueueActivityLog({
   type: ActivityLogType.SERVER_STARTED
 });
+

@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { Button } from '@sharkord/ui';
+import { Button } from '@opencord/ui';
 import { memo } from 'react';
 
 type TPushPinIconProps = {
@@ -60,3 +60,4 @@ PushPinIcon.displayName = 'PushPinIcon';
 PinActionButton.displayName = 'PinActionButton';
 
 export { PinActionButton, PushPinIcon };
+

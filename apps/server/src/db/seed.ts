@@ -15,7 +15,7 @@ import {
   type TIRole,
   type TISettings,
   type TIUser
-} from '@sharkord/shared';
+} from '@opencord/shared';
 import { randomUUIDv7 } from 'bun';
 import { logger } from '../logger';
 import { db } from './index';
@@ -26,7 +26,6 @@ import {
   rolePermissions,
   roles,
   settings,
-  userRoles,
   users
 } from './schema';
 
@@ -186,3 +185,4 @@ const seedDatabase = async () => {
 };
 
 export { seedDatabase };
+

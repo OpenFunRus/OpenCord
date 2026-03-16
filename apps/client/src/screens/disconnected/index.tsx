@@ -1,6 +1,6 @@
 import type { TDisconnectInfo } from '@/features/server/types';
-import { DisconnectCode } from '@sharkord/shared';
-import { Button } from '@sharkord/ui';
+import { DisconnectCode } from '@opencord/shared';
+import { Button } from '@opencord/ui';
 import { AlertCircle, Gavel, RefreshCw, WifiOff } from 'lucide-react';
 import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -76,3 +76,4 @@ const Disconnected = memo(({ info }: TDisconnectedProps) => {
 });
 
 export { Disconnected };
+

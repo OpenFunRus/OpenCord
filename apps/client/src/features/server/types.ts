@@ -2,7 +2,7 @@ import {
   type TJoinedMessage,
   type TJoinedPublicUser,
   type TVoiceUserState
-} from '@sharkord/shared';
+} from '@opencord/shared';
 
 export enum SoundType {
   MESSAGE_RECEIVED = 'message_received',
@@ -47,3 +47,4 @@ export type TDisconnectInfo = {
 export type TVoiceUser = TJoinedPublicUser & {
   state: TVoiceUserState;
 };
+

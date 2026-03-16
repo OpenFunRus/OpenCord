@@ -6,7 +6,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue
-} from '@sharkord/ui';
+} from '@opencord/ui';
 import { Languages } from 'lucide-react';
 import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -52,3 +52,4 @@ const LanguageSwitcher = memo(
 );
 
 export { LanguageSwitcher };
+

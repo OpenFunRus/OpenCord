@@ -1,5 +1,5 @@
-import { Permission as EPermission } from '@sharkord/shared';
-import { Label, Switch } from '@sharkord/ui';
+import { Permission as EPermission } from '@opencord/shared';
+import { Label, Switch } from '@opencord/ui';
 import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -76,3 +76,4 @@ const PermissionList = memo(
 );
 
 export { PermissionList };
+

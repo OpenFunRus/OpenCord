@@ -1,4 +1,4 @@
-import { Button } from '@sharkord/ui';
+import { Button } from '@opencord/ui';
 import { ArrowLeft } from 'lucide-react';
 import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -90,3 +90,4 @@ const ModViewContent = memo(() => {
 });
 
 export { ModViewContent };
+

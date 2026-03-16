@@ -1,4 +1,4 @@
-import { ActivityLogType, Permission } from '@sharkord/shared';
+import { ActivityLogType, Permission } from '@opencord/shared';
 import z from 'zod';
 import { getInvokerCtxFromTrpcCtx } from '../../helpers/get-invoker-ctx-from-trpc-ctx';
 import { pluginManager } from '../../plugins';
@@ -43,3 +43,4 @@ const executeCommandRoute = protectedProcedure
   });
 
 export { executeCommandRoute };
+

@@ -4,7 +4,7 @@ import {
   OWNER_ROLE_ID,
   sha256,
   type TJoinedUser
-} from '@sharkord/shared';
+} from '@opencord/shared';
 import chalk from 'chalk';
 import { eq, isNull, max, sql } from 'drizzle-orm';
 import http from 'http';
@@ -299,3 +299,4 @@ const loginRouteHandler = async (
 };
 
 export { loginRouteHandler };
+

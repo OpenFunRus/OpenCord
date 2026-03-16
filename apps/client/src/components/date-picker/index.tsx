@@ -7,7 +7,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger
-} from '@sharkord/ui';
+} from '@opencord/ui';
 import { CalendarIcon } from 'lucide-react';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -193,3 +193,4 @@ const DatePicker = memo(
 );
 
 export { DatePicker };
+

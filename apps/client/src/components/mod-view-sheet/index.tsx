@@ -1,8 +1,8 @@
 import { setModViewOpen } from '@/features/app/actions';
 import { useModViewOpen } from '@/features/app/hooks';
 import { useAdminUserInfo } from '@/features/server/admin/hooks';
-import { extractUrls } from '@sharkord/shared';
-import { Dialog, DialogContent, DialogTitle } from '@sharkord/ui';
+import { extractUrls } from '@opencord/shared';
+import { Dialog, DialogContent, DialogTitle } from '@opencord/ui';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ModViewContext, ModViewScreen, type TModViewContext } from './context';
@@ -92,3 +92,4 @@ const ModViewSheet = memo(() => {
 });
 
 export { ModViewSheet };
+

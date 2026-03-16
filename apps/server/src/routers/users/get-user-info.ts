@@ -1,4 +1,4 @@
-import { Permission, type TLogin } from '@sharkord/shared';
+import { Permission, type TLogin } from '@opencord/shared';
 import z from 'zod';
 import { getFilesByUserId } from '../../db/queries/files';
 import { getLastLogins } from '../../db/queries/logins';
@@ -47,3 +47,4 @@ const getUserInfoRoute = protectedProcedure
   });
 
 export { getUserInfoRoute };
+

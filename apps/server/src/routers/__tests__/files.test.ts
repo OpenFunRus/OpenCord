@@ -1,4 +1,4 @@
-import type { TTempFile } from '@sharkord/shared';
+import type { TTempFile } from '@opencord/shared';
 import { beforeEach, describe, expect, test } from 'bun:test';
 import fs from 'fs/promises';
 import { initTest, login, uploadFile } from '../../__tests__/helpers';
@@ -72,3 +72,4 @@ describe('files router', () => {
     expect(await fs.exists(tempFile.path)).toBe(true);
   });
 });
+

@@ -3,7 +3,6 @@ import { getTRPCClient } from '@/lib/trpc';
 import {
   DELETED_USER_IDENTITY_AND_NAME,
   parseTrpcErrors,
-  Permission,
   STORAGE_DEFAULT_MAX_AVATAR_SIZE,
   STORAGE_DEFAULT_MAX_BANNER_SIZE,
   STORAGE_DEFAULT_MAX_FILES_PER_MESSAGE,
@@ -28,11 +27,10 @@ import {
   type TRole,
   type TStorageSettings,
   type TTrpcErrors
-} from '@sharkord/shared';
+} from '@opencord/shared';
 import { filesize } from 'filesize';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
-import { useCan } from '../hooks';
 
 // TODO: review this whole file for optimizations and improvements
 
@@ -555,3 +553,4 @@ export const useAdminInvites = () => {
     loading
   };
 };
+

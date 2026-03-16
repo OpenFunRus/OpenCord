@@ -3,8 +3,8 @@ import { RelativeTime } from '@/components/relative-time';
 import { useSelectedChannelId } from '@/features/server/channels/hooks';
 import { useUserById } from '@/features/server/users/hooks';
 import { getTRPCClient } from '@/lib/trpc';
-import { getTrpcError, type TJoinedMessage } from '@sharkord/shared';
-import { IconButton, Popover, PopoverContent, PopoverTrigger, Spinner, Tooltip } from '@sharkord/ui';
+import { getTrpcError, type TJoinedMessage } from '@opencord/shared';
+import { IconButton, Popover, PopoverContent, PopoverTrigger, Spinner, Tooltip } from '@opencord/ui';
 import { format } from 'date-fns';
 import { ArrowRight } from 'lucide-react';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
@@ -179,3 +179,4 @@ const PinnedMessagesPopover = memo(
 );
 
 export { PinnedMessagesPopover };
+

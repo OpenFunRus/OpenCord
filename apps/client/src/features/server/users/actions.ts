@@ -1,5 +1,5 @@
 import { store } from '@/features/store';
-import { UserStatus, type TJoinedPublicUser } from '@sharkord/shared';
+import { UserStatus, type TJoinedPublicUser } from '@opencord/shared';
 import { serverSliceActions } from '../slice';
 import { userByIdSelector } from './selectors';
 
@@ -38,3 +38,4 @@ export const handleUserJoin = (user: TJoinedPublicUser) => {
     addUser(user);
   }
 };
+

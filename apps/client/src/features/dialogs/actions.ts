@@ -1,5 +1,5 @@
 import { Dialog } from '@/components/dialogs/dialogs';
-import type { TGenericObject } from '@sharkord/shared';
+import type { TGenericObject } from '@opencord/shared';
 import { store } from '../store';
 import { dialogSliceActions } from './slice';
 
@@ -102,3 +102,4 @@ export const requestTextInput = async ({
 export const resetDialogs = () => {
   store.dispatch(dialogSliceActions.resetDialogs());
 };
+

@@ -14,14 +14,14 @@ import {
   Permission,
   UserStatus,
   getTrpcError
-} from '@sharkord/shared';
+} from '@opencord/shared';
 import {
   Button,
   IconButton,
   Popover,
   PopoverContent,
   PopoverTrigger
-} from '@sharkord/ui';
+} from '@opencord/ui';
 import { format } from 'date-fns';
 import { MessageSquare, ShieldCheck, Trash, UserCog } from 'lucide-react';
 import { memo, useCallback } from 'react';
@@ -188,3 +188,4 @@ const UserPopover = memo(({ userId, children }: TUserPopoverProps) => {
 UserPopover.displayName = 'UserPopover';
 
 export { UserPopover };
+

@@ -1,4 +1,4 @@
-import { ActivityLogType, Permission } from '@sharkord/shared';
+import { ActivityLogType, Permission } from '@opencord/shared';
 import { db } from '../../db';
 import { publishRole } from '../../db/publishers';
 import { roles } from '../../db/schema';
@@ -34,3 +34,4 @@ const addRoleRoute = protectedProcedure.mutation(async ({ ctx }) => {
 });
 
 export { addRoleRoute };
+

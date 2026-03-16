@@ -1,5 +1,5 @@
 import { PaginatedList } from '@/components/paginated-list';
-import { Button } from '@sharkord/ui';
+import { Button } from '@opencord/ui';
 import { ExternalLink, Link as LinkIcon } from 'lucide-react';
 import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -85,3 +85,4 @@ const Links = memo(() => {
 });
 
 export { Links };
+

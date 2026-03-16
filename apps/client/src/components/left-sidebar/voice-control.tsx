@@ -3,8 +3,8 @@ import { useChannelCan } from '@/features/server/hooks';
 import { leaveVoice } from '@/features/server/voice/actions';
 import { useVoice } from '@/features/server/voice/hooks';
 import { cn } from '@/lib/utils';
-import { ChannelPermission } from '@sharkord/shared';
-import { Button } from '@sharkord/ui';
+import { ChannelPermission } from '@opencord/shared';
+import { Button } from '@opencord/ui';
 import {
   AlertTriangle,
   Loader2,
@@ -144,3 +144,4 @@ const VoiceControl = memo(() => {
 });
 
 export { VoiceControl };
+

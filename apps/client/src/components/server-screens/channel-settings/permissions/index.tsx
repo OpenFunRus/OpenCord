@@ -2,7 +2,7 @@ import {
   useAdminChannelGeneral,
   useAdminChannelPermissions
 } from '@/features/server/admin/hooks';
-import { ChannelPermission } from '@sharkord/shared';
+import { ChannelPermission } from '@opencord/shared';
 import {
   Alert,
   AlertDescription,
@@ -13,7 +13,7 @@ import {
   CardHeader,
   CardTitle,
   LoadingCard
-} from '@sharkord/ui';
+} from '@opencord/ui';
 import { MessageCircleWarning } from 'lucide-react';
 import { memo, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -110,3 +110,4 @@ const ChannelPermissions = memo(({ channelId }: TChannelPermissionsProps) => {
 });
 
 export { ChannelPermissions };
+

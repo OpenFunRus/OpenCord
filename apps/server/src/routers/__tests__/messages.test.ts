@@ -1,4 +1,4 @@
-import { ChannelPermission, Permission } from '@sharkord/shared';
+import { ChannelPermission, Permission } from '@opencord/shared';
 import { describe, expect, test } from 'bun:test';
 import { and, eq } from 'drizzle-orm';
 import { initTest, uploadFile } from '../../__tests__/helpers';
@@ -83,7 +83,7 @@ describe('messages router', () => {
     await expect(
       caller2.messages.toggleReaction({
         messageId,
-        emoji: '👍'
+        emoji: '\u{1F44D}'
       })
     ).rejects.toThrow('Insufficient permissions');
   });
@@ -679,7 +679,7 @@ describe('messages router', () => {
 
     await caller.messages.toggleReaction({
       messageId,
-      emoji: '👍'
+      emoji: '\u{1F44D}'
     });
 
     const messagesAfterAdd = await caller.messages.get({
@@ -694,12 +694,12 @@ describe('messages router', () => {
 
     expect(messageWithReaction!.reactions).toBeDefined();
     expect(messageWithReaction!.reactions.length).toBe(1);
-    expect(messageWithReaction!.reactions[0]!.emoji).toBe('👍');
+    expect(messageWithReaction!.reactions[0]!.emoji).toBe('\u{1F44D}');
     expect(messageWithReaction!.reactions[0]!.userId).toBe(1);
 
     await caller.messages.toggleReaction({
       messageId,
-      emoji: '👍'
+      emoji: '\u{1F44D}'
     });
 
     const messagesAfterRemove = await caller.messages.get({
@@ -734,12 +734,12 @@ describe('messages router', () => {
 
     await caller1.messages.toggleReaction({
       messageId,
-      emoji: '👍'
+      emoji: '\u{1F44D}'
     });
 
     await caller1.messages.toggleReaction({
       messageId,
-      emoji: '❤️'
+      emoji: '\u2764\uFE0F'
     });
 
     const messagesAfter = await caller1.messages.get({
@@ -756,8 +756,8 @@ describe('messages router', () => {
 
     const emojis = messageWithReactions!.reactions.map((r) => r.emoji);
 
-    expect(emojis).toContain('👍');
-    expect(emojis).toContain('❤️');
+    expect(emojis).toContain('\u{1F44D}');
+    expect(emojis).toContain('\u2764\uFE0F');
   });
 
   test('should allow multiple different reactions on the same message', async () => {
@@ -779,17 +779,17 @@ describe('messages router', () => {
 
     await caller.messages.toggleReaction({
       messageId,
-      emoji: '👍'
+      emoji: '\u{1F44D}'
     });
 
     await caller.messages.toggleReaction({
       messageId,
-      emoji: '❤️'
+      emoji: '\u2764\uFE0F'
     });
 
     await caller.messages.toggleReaction({
       messageId,
-      emoji: '😂'
+      emoji: '\u{1F602}'
     });
 
     const messagesAfter = await caller.messages.get({
@@ -806,9 +806,9 @@ describe('messages router', () => {
 
     const emojis = messageWithReactions!.reactions.map((r) => r.emoji);
 
-    expect(emojis).toContain('👍');
-    expect(emojis).toContain('❤️');
-    expect(emojis).toContain('😂');
+    expect(emojis).toContain('\u{1F44D}');
+    expect(emojis).toContain('\u2764\uFE0F');
+    expect(emojis).toContain('\u{1F602}');
   });
 
   test('should send multiple messages', async () => {
@@ -925,7 +925,7 @@ describe('messages router', () => {
       sentMessageIds.push(messageId);
     }
 
-    // target the newest message — should return all 10 + up to 20 older (0 exist)
+    // target the newest message - should return all 10 plus up to 20 older (0 exist)
     const newestId = sentMessageIds[9]!;
 
     const result = await caller.messages.get({
@@ -942,7 +942,7 @@ describe('messages router', () => {
       true
     );
 
-    // target the 3rd message (index 2) — 7 newer + target + 2 older = 10
+    // target the 3rd message (index 2) - 7 newer + target + 2 older = 10
     const middleId = sentMessageIds[2]!;
 
     const result2 = await caller.messages.get({
@@ -957,7 +957,7 @@ describe('messages router', () => {
       true
     );
 
-    // target the oldest — 9 newer + target + 0 older = 10
+    // target the oldest - 9 newer + target + 0 older = 10
     const oldestId = sentMessageIds[0]!;
 
     const result3 = await caller.messages.get({
@@ -1787,7 +1787,7 @@ describe('messages router', () => {
     await tdb.update(settings).set({ directMessagesEnabled: false }).execute();
 
     await expect(
-      caller.messages.toggleReaction({ messageId: 2, emoji: '👍' })
+      caller.messages.toggleReaction({ messageId: 2, emoji: '\u{1F44D}' })
     ).rejects.toThrow('Direct messages are disabled on this server');
   });
 
@@ -1909,3 +1909,4 @@ describe('messages router', () => {
     ).rejects.toThrow('File uploads are disabled on this server');
   });
 });
+

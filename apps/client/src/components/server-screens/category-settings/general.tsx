@@ -9,7 +9,7 @@ import {
   CardTitle,
   Group,
   Input
-} from '@sharkord/ui';
+} from '@opencord/ui';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -54,3 +54,4 @@ const General = memo(({ categoryId }: TGeneralProps) => {
 });
 
 export { General };
+

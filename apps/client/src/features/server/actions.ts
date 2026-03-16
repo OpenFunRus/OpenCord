@@ -3,7 +3,7 @@ import { logDebug } from '@/helpers/browser-logger';
 import { getHostFromServer } from '@/helpers/get-file-url';
 import { cleanup, connectToTRPC, getTRPCClient } from '@/lib/trpc';
 import type { TMessageJumpToTarget } from '@/types';
-import { type TPublicServerSettings, type TServerInfo } from '@sharkord/shared';
+import { type TPublicServerSettings, type TServerInfo } from '@opencord/shared';
 import { toast } from 'sonner';
 import {
   setDmsOpen,
@@ -131,3 +131,4 @@ window.useToken = async (token: string) => {
     toast.error(message);
   }
 };
+

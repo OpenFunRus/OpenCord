@@ -1,4 +1,4 @@
-import { ServerEvents } from '@sharkord/shared';
+import { ServerEvents } from '@opencord/shared';
 import { protectedProcedure } from '../../utils/trpc';
 
 const onPluginLogRoute = protectedProcedure.subscription(async ({ ctx }) => {
@@ -18,3 +18,4 @@ const onComponentsChangeRoute = protectedProcedure.subscription(
 );
 
 export { onCommandsChangeRoute, onComponentsChangeRoute, onPluginLogRoute };
+

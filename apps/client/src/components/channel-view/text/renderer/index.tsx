@@ -11,8 +11,8 @@ import {
 } from '@/helpers/message-emojis';
 import { getTRPCClient } from '@/lib/trpc';
 import { cn } from '@/lib/utils';
-import { imageExtensions, type TJoinedMessage } from '@sharkord/shared';
-import { Tooltip } from '@sharkord/ui';
+import { imageExtensions, type TJoinedMessage } from '@opencord/shared';
+import { Tooltip } from '@opencord/ui';
 import parse, { Text } from 'html-react-parser';
 import { memo, useCallback, useMemo, type ClipboardEvent } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -207,3 +207,4 @@ const MessageRenderer = memo(
 );
 
 export { MessageRenderer };
+

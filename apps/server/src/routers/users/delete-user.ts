@@ -4,7 +4,7 @@ import {
   DisconnectCode,
   Permission,
   ServerEvents
-} from '@sharkord/shared';
+} from '@opencord/shared';
 import { eq } from 'drizzle-orm';
 import z from 'zod';
 import { db } from '../../db';
@@ -146,3 +146,4 @@ const deleteUserRoute = protectedProcedure
   });
 
 export { deleteUserRoute };
+

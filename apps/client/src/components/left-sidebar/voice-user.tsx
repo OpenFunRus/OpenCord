@@ -1,7 +1,7 @@
 import { UserAvatar } from '@/components/user-avatar';
 import type { TVoiceUser } from '@/features/server/types';
 import { useSpeakingState } from '@/features/server/voice/hooks';
-import { cn } from '@sharkord/ui';
+import { cn } from '@opencord/ui';
 import {
   HeadphoneOff,
   Headphones,
@@ -66,3 +66,4 @@ const VoiceUser = memo(({ user }: TVoiceUserProps) => {
 });
 
 export { VoiceUser };
+

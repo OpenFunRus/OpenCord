@@ -1,4 +1,4 @@
-import { ChannelPermission } from '@sharkord/shared';
+import { ChannelPermission } from '@opencord/shared';
 import { z } from 'zod';
 import { assertDmChannel } from '../../db/queries/dms';
 import { getMessage } from '../../db/queries/messages';
@@ -30,3 +30,4 @@ const getMessageRoute = protectedProcedure
   });
 
 export { getMessageRoute };
+

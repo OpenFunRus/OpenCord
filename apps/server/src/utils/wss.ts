@@ -6,7 +6,7 @@ import {
   ServerEvents,
   UserStatus,
   type TConnectionParams
-} from '@sharkord/shared';
+} from '@opencord/shared';
 import { TRPCError } from '@trpc/server';
 import {
   applyWSSHandler,
@@ -339,4 +339,23 @@ const createWsServer = async (server: http.Server) => {
   });
 };
 
-export { createContext, createWsServer, getUserIp };
+const closeWsServer = async () => {
+  if (!wss) return;
+
+  for (const client of wss.clients) {
+    try {
+      client.close(1001, 'Server shutting down');
+    } catch {
+      // ignore client close failures during shutdown
+    }
+  }
+
+  await new Promise<void>((resolve) => {
+    wss?.close(() => resolve());
+  });
+
+  wss = undefined;
+};
+
+export { closeWsServer, createContext, createWsServer, getUserIp };
+

@@ -1,4 +1,4 @@
-import type { TCommandInfo } from '@sharkord/shared';
+import type { TCommandInfo } from '@opencord/shared';
 import { Extension } from '@tiptap/core';
 import { PluginKey } from '@tiptap/pm/state';
 import Suggestion from '@tiptap/suggestion';
@@ -48,3 +48,4 @@ export const SlashCommands = Extension.create<SlashCommandsOptions>({
     ];
   }
 });
+

@@ -12,7 +12,7 @@ import {
   DialogTitle,
   Input,
   Spinner
-} from '@sharkord/ui';
+} from '@opencord/ui';
 import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearch } from './hooks';
@@ -129,3 +129,4 @@ const SearchDialog = memo(({ isOpen, close }: TSearchDialogProps) => {
 });
 
 export { SearchDialog };
+

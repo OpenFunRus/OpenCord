@@ -4,7 +4,7 @@ import {
   type TChannel,
   type TChannelUserPermissionsMap,
   type TReadStateMap
-} from '@sharkord/shared';
+} from '@opencord/shared';
 import { and, eq, inArray, sql } from 'drizzle-orm';
 import { db } from '..';
 import {
@@ -487,3 +487,4 @@ export {
   getRoleChannelPermissions,
   getUserChannelPermissions
 };
+

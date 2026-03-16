@@ -1,4 +1,4 @@
-import type { TInvokerContext } from '@sharkord/shared';
+import type { TInvokerContext } from '@opencord/shared';
 import type { Context } from '../utils/trpc';
 
 const getInvokerCtxFromTrpcCtx = (ctx: Context): TInvokerContext => {
@@ -9,3 +9,4 @@ const getInvokerCtxFromTrpcCtx = (ctx: Context): TInvokerContext => {
 };
 
 export { getInvokerCtxFromTrpcCtx };
+

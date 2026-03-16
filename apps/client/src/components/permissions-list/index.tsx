@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
-import { Permission } from '@sharkord/shared';
-import { Badge } from '@sharkord/ui';
+import { Permission } from '@opencord/shared';
+import { Badge } from '@opencord/ui';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -93,3 +93,4 @@ const PermissionsList = memo(
 PermissionsList.displayName = 'PermissionsList';
 
 export { PermissionsList };
+

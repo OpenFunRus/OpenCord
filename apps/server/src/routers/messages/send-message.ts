@@ -5,7 +5,7 @@ import {
   isEmptyMessage,
   Permission,
   toDomCommand
-} from '@sharkord/shared';
+} from '@opencord/shared';
 import { eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { config } from '../../config';
@@ -258,3 +258,4 @@ const sendMessageRoute = rateLimitedProcedure(protectedProcedure, {
   });
 
 export { sendMessageRoute };
+

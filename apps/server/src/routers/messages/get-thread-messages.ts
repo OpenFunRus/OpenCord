@@ -2,7 +2,7 @@ import {
   ChannelPermission,
   DEFAULT_MESSAGES_LIMIT,
   type TMessage
-} from '@sharkord/shared';
+} from '@opencord/shared';
 import { and, asc, eq, gt } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '../../db';
@@ -98,3 +98,4 @@ const getThreadMessagesRoute = protectedProcedure
   });
 
 export { getThreadMessagesRoute };
+

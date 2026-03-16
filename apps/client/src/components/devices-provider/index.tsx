@@ -5,7 +5,7 @@ import {
   setLocalStorageItemAsJSON
 } from '@/helpers/storage';
 import { Resolution, VideoCodec, type TDeviceSettings } from '@/types';
-import { DEFAULT_BITRATE } from '@sharkord/shared';
+import { DEFAULT_BITRATE } from '@opencord/shared';
 import {
   createContext,
   memo,
@@ -100,3 +100,4 @@ const DevicesProvider = memo(({ children }: TDevicesProviderProps) => {
 });
 
 export { DevicesProvider, DevicesProviderContext };
+

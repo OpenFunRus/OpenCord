@@ -141,31 +141,31 @@ describe('applyEnvOverrides', () => {
   });
 
   test('works with the full config overrides map', () => {
-    setEnv('SHARKORD_PORT_TEST', '5000');
-    setEnv('SHARKORD_DEBUG_TEST', 'false');
-    setEnv('SHARKORD_WEBRTC_PORT_TEST', '50000');
+    setEnv('OPENCORD_PORT_TEST', '5000');
+    setEnv('OPENCORD_DEBUG_TEST', 'false');
+    setEnv('OPENCORD_WEBRTC_PORT_TEST', '50000');
 
     const config = {
-      server: { port: 4991, debug: true, autoupdate: false },
+      server: { port: 4991, debug: true },
       http: { maxFiles: 40, maxFileSize: 100 },
       mediasoup: { webrtcPort: 40000, announcedAddress: '' }
     };
 
     const overridesMap = {
-      'server.port': 'SHARKORD_PORT_TEST',
-      'server.debug': 'SHARKORD_DEBUG_TEST',
-      'mediasoup.webrtcPort': 'SHARKORD_WEBRTC_PORT_TEST',
-      'mediasoup.announcedAddress': 'SHARKORD_ANNOUNCED_ADDRESS_TEST'
+      'server.port': 'OPENCORD_PORT_TEST',
+      'server.debug': 'OPENCORD_DEBUG_TEST',
+      'mediasoup.webrtcPort': 'OPENCORD_WEBRTC_PORT_TEST',
+      'mediasoup.announcedAddress': 'OPENCORD_ANNOUNCED_ADDRESS_TEST'
     };
 
     const result = applyEnvOverrides(config, overridesMap);
 
     expect(result.server.port).toBe(5000);
     expect(result.server.debug).toBe(false);
-    expect(result.server.autoupdate).toBe(false);
     expect(result.http.maxFiles).toBe(40);
     expect(result.http.maxFileSize).toBe(100);
     expect(result.mediasoup.webrtcPort).toBe(50000);
     expect(result.mediasoup.announcedAddress).toBe('');
   });
 });
+

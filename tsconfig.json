@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@sharkord/shared": ["packages/shared/src/index.ts"]
+      "@opencord/shared": ["packages/shared/src/index.ts"]
     },
     "moduleResolution": "NodeNext",
     "module": "NodeNext",
@@ -13,3 +13,4 @@
   },
   "include": ["packages/**/*", "apps/**/*", "build.ts"]
 }
+

@@ -1,6 +1,6 @@
 import type { IRootState } from '@/features/store';
 import { createSelector } from '@reduxjs/toolkit';
-import type { TChannel } from '@sharkord/shared';
+import type { TChannel } from '@opencord/shared';
 import { createCachedSelector } from 're-reselect';
 
 const DEFAULT_OBJECT = {};
@@ -86,3 +86,4 @@ export const directMessagesUnreadCountSelector = createSelector(
       .reduce((acc, channel) => acc + (readStates[channel.id] ?? 0), 0);
   }
 );
+

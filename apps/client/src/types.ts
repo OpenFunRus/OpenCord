@@ -1,4 +1,4 @@
-import type { StreamKind } from '@sharkord/shared';
+import type { StreamKind } from '@opencord/shared';
 
 export type TDevices = {
   input: {
@@ -80,3 +80,4 @@ export type TMessageJumpToTarget = {
   messageId: number;
   isDm: boolean;
 };
+

@@ -1,7 +1,7 @@
 {
   "name": "plugin-missing-entry",
   "version": "1.0.0",
-  "sharkord": {
+  "opencord": {
     "entry": {
       "server": "nonexistent.js",
       "client": "nonexistent.js"
@@ -10,3 +10,4 @@
     "description": "Plugin with missing entry file"
   }
 }
+

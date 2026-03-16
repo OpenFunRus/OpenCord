@@ -1,4 +1,4 @@
-import type { TTempFile } from '@sharkord/shared';
+import type { TTempFile } from '@opencord/shared';
 import { describe, expect, test } from 'bun:test';
 import { initTest, uploadFile } from '../../__tests__/helpers';
 
@@ -297,3 +297,4 @@ describe('emojis router', () => {
     expect(updatedEmoji!.fileId).toBe(originalFileId);
   });
 });
+

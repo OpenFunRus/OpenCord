@@ -1,4 +1,4 @@
-import { Permission } from '@sharkord/shared';
+import { Permission } from '@opencord/shared';
 import { getUsers } from '../../db/queries/users';
 import { clearFields } from '../../helpers/clear-fields';
 import { protectedProcedure } from '../../utils/trpc';
@@ -12,3 +12,4 @@ const getUsersRoute = protectedProcedure.query(async ({ ctx }) => {
 });
 
 export { getUsersRoute };
+

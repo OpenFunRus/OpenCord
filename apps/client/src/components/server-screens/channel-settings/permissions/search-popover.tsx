@@ -10,7 +10,7 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger
-} from '@sharkord/ui';
+} from '@opencord/ui';
 import { Plus, Search } from 'lucide-react';
 import { memo, useMemo, useState } from 'react';
 import type { TChannelPermissionType } from './types';
@@ -133,3 +133,4 @@ const SearchPopover = memo(
 );
 
 export { SearchPopover };
+

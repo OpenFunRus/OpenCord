@@ -3,7 +3,7 @@ import { useThreadSidebar } from '@/features/app/hooks';
 import { useCan } from '@/features/server/hooks';
 import { useIsOwnUser, useOwnUserId } from '@/features/server/users/hooks';
 import { cn } from '@/lib/utils';
-import { hasMention, Permission, type TJoinedMessage } from '@sharkord/shared';
+import { hasMention, Permission, type TJoinedMessage } from '@opencord/shared';
 import { MessageSquareText } from 'lucide-react';
 import { memo, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -103,3 +103,4 @@ const Message = memo(
 );
 
 export { Message };
+

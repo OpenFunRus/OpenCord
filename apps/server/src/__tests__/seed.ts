@@ -18,7 +18,7 @@ import {
   type TIRole,
   type TISettings,
   type TIUser
-} from '@sharkord/shared';
+} from '@opencord/shared';
 import { randomUUIDv7 } from 'bun';
 import { type BunSQLiteDatabase } from 'drizzle-orm/bun-sqlite';
 import {
@@ -312,3 +312,4 @@ const seedDatabase = async (db: BunSQLiteDatabase) => {
 };
 
 export { seedDatabase, TEST_SECRET_TOKEN };
+

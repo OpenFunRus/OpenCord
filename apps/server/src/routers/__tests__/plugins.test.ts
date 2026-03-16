@@ -1,4 +1,4 @@
-import { type TPluginInfo } from '@sharkord/shared';
+import { type TPluginInfo } from '@opencord/shared';
 import { beforeAll, beforeEach, describe, expect, test } from 'bun:test';
 import { eq } from 'drizzle-orm';
 import { initTest } from '../../__tests__/helpers';
@@ -417,3 +417,4 @@ describe('plugins router', () => {
     expect(errorLog).toBeDefined();
   });
 });
+

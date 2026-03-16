@@ -1,7 +1,7 @@
 import { getFileUrl } from '@/helpers/get-file-url';
 import { cn } from '@/lib/utils';
-import type { TFile } from '@sharkord/shared';
-import { Button, buttonVariants } from '@sharkord/ui';
+import type { TFile } from '@opencord/shared';
+import { Button, buttonVariants } from '@opencord/ui';
 import { Upload } from 'lucide-react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -70,3 +70,4 @@ const ImagePicker = memo(
 );
 
 export { ImagePicker };
+

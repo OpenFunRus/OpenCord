@@ -4,8 +4,8 @@ import type {
   TPluginComponentsMapBySlotId,
   TPluginSettingDefinition,
   TPluginSlotContext
-} from '@sharkord/shared';
-import { PluginSlot } from '@sharkord/shared';
+} from '@opencord/shared';
+import { PluginSlot } from '@opencord/shared';
 import type { AppData, Producer, Router } from 'mediasoup/types';
 
 export { PluginSlot };
@@ -166,3 +166,4 @@ export type {
   RtpParameters,
   Transport
 } from 'mediasoup/types';
+

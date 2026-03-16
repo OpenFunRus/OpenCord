@@ -1,4 +1,4 @@
-import { imageExtensions, parseDomCommand } from '@sharkord/shared';
+import { imageExtensions, parseDomCommand } from '@opencord/shared';
 import { Element, type DOMNode } from 'html-react-parser';
 import { CommandOverride } from '../overrides/command';
 import { MentionOverride } from '../overrides/mention';
@@ -86,3 +86,4 @@ const serializer = (
 };
 
 export { serializer };
+
