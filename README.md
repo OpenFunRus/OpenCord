@@ -15,9 +15,9 @@
 - Linux production path через `Dockerfile`, `docker-entrypoint.sh` и `docker-compose.yml`
 - снапшот исходного состояния рядом с проектом: `../sharkord-development.zip`
 
-## Быстрый production запуск на Ubuntu
+## Быстрый production запуск на Ubuntu 22.04.5
 
-1. Установить Docker Engine, Docker Compose Plugin и Git.
+1. Установить Docker Engine, `docker-compose-v2` и Git.
 2. Склонировать репозиторий и перейти в его директорию.
 3. В `docker-compose.yml` указать реальный публичный IP или домен в `OPENCORD_WEBRTC_ANNOUNCED_ADDRESS`.
 4. Открыть нужные порты в firewall.
@@ -25,7 +25,7 @@
 
 ```bash
 sudo apt update
-sudo apt install -y docker.io docker-compose-plugin git
+sudo apt install -y docker.io docker-compose-v2 git
 sudo systemctl enable --now docker
 
 git clone https://github.com/OpenFunRus/OpenCord.git
@@ -50,6 +50,8 @@ docker compose logs -f
 После старта интерфейс будет доступен по адресу `http://SERVER_IP:4991`.
 
 Данные сервера сохраняются в `./data` и монтируются в `/home/bun/.config/opencord`.
+
+Контейнер настроен с `restart: unless-stopped`, поэтому после перезагрузки Ubuntu он должен подниматься автоматически, если сервис Docker включён через `systemctl enable docker`.
 
 ## Порты
 
@@ -81,5 +83,6 @@ bun run build:windows
 ## Примечания
 
 - При первом запуске OpenCord автоматически создаёт `config.ini` и структуру данных.
+- В Docker builder уже добавлены зависимости, нужные `mediasoup`, поэтому для Ubuntu 22.04.5 не требуется вручную ставить `python`, `invoke` или компиляторы на хост-систему.
 - Для общего контекста, списка задач и истории изменений используй `ROADMAP.md`.
 
