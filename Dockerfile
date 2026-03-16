@@ -10,6 +10,7 @@ RUN apt-get update && \
       make \
       g++ \
       pkg-config && \
+    python3 -m pip install --no-cache-dir invoke && \
     rm -rf /var/lib/apt/lists/*
 
 COPY package.json bun.lock tsconfig.json ./
