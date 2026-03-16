@@ -27,6 +27,8 @@
 
 - `README.md`
   Полностью переписан как короткая русская точка входа для OpenCord, без хвостов Sharkord.
+- `PROJECT_STRUCTURE.md`
+  Добавлен отдельный обзорный документ по составу репозитория, чтобы новый человек мог быстро понять, где клиент, где сервер, где сборка и что реально участвует в Windows/Docker workflow.
 - `docker-compose.yml`
   Добавлен минимальный production-first сценарий запуска OpenCord на Ubuntu 22.04.5 через Docker.
 - `Dockerfile`, `docker-entrypoint.sh`
