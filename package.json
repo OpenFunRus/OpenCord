@@ -1,0 +1,25 @@
+{
+  "name": "sharkord",
+  "version": "0.0.12",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "trustedDependencies": [
+    "mediasoup"
+  ],
+  "scripts": {
+    "test": "bun run --filter '*' test",
+    "format": "bun run --filter '*' format",
+    "format:check": "bun run --filter '*' format:check",
+    "check-types": "bun run --filter '*' check-types",
+    "lint": "bun run --filter '*' lint",
+    "knip": "knip",
+    "knip:production": "knip --production",
+    "magic": "bun run format && bun run check-types && bun run lint"
+  },
+  "devDependencies": {
+    "knip": "^5.80.0"
+  }
+}
