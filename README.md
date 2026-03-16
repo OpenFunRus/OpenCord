@@ -17,17 +17,47 @@
 
 ## Быстрый production запуск на Ubuntu
 
-1. Установить Docker Engine и Docker Compose Plugin.
-2. В `docker-compose.yml` указать реальный публичный IP или домен в `OPENCORD_WEBRTC_ANNOUNCED_ADDRESS`.
-3. Из корня проекта выполнить:
+1. Установить Docker Engine, Docker Compose Plugin и Git.
+2. Склонировать репозиторий и перейти в его директорию.
+3. В `docker-compose.yml` указать реальный публичный IP или домен в `OPENCORD_WEBRTC_ANNOUNCED_ADDRESS`.
+4. Открыть нужные порты в firewall.
+5. Из корня проекта выполнить:
+
+```bash
+sudo apt update
+sudo apt install -y docker.io docker-compose-plugin git
+sudo systemctl enable --now docker
+
+git clone https://github.com/OpenFunRus/OpenCord.git
+cd OpenCord
+```
+
+Если на сервере включён `ufw`, открыть:
+
+```bash
+sudo ufw allow 4991/tcp
+sudo ufw allow 40000/tcp
+sudo ufw allow 40000/udp
+```
+
+Запуск:
 
 ```bash
 docker compose up -d --build
+docker compose logs -f
 ```
 
 После старта интерфейс будет доступен по адресу `http://SERVER_IP:4991`.
 
 Данные сервера сохраняются в `./data` и монтируются в `/home/bun/.config/opencord`.
+
+## Порты
+
+- `4991/tcp` - веб-интерфейс OpenCord и основной HTTP-сервер
+- `40000/tcp` - WebRTC fallback / signalling transport для mediasoup
+- `40000/udp` - основной voice/media трафик WebRTC
+
+Для production на Ubuntu эти порты должны быть открыты наружу и на уровне облачного firewall, и на уровне локального firewall сервера.
 
 ## Windows test build
 
@@ -52,5 +82,4 @@ bun run build:windows
 
 - При первом запуске OpenCord автоматически создаёт `config.ini` и структуру данных.
 - Для общего контекста, списка задач и истории изменений используй `ROADMAP.md`.
-- Лицензия проекта находится в `LICENSE`.
 

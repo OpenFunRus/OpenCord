@@ -1,5 +1,50 @@
 # OpenCord Roadmap
 
+## 2026-03-16
+
+### Жёсткая чистка репозитория и production-подготовка
+
+- Репозиторий агрессивно сокращён до минимального рабочего состава под два сценария: Windows test build и production-запуск на Ubuntu 22.04.5 через Docker.
+- Удалены лишние GitHub workflows, второстепенная документация, Nix/dev-only файлы, `packages/e2e`, старые helper-скрипты и прочий балласт, который не нужен для текущего OpenCord workflow.
+- Полный брендинг `Sharkord -> OpenCord` доведён в оставшемся рабочем репозитории: package scopes, env-переменные, data paths, runtime/build naming и user-facing строки.
+- `LICENSE` удалён из репозитория как ненужный файл старого проекта.
+- Версия проекта снижена до `0.0.1` как стартовая точка уже очищенного OpenCord.
+
+### Build и runtime слой
+
+- `apps/server/build/build.ts`
+  Multi-target release build ужат до Linux x64 production build.
+- `apps/server/build/build-windows.ts`
+  Оставлен отдельный Windows-only сценарий для тестовой пересборки `opencord-server.exe`.
+- `apps/server/build/helpers.ts`
+  Сборочный helper переведён на OpenCord naming и metadata; Windows metadata version синхронизирована с текущей версией `0.0.1`.
+- `apps/server/src/utils/shutdown.ts`
+  Добавлен единый graceful shutdown для штатного завершения `opencord-server.exe`, WebSocket/HTTP, voice runtimes и `mediasoup-worker`.
+- `apps/server/src/utils/mediasoup.ts`
+  Для Windows test build зафиксирован более безопасный localhost-only режим WebRTC, чтобы тестовый запуск не торчал наружу без необходимости.
+
+### Документация и deployment
+
+- `README.md`
+  Полностью переписан как короткая русская точка входа для OpenCord, без хвостов Sharkord.
+- `docker-compose.yml`
+  Добавлен минимальный production-first сценарий запуска OpenCord на Ubuntu 22.04.5 через Docker.
+- `Dockerfile`, `docker-entrypoint.sh`
+  Доведены до Docker-first production path.
+- В README теперь явно описаны шаги развёртывания на Ubuntu 22.04.5, а также обязательные порты:
+  - `4991/tcp` для веб-интерфейса
+  - `40000/tcp` для WebRTC fallback
+  - `40000/udp` для основного voice/media трафика
+
+### Что подтверждено
+
+- `bun run check-types`
+  Проходит успешно по всему workspace.
+- `apps/server/build/out/opencord-server.exe`
+  Основной Windows test build пересобирается и используется как актуальный локальный артефакт.
+- GitHub-репозиторий `OpenFunRus/OpenCord`
+  Уже приведён к чистому OpenCord состоянию и используется как основной remote.
+
 ## 2026-03-13
 
 Старт проекта `OpenCord`.
