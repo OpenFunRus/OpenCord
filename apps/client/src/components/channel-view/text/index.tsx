@@ -51,7 +51,10 @@ const TextChannel = memo(({ channelId, onClose }: TChannelProps) => {
     loading,
     fetching,
     groupedMessages,
-    scrollToMessage
+    scrollToMessage,
+    isHistoryMode,
+    exitHistoryMode,
+    moveHistoryForwardOrExit
   } = useMessages(channelId);
 
   useScrollToJumpTarget(channelId, scrollToMessage);
@@ -71,7 +74,9 @@ const TextChannel = memo(({ channelId, onClose }: TChannelProps) => {
     fetching,
     hasMore,
     loadMore,
-    hasTypingUsers: typingUsers.length > 0
+    hasTypingUsers: typingUsers.length > 0,
+    isHistoryMode,
+    onHistoryBottomReached: moveHistoryForwardOrExit
     });
 
   const channelCan = useChannelCan(channelId);
@@ -183,6 +188,17 @@ const TextChannel = memo(({ channelId, onClose }: TChannelProps) => {
               className="pointer-events-auto h-10 w-10 rounded-full border border-[#4677b8] bg-[#206bc4] text-white shadow-[0_16px_32px_rgba(15,23,42,0.45)] hover:border-[#5f90d1] hover:bg-[#2b5ea7]"
             >
               <ArrowDown className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
+        {isHistoryMode && (
+          <div className="pointer-events-none absolute bottom-4 left-1/2 z-20 -translate-x-1/2">
+            <Button
+              type="button"
+              onClick={exitHistoryMode}
+              className="pointer-events-auto h-10 rounded-full border border-[#7b2a2a] bg-[#b42318] px-4 text-sm text-white shadow-[0_16px_32px_rgba(15,23,42,0.45)] hover:border-[#8f3131] hover:bg-[#d92d20]"
+            >
+              Выйти из истории
             </Button>
           </div>
         )}

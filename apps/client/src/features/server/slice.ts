@@ -193,9 +193,10 @@ export const serverSlice = createSlice({
         merged = [...existing, ...filtered];
       }
 
-      // store in chronological asc order (oldest в†’ newest)
+      // store in chronological asc order (oldest -> newest)
+      // use id for stable ordering (createdAt can collide in the same ms)
       state.messagesMap[channelId] = merged.sort(
-        (a, b) => a.createdAt - b.createdAt
+        (a, b) => a.id - b.id
       );
     },
     updateMessage: (
@@ -243,6 +244,12 @@ export const serverSlice = createSlice({
       state.messagesMap[action.payload.channelId] = messages.filter(
         (m) => m.id !== action.payload.messageId
       );
+    },
+    clearMessages: (
+      state,
+      action: PayloadAction<{ channelId: number }>
+    ) => {
+      state.messagesMap[action.payload.channelId] = [];
     },
 
     // THREAD MESSAGES ------------------------------------------------------------

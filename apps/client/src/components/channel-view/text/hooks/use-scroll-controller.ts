@@ -6,8 +6,10 @@ type TUseScrollControllerProps = {
   messages: unknown[];
   fetching: boolean;
   hasMore: boolean;
-  loadMore: () => Promise<unknown>;
+  loadMore: () => Promise<{ preserveScroll?: boolean } | void>;
   hasTypingUsers?: boolean;
+  isHistoryMode?: boolean;
+  onHistoryBottomReached?: () => Promise<unknown>;
 };
 
 type TUseScrollControllerReturn = {
@@ -19,16 +21,47 @@ type TUseScrollControllerReturn = {
 
 const SCROLL_THRESHOLD = 80;
 
+type TScrollAnchor = {
+  messageId: string;
+  offsetTop: number;
+};
+
+const getTopVisibleAnchor = (container: HTMLDivElement): TScrollAnchor | null => {
+  const containerRect = container.getBoundingClientRect();
+  const messageElements = Array.from(
+    container.querySelectorAll<HTMLElement>('[data-message-id]')
+  );
+
+  for (const element of messageElements) {
+    const rect = element.getBoundingClientRect();
+
+    if (rect.bottom > containerRect.top + 1) {
+      return {
+        messageId: element.dataset.messageId ?? '',
+        offsetTop: rect.top - containerRect.top
+      };
+    }
+  }
+
+  return null;
+};
+
 const useScrollController = ({
   messages,
   fetching,
   hasMore,
   loadMore,
-  hasTypingUsers = false
+  hasTypingUsers = false,
+  isHistoryMode = false,
+  onHistoryBottomReached
 }: TUseScrollControllerProps): TUseScrollControllerReturn => {
   const containerRef = useRef<HTMLDivElement>(null);
   const hasInitialScroll = useRef(false);
   const shouldStickToBottom = useRef(true);
+  const isHandlingHistoryExit = useRef(false);
+  const previousScrollTop = useRef(0);
+  const canAutoExitHistory = useRef(false);
+  const topLoadLocked = useRef(false);
   const [showScrollToBottom, setShowScrollToBottom] = useState(false);
 
   const isNearBottom = useCallback((container: HTMLDivElement) => {
@@ -54,24 +87,76 @@ const useScrollController = ({
 
     if (!container) return;
 
+    const currentScrollTop = container.scrollTop;
+    const isScrollingDown = currentScrollTop > previousScrollTop.current;
+    previousScrollTop.current = currentScrollTop;
+
+    if (container.scrollTop > SCROLL_THRESHOLD * 2) {
+      topLoadLocked.current = false;
+    }
+
     shouldStickToBottom.current = isNearBottom(container);
-    setShowScrollToBottom(!shouldStickToBottom.current);
+    setShowScrollToBottom(!isHistoryMode && !shouldStickToBottom.current);
+
+    if (
+      isHistoryMode &&
+      shouldStickToBottom.current &&
+      onHistoryBottomReached &&
+      !isHandlingHistoryExit.current &&
+      !fetching &&
+      canAutoExitHistory.current &&
+      isScrollingDown
+    ) {
+      isHandlingHistoryExit.current = true;
+      onHistoryBottomReached().finally(() => {
+        isHandlingHistoryExit.current = false;
+        canAutoExitHistory.current = false;
+      });
+      return;
+    }
+
+    if (isHistoryMode && isScrollingDown) {
+      canAutoExitHistory.current = true;
+    }
 
     if (fetching) return;
 
-    if (container.scrollTop <= SCROLL_THRESHOLD && hasMore) {
-      const prevScrollHeight = container.scrollHeight;
+    if (container.scrollTop <= SCROLL_THRESHOLD && hasMore && !topLoadLocked.current) {
+      topLoadLocked.current = true;
+      const topAnchor = getTopVisibleAnchor(container);
 
-      loadMore().then(() => {
-        const newScrollHeight = container.scrollHeight;
+      loadMore().then((result) => {
+        if (result?.preserveScroll === false) {
+          return;
+        }
 
-        container.scrollTop =
-          newScrollHeight - prevScrollHeight + container.scrollTop;
+        if (topAnchor?.messageId) {
+          const target = container.querySelector<HTMLElement>(
+            `[data-message-id="${topAnchor.messageId}"]`
+          );
+
+          if (target) {
+            const containerRect = container.getBoundingClientRect();
+            const targetRect = target.getBoundingClientRect();
+            const delta =
+              targetRect.top - containerRect.top - topAnchor.offsetTop;
+
+            container.scrollTop += delta;
+          }
+        }
+
         shouldStickToBottom.current = isNearBottom(container);
-        setShowScrollToBottom(!shouldStickToBottom.current);
+        setShowScrollToBottom(!isHistoryMode && !shouldStickToBottom.current);
       });
     }
-  }, [loadMore, hasMore, fetching, isNearBottom]);
+  }, [
+    loadMore,
+    hasMore,
+    fetching,
+    isHistoryMode,
+    isNearBottom,
+    onHistoryBottomReached
+  ]);
 
   // Handle initial scroll after messages load
   useEffect(() => {
@@ -107,19 +192,14 @@ const useScrollController = ({
     }
   }, [fetching, messages.length, scrollToBottom]);
 
-  // if user is already at the top when fetching completes
-  // trigger another page load without requiring an extra scroll event
   useEffect(() => {
     const container = containerRef.current;
+    if (!container) return;
 
-    if (!container || fetching || !hasMore) {
-      return;
-    }
-
-    if (container.scrollTop <= SCROLL_THRESHOLD) {
-      onScroll();
-    }
-  }, [fetching, hasMore, messages.length, onScroll]);
+    previousScrollTop.current = container.scrollTop;
+    canAutoExitHistory.current = false;
+    topLoadLocked.current = false;
+  }, [isHistoryMode]);
 
   // auto-scroll on new messages if user is near bottom
   useEffect(() => {
@@ -127,19 +207,27 @@ const useScrollController = ({
     if (!container || !hasInitialScroll.current || messages.length === 0)
       return;
 
+    if (isHistoryMode) {
+      return;
+    }
+
     if (shouldStickToBottom.current) {
       // scroll after a short delay to allow content to render
       setTimeout(() => {
         scrollToBottom();
       }, 10);
     }
-  }, [messages, hasTypingUsers, scrollToBottom]);
+  }, [messages, hasTypingUsers, isHistoryMode, scrollToBottom]);
 
   // keep bottom lock on container resize (input/footer height changes)
   useEffect(() => {
     const container = containerRef.current;
 
     if (!container) {
+      return;
+    }
+
+    if (isHistoryMode) {
       return;
     }
 
@@ -156,13 +244,13 @@ const useScrollController = ({
     return () => {
       observer.disconnect();
     };
-  }, [scrollToBottom]);
+  }, [isHistoryMode, scrollToBottom]);
 
   return {
     containerRef,
     onScroll,
     scrollToBottom,
-    showScrollToBottom
+    showScrollToBottom: isHistoryMode ? false : showScrollToBottom
   };
 };
 

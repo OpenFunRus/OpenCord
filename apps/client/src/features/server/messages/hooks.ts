@@ -3,7 +3,12 @@ import { getTRPCClient } from '@/lib/trpc';
 import { DEFAULT_MESSAGES_LIMIT, type TJoinedMessage } from '@opencord/shared';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { addMessages, addThreadMessages, clearThreadMessages } from './actions';
+import {
+  addMessages,
+  addThreadMessages,
+  clearMessages,
+  clearThreadMessages
+} from './actions';
 import {
   findMessageElement,
   highlightMessageElement,
@@ -138,33 +143,314 @@ const usePaginatedMessages = (
 export const useMessages = (channelId: number) => {
   const messages = useMessagesByChannelId(channelId);
   const inited = useRef(false);
+  const loadingMoreRef = useRef(false);
+  const currentWindowNewestIdRef = useRef<number | null>(null);
+  const [fetching, setFetching] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [cursor, setCursor] = useState<number | null>(null);
+  const [hasMore, setHasMore] = useState(true);
+  const [isHistoryMode, setIsHistoryMode] = useState(false);
+  const [currentPagesLoaded, setCurrentPagesLoaded] = useState(1);
+  const [historyAnchorMessageId, setHistoryAnchorMessageId] = useState<
+    number | null
+  >(null);
 
-  const fetchPage = useCallback(
-    async (cursorToFetch: number | null) => {
+  const CURRENT_MESSAGES_LIMIT = 50;
+  const MAX_CURRENT_PAGES = 3;
+  const HISTORY_MESSAGES_LIMIT = 100;
+
+  const groupedMessages = useGroupedMessages(messages);
+
+  const fetchAndStore = useCallback(
+    async ({
+      cursorToFetch,
+      limit,
+      targetMessageId
+    }: {
+      cursorToFetch: number | null;
+      limit: number;
+      targetMessageId?: number;
+    }) => {
       const { messages: rawPage, nextCursor } = await fetchChannelMessagesPage({
         channelId,
         cursor: cursorToFetch,
-        limit: DEFAULT_MESSAGES_LIMIT
+        limit,
+        targetMessageId
       });
+
+      const pageAsc = [...rawPage].reverse();
 
       storeChannelMessages(channelId, rawPage, {
         prepend: cursorToFetch !== null
       });
 
-      return { nextCursor };
+      if (rawPage.length > 0 && !targetMessageId) {
+        const newestFromPage = rawPage[0]!.id;
+        currentWindowNewestIdRef.current = Math.max(
+          currentWindowNewestIdRef.current ?? 0,
+          newestFromPage
+        );
+      }
+
+      setCursor(nextCursor);
+      setHasMore(nextCursor !== null);
+
+      return { nextCursor, page: pageAsc };
     },
     [channelId]
   );
 
-  const paginated = usePaginatedMessages(messages, fetchPage);
+  const loadCurrentWindow = useCallback(async () => {
+    clearMessages(channelId);
+    setCursor(null);
+    setHasMore(true);
+
+    let nextCursor: number | null = null;
+    let hasMorePages = true;
+
+    for (let i = 0; i < 3; i++) {
+      const { messages: rawPage, nextCursor: newCursor } =
+        await fetchChannelMessagesPage({
+          channelId,
+          cursor: nextCursor,
+          limit: CURRENT_MESSAGES_LIMIT
+        });
+
+      storeChannelMessages(channelId, rawPage, {
+        prepend: nextCursor !== null
+      });
+
+      nextCursor = newCursor;
+      hasMorePages = newCursor !== null;
+
+      if (!hasMorePages) {
+        break;
+      }
+    }
+
+    setCursor(nextCursor);
+    setHasMore(hasMorePages);
+    setCurrentPagesLoaded(MAX_CURRENT_PAGES);
+  }, [channelId]);
+
+  const enterHistoryMode = useCallback(
+    async (anchorMessageId: number) => {
+      setIsHistoryMode(true);
+      setCurrentPagesLoaded(0);
+      setHistoryAnchorMessageId(anchorMessageId);
+      clearMessages(channelId);
+      setCursor(null);
+      setHasMore(true);
+
+      await fetchAndStore({
+        cursorToFetch: null,
+        limit: HISTORY_MESSAGES_LIMIT,
+        targetMessageId: anchorMessageId
+      });
+
+      const anchorElement = await waitForMessageElement(anchorMessageId);
+
+      if (anchorElement) {
+        anchorElement.scrollIntoView({ behavior: 'auto', block: 'center' });
+      }
+    },
+    [channelId, fetchAndStore]
+  );
+
+  const exitHistoryMode = useCallback(async () => {
+    if (!isHistoryMode) {
+      return;
+    }
+
+    setFetching(true);
+
+    try {
+      await loadCurrentWindow();
+      setIsHistoryMode(false);
+      setCurrentPagesLoaded(MAX_CURRENT_PAGES);
+      setHistoryAnchorMessageId(null);
+    } finally {
+      setFetching(false);
+      setLoading(false);
+    }
+  }, [isHistoryMode, loadCurrentWindow]);
+
+  const moveHistoryForwardOrExit = useCallback(async () => {
+    if (!isHistoryMode || loadingMoreRef.current) {
+      return;
+    }
+
+    const middleLoaded = messages[Math.floor(messages.length / 2)]?.id;
+    const newestLoaded = messages[messages.length - 1]?.id;
+
+    if (!middleLoaded || !newestLoaded) {
+      return;
+    }
+
+    const currentNewest = currentWindowNewestIdRef.current;
+
+    if (!currentNewest) {
+      await exitHistoryMode();
+      return;
+    }
+
+    if (newestLoaded >= currentNewest) {
+      await exitHistoryMode();
+      return;
+    }
+
+    const forwardAnchor = Math.min(middleLoaded + 50, currentNewest);
+
+    if (forwardAnchor <= middleLoaded) {
+      await exitHistoryMode();
+      return;
+    }
+
+    loadingMoreRef.current = true;
+    setFetching(true);
+
+    try {
+      clearMessages(channelId);
+      setHistoryAnchorMessageId(forwardAnchor);
+      setCursor(null);
+      setHasMore(true);
+
+      const { page } = await fetchAndStore({
+        cursorToFetch: null,
+        limit: HISTORY_MESSAGES_LIMIT,
+        targetMessageId: forwardAnchor
+      });
+
+      const middleMessage = page[Math.floor(page.length / 2)];
+
+      if (middleMessage) {
+        const element = await waitForMessageElement(middleMessage.id);
+
+        if (element) {
+          element.scrollIntoView({ behavior: 'auto', block: 'center' });
+        }
+      }
+    } finally {
+      loadingMoreRef.current = false;
+      setFetching(false);
+      setLoading(false);
+    }
+  }, [
+    isHistoryMode,
+    messages,
+    exitHistoryMode,
+    channelId,
+    fetchAndStore,
+    HISTORY_MESSAGES_LIMIT
+  ]);
+
+  const loadMore = useCallback(async () => {
+    if (fetching || !hasMore || loadingMoreRef.current) {
+      return;
+    }
+
+    loadingMoreRef.current = true;
+
+    // keep a lightweight current-chat window:
+    // 3 pages x 50 messages, then switch to history mode
+    if (!isHistoryMode && currentPagesLoaded >= MAX_CURRENT_PAGES) {
+      const oldestLoaded = messages[0];
+
+      if (!oldestLoaded) {
+        return;
+      }
+
+      const historyAnchorMessageId =
+        cursor && cursor > 1 ? cursor - 1 : oldestLoaded.id;
+
+      setFetching(true);
+
+      try {
+        await enterHistoryMode(historyAnchorMessageId);
+        return { preserveScroll: false };
+      } finally {
+        loadingMoreRef.current = false;
+        setFetching(false);
+        setLoading(false);
+      }
+    }
+
+    setFetching(true);
+
+    try {
+      if (isHistoryMode) {
+        // history window shift: keep 50 overlap from previous page + 50 older
+        const historyShiftAnchorId =
+          messages[0]?.id ?? historyAnchorMessageId ?? null;
+
+        if (!historyShiftAnchorId) {
+          return { preserveScroll: false };
+        }
+
+        clearMessages(channelId);
+        setHistoryAnchorMessageId(historyShiftAnchorId);
+
+        const { page } = await fetchAndStore({
+          cursorToFetch: null,
+          limit: HISTORY_MESSAGES_LIMIT,
+          targetMessageId: historyShiftAnchorId
+        });
+
+        // magnet to center of the newly loaded history chunk
+        const middleMessage = page[Math.floor(page.length / 2)];
+
+        if (middleMessage) {
+          const element = await waitForMessageElement(middleMessage.id);
+
+          if (element) {
+            element.scrollIntoView({ behavior: 'auto', block: 'center' });
+          }
+        }
+
+        return { preserveScroll: false };
+      }
+
+      await fetchAndStore({
+        cursorToFetch: cursor,
+        limit: CURRENT_MESSAGES_LIMIT
+      });
+
+      setCurrentPagesLoaded((prev) => prev + 1);
+
+      return { preserveScroll: true };
+    } finally {
+      loadingMoreRef.current = false;
+      setFetching(false);
+      setLoading(false);
+    }
+  }, [
+    cursor,
+    enterHistoryMode,
+    fetchAndStore,
+    fetching,
+    hasMore,
+    currentPagesLoaded,
+    isHistoryMode,
+    messages,
+    channelId
+  ]);
 
   useEffect(() => {
     if (inited.current) return;
 
-    paginated.fetchMessages(null);
+    setFetching(true);
+
+    fetchAndStore({
+      cursorToFetch: null,
+      limit: CURRENT_MESSAGES_LIMIT
+    }).finally(() => {
+      setCurrentPagesLoaded(1);
+      setFetching(false);
+      setLoading(false);
+    });
 
     inited.current = true;
-  }, [paginated]);
+  }, [fetchAndStore]);
 
   const scrollToMessage = useCallback(
     async (messageId: number, highlightTime = 4000) => {
@@ -177,14 +463,25 @@ export const useMessages = (channelId: number) => {
         return;
       }
 
-      const { messages: rawPage } = await fetchChannelMessagesPage({
-        channelId,
-        cursor: null,
-        limit: DEFAULT_MESSAGES_LIMIT,
-        targetMessageId: messageId
-      });
+      setFetching(true);
 
-      storeChannelMessages(channelId, rawPage, { prepend: true });
+      try {
+        setIsHistoryMode(true);
+        setCurrentPagesLoaded(0);
+        setHistoryAnchorMessageId(messageId);
+        clearMessages(channelId);
+        setCursor(null);
+        setHasMore(true);
+
+        await fetchAndStore({
+          cursorToFetch: null,
+          limit: HISTORY_MESSAGES_LIMIT,
+          targetMessageId: messageId
+        });
+      } finally {
+        setFetching(false);
+        setLoading(false);
+      }
 
       const element = await waitForMessageElement(messageId);
 
@@ -192,10 +489,23 @@ export const useMessages = (channelId: number) => {
         highlightMessageElement(element, highlightTime);
       }
     },
-    [channelId]
+    [channelId, fetchAndStore]
   );
 
-  return { ...paginated, scrollToMessage };
+  return {
+    messages,
+    groupedMessages,
+    fetching,
+    loading,
+    hasMore,
+    cursor,
+    loadMore,
+    scrollToMessage,
+    isHistoryMode,
+    historyAnchorMessageId,
+    exitHistoryMode,
+    moveHistoryForwardOrExit
+  };
 };
 
 export const useThreadMessagesByParentId = (parentMessageId: number) =>

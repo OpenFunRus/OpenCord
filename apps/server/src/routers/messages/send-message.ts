@@ -28,7 +28,8 @@ import { protectedProcedure, rateLimitedProcedure } from '../../utils/trpc';
 const sendMessageRoute = rateLimitedProcedure(protectedProcedure, {
   maxRequests: config.rateLimiters.sendAndEditMessage.maxRequests,
   windowMs: config.rateLimiters.sendAndEditMessage.windowMs,
-  logLabel: 'sendMessage'
+  logLabel: 'sendMessage',
+  bypassForOwner: true
 })
   .input(
     z.object({

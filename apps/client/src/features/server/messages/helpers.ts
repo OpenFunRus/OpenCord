@@ -18,7 +18,7 @@ export const highlightMessageElement = async (
   await nextFrame();
   await nextFrame();
 
-  element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  element.scrollIntoView({ behavior: 'auto', block: 'center' });
   element.classList.add('message-jump-highlight');
 
   if (messageHighlightTimeouts.has(element)) {

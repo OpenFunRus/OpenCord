@@ -1,4 +1,5 @@
 import {
+  OWNER_ROLE_ID,
   ChannelPermission,
   UserStatus,
   type Permission,
@@ -6,8 +7,11 @@ import {
 } from '@opencord/shared';
 import { initTRPC, TRPCError } from '@trpc/server';
 import chalk from 'chalk';
+import { and, eq } from 'drizzle-orm';
 import type WebSocket from 'ws';
 import { config } from '../config';
+import { db } from '../db';
+import { userRoles } from '../db/schema';
 import { logger } from '../logger';
 import type { TConnectionInfo } from '../types';
 import { invariant } from './invariant';
@@ -81,6 +85,7 @@ type TRateLimitedProcedureOptions = {
   windowMs: number;
   logLabel: string;
   maxEntries?: number;
+  bypassForOwner?: boolean;
 };
 
 const rateLimitedProcedure = (
@@ -94,6 +99,24 @@ const rateLimitedProcedure = (
   });
 
   const rateLimitMiddleware = t.middleware(async ({ ctx, next, path }) => {
+    if (options.bypassForOwner) {
+      const ownerRole = await db
+        .select({ roleId: userRoles.roleId })
+        .from(userRoles)
+        .where(
+          and(
+            eq(userRoles.userId, ctx.userId),
+            eq(userRoles.roleId, OWNER_ROLE_ID)
+          )
+        )
+        .limit(1)
+        .get();
+
+      if (ownerRole) {
+        return next();
+      }
+    }
+
     const connectionInfo = ctx.getConnectionInfo();
 
     if (!connectionInfo?.ip) {

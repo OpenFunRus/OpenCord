@@ -60,11 +60,10 @@ const getMessagesRoute = protectedProcedure
     let nextCursor: number | null = null;
 
     if (targetMessageId) {
-      // fetch all messages from newest down to (and including) the target
+      // history/jump mode: fetch a window around the target id
       const targetMessage = await db
         .select({
           id: messages.id,
-          createdAt: messages.createdAt,
           parentMessageId: messages.parentMessageId
         })
         .from(messages)
@@ -86,37 +85,50 @@ const getMessagesRoute = protectedProcedure
         message: 'Target message must be a root message'
       });
 
-      // fetch everything from newest down to the target, plus 20 older messages
-      // for context around the target
+      const newerLimit = Math.max(Math.floor(limit / 2), 1);
+      const olderLimit = Math.max(limit - newerLimit, 1);
+
+      // keep context near target, not near the latest message
+      const newerMessagesAsc = await db
+        .select()
+        .from(messages)
+        .where(and(baseWhere, gte(messages.id, targetMessage.id)))
+        .orderBy(messages.id)
+        .limit(newerLimit);
+
       const olderMessages = await db
         .select()
         .from(messages)
-        .where(and(baseWhere, lt(messages.createdAt, targetMessage.createdAt)))
-        .orderBy(desc(messages.createdAt))
-        .limit(20);
+        .where(and(baseWhere, lt(messages.id, targetMessage.id)))
+        .orderBy(desc(messages.id))
+        .limit(olderLimit + 1);
 
-      const newerMessages = await db
-        .select()
-        .from(messages)
-        .where(and(baseWhere, gte(messages.createdAt, targetMessage.createdAt)))
-        .orderBy(desc(messages.createdAt));
+      const hasMoreOlder = olderMessages.length > olderLimit;
+      const trimmedOlderMessages = hasMoreOlder
+        ? olderMessages.slice(0, olderLimit)
+        : olderMessages;
 
-      rows = [...newerMessages, ...olderMessages];
+      rows = [...[...newerMessagesAsc].reverse(), ...trimmedOlderMessages];
+
+      if (hasMoreOlder && rows.length > 0) {
+        // cursor points to the oldest message currently included
+        nextCursor = rows[rows.length - 1]!.id;
+      } else {
+        nextCursor = null;
+      }
     } else {
       // standard cursor-based pagination
       rows = await db
         .select()
         .from(messages)
-        .where(
-          cursor ? and(baseWhere, lt(messages.createdAt, cursor)) : baseWhere
-        )
-        .orderBy(desc(messages.createdAt))
+        .where(cursor ? and(baseWhere, lt(messages.id, cursor)) : baseWhere)
+        .orderBy(desc(messages.id))
         .limit(limit + 1);
 
       if (rows.length > limit) {
-        const next = rows.pop();
-
-        nextCursor = next ? next.createdAt : null;
+        rows = rows.slice(0, limit);
+        // cursor points to the oldest message currently included
+        nextCursor = rows[rows.length - 1]!.id;
       }
     }
 
@@ -165,7 +177,7 @@ const getMessagesRoute = protectedProcedure
       .where(
         and(eq(messages.channelId, channelId), isNull(messages.parentMessageId))
       )
-      .orderBy(desc(messages.createdAt))
+      .orderBy(desc(messages.id))
       .limit(1)
       .get();
 

@@ -214,6 +214,10 @@ export const deleteMessage = (channelId: number, messageId: number) => {
   }
 };
 
+export const clearMessages = (channelId: number) => {
+  store.dispatch(serverSliceActions.clearMessages({ channelId }));
+};
+
 export const addThreadMessages = (
   parentMessageId: number,
   messages: TJoinedMessage[],
