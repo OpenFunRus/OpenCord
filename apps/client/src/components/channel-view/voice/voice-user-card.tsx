@@ -10,9 +10,11 @@ import {
 import { getFileUrl } from '@/helpers/get-file-url';
 import { cn } from '@/lib/utils';
 import { HeadphoneOff, MicOff, Monitor, Video } from 'lucide-react';
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useRef } from 'react';
 import { CardControls } from './card-controls';
 import { CardGradient } from './card-gradient';
+import { FullscreenControls } from './fullscreen-controls';
+import { useMediaFullscreen } from './hooks/use-media-fullscreen';
 import { useVoiceRefs } from './hooks/use-voice-refs';
 import { PinButton } from './pin-button';
 import { VolumeButton } from './volume-button';
@@ -38,12 +40,15 @@ const VoiceUserCard = memo(
     voiceUser
   }: TVoiceUserCardProps) => {
     const { videoRef, hasVideoStream } = useVoiceRefs(userId);
+    const containerRef = useRef<HTMLDivElement>(null);
     const { getUserVolumeKey } = useVolumeControl();
     const { devices } = useDevices();
     const isOwnUser = useIsOwnUser(userId);
     const showUserBanners = useShowUserBannersInVoice();
     const { isActivelySpeaking, speakingEffectClass } =
       useSpeakingState(userId);
+    const { isFullscreen, rotationDeg, toggleFullscreen, rotateClockwise } =
+      useMediaFullscreen();
 
     const handlePinToggle = useCallback(() => {
       if (isPinned) {
@@ -55,6 +60,7 @@ const VoiceUserCard = memo(
 
     return (
       <div
+        ref={containerRef}
         className={cn(
           'group relative overflow-hidden rounded-2xl border border-[#2b3544] bg-[#172231]',
           'flex items-center justify-center',
@@ -81,6 +87,13 @@ const VoiceUserCard = memo(
             <PinButton isPinned={isPinned} handlePinToggle={handlePinToggle} />
           )}
         </CardControls>
+        {hasVideoStream && (
+          <FullscreenControls
+            isFullscreen={isFullscreen}
+            onToggleFullscreen={() => toggleFullscreen(containerRef.current)}
+            onRotate={rotateClockwise}
+          />
+        )}
 
         {hasVideoStream && (
           <video
@@ -88,10 +101,10 @@ const VoiceUserCard = memo(
             autoPlay
             muted
             playsInline
-            className={cn(
-              'absolute inset-0 w-full h-full object-contain',
-              isOwnUser && devices.mirrorOwnVideo && '-scale-x-100'
-            )}
+            className="absolute inset-0 w-full h-full object-contain"
+            style={{
+              transform: `${isOwnUser && devices.mirrorOwnVideo ? 'scaleX(-1) ' : ''}rotate(${rotationDeg}deg)`
+            }}
           />
         )}
         {!hasVideoStream && (

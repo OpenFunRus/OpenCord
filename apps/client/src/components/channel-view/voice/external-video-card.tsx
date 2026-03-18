@@ -2,8 +2,14 @@ import { cn } from '@/lib/utils';
 import { IconButton } from '@opencord/ui';
 import { Video, ZoomIn, ZoomOut } from 'lucide-react';
 import { memo, useCallback } from 'react';
+import {
+  VOICE_CARD_ACTION_BUTTON_ACTIVE_CLASS,
+  VOICE_CARD_ACTION_BUTTON_BASE_CLASS
+} from './action-button-styles';
 import { CardControls } from './card-controls';
 import { CardGradient } from './card-gradient';
+import { FullscreenControls } from './fullscreen-controls';
+import { useMediaFullscreen } from './hooks/use-media-fullscreen';
 import { useScreenShareZoom } from './hooks/use-screen-share-zoom';
 import { useVoiceRefs } from './hooks/use-voice-refs';
 import { PinButton } from './pin-button';
@@ -28,11 +34,15 @@ const ExternalVideoControls = memo(
       <CardControls>
         {showPinControls && isPinned && (
           <IconButton
-            variant={isZoomEnabled ? 'default' : 'ghost'}
+            variant="ghost"
             icon={isZoomEnabled ? ZoomOut : ZoomIn}
             onClick={handleToggleZoom}
             title={isZoomEnabled ? 'Disable Zoom' : 'Enable Zoom'}
             size="sm"
+            className={cn(
+              VOICE_CARD_ACTION_BUTTON_BASE_CLASS,
+              isZoomEnabled && VOICE_CARD_ACTION_BUTTON_ACTIVE_CLASS
+            )}
           />
         )}
         {showPinControls && (
@@ -79,6 +89,8 @@ const ExternalVideoCard = memo(
       getCursor,
       resetZoom
     } = useScreenShareZoom();
+    const { isFullscreen, rotationDeg, toggleFullscreen, rotateClockwise } =
+      useMediaFullscreen();
 
     const handlePinToggle = useCallback(() => {
       if (isPinned) {
@@ -119,6 +131,11 @@ const ExternalVideoCard = memo(
           handleToggleZoom={handleToggleZoom}
           showPinControls={showPinControls}
         />
+        <FullscreenControls
+          isFullscreen={isFullscreen}
+          onToggleFullscreen={() => toggleFullscreen(containerRef.current)}
+          onRotate={rotateClockwise}
+        />
 
         <video
           ref={externalVideoRef}
@@ -127,7 +144,7 @@ const ExternalVideoCard = memo(
           playsInline
           className="absolute inset-0 w-full h-full object-contain bg-black"
           style={{
-            transform: `scale(${zoom}) translate(${position.x / zoom}px, ${position.y / zoom}px)`,
+            transform: `scale(${zoom}) translate(${position.x / zoom}px, ${position.y / zoom}px) rotate(${rotationDeg}deg)`,
             transition: isDragging ? 'none' : 'transform 0.1s ease-out'
           }}
         />

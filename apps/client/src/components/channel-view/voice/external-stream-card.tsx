@@ -4,8 +4,14 @@ import type { TExternalStream } from '@opencord/shared';
 import { Avatar, AvatarFallback, AvatarImage, IconButton } from '@opencord/ui';
 import { Headphones, Router, Video, ZoomIn, ZoomOut } from 'lucide-react';
 import { memo, useCallback } from 'react';
+import {
+  VOICE_CARD_ACTION_BUTTON_ACTIVE_CLASS,
+  VOICE_CARD_ACTION_BUTTON_BASE_CLASS
+} from './action-button-styles';
 import { CardControls } from './card-controls';
 import { CardGradient } from './card-gradient';
+import { FullscreenControls } from './fullscreen-controls';
+import { useMediaFullscreen } from './hooks/use-media-fullscreen';
 import { useScreenShareZoom } from './hooks/use-screen-share-zoom';
 import { useVoiceRefs } from './hooks/use-voice-refs';
 import { PinButton } from './pin-button';
@@ -56,11 +62,10 @@ const ExternalStreamControls = memo(
             onClick={handleToggleZoom}
             title={isZoomEnabled ? 'Disable Zoom' : 'Enable Zoom'}
             size="sm"
-            className={
-              isZoomEnabled
-                ? 'rounded-lg border border-[#4677b8] bg-[#1c2e48] text-[#a8c9ff] hover:border-[#5f90d1] hover:bg-[#22385a] hover:text-white'
-                : 'rounded-lg border border-[#314055] bg-[#101926] text-[#8fa2bb] hover:border-[#3d516b] hover:bg-[#1b2940] hover:text-white'
-            }
+            className={cn(
+              VOICE_CARD_ACTION_BUTTON_BASE_CLASS,
+              isZoomEnabled && VOICE_CARD_ACTION_BUTTON_ACTIVE_CLASS
+            )}
           />
         )}
         {showPinControls && (
@@ -115,6 +120,8 @@ const ExternalStreamCard = memo(
       getCursor,
       resetZoom
     } = useScreenShareZoom();
+    const { isFullscreen, rotationDeg, toggleFullscreen, rotateClockwise } =
+      useMediaFullscreen();
 
     const handlePinToggle = useCallback(() => {
       if (isPinned) {
@@ -173,6 +180,13 @@ const ExternalStreamCard = memo(
           onVolumeChange={handleVolumeChange}
           onMuteToggle={handleMuteToggle}
         />
+        {hasVideo && (
+          <FullscreenControls
+            isFullscreen={isFullscreen}
+            onToggleFullscreen={() => toggleFullscreen(containerRef.current)}
+            onRotate={rotateClockwise}
+          />
+        )}
 
         {hasVideo ? (
           <video
@@ -182,7 +196,7 @@ const ExternalStreamCard = memo(
             playsInline
             className="absolute inset-0 h-full w-full bg-[#0b1220] object-contain"
             style={{
-              transform: `scale(${zoom}) translate(${position.x / zoom}px, ${position.y / zoom}px)`,
+              transform: `scale(${zoom}) translate(${position.x / zoom}px, ${position.y / zoom}px) rotate(${rotationDeg}deg)`,
               transition: isDragging ? 'none' : 'transform 0.1s ease-out'
             }}
           />
