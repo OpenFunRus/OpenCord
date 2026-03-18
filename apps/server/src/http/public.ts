@@ -9,6 +9,7 @@ import { channels, files } from '../db/schema';
 import { verifyFileToken } from '../helpers/files-crypto';
 import { getErrorMessage } from '../helpers/get-error-message';
 import { PUBLIC_PATH } from '../helpers/paths';
+import { ensureThumbnail } from '../helpers/thumbnails';
 import { logger } from '../logger';
 
 const pipeFileStream = (
@@ -50,6 +51,9 @@ const publicRouteHandler = async (
 
   const url = new URL(req.url!, `http://${req.headers.host}`);
   const fileName = decodeURIComponent(path.basename(url.pathname));
+  const wantsThumbnail =
+    url.searchParams.get('thumb') === '1' ||
+    url.searchParams.get('thumbnail') === '1';
 
   const dbFile = await db
     .select()
@@ -108,6 +112,32 @@ const publicRouteHandler = async (
   }
 
   const stat = fs.statSync(filePath);
+
+  if (wantsThumbnail) {
+    try {
+      const thumbPath = await ensureThumbnail(
+        filePath,
+        dbFile.name,
+        dbFile.mimeType
+      );
+
+      if (thumbPath) {
+        const thumbStat = fs.statSync(thumbPath);
+
+        res.writeHead(200, {
+          'Content-Type': 'image/png',
+          'Content-Length': thumbStat.size,
+          'Cache-Control': 'public, max-age=31536000, immutable'
+        });
+
+        pipeFileStream(thumbPath, res);
+        return res;
+      }
+    } catch (error) {
+      logger.warn('Thumbnail generation failed: %s', getErrorMessage(error));
+      // fall back to original file
+    }
+  }
 
   const inlineAllowlist = [
     'image/png',

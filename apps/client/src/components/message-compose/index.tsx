@@ -12,8 +12,11 @@ import { getTRPCClient } from '@/lib/trpc';
 import type { TJoinedPublicUser, TTempFile } from '@opencord/shared';
 import {
   ChannelPermission,
+  MESSAGE_DEFAULT_LINES_LIMIT,
+  MESSAGE_DEFAULT_TEXT_LENGTH_LIMIT,
   Permission,
   PluginSlot,
+  getMessageTextMetrics,
   isEmptyMessage
 } from '@opencord/shared';
 import { Button, Spinner } from '@opencord/ui';
@@ -28,6 +31,7 @@ import {
   useState,
   type Ref
 } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FileCard } from '../channel-view/text/file-card';
 import { UsersTypingIndicator } from '../channel-view/text/users-typing';
 
@@ -57,6 +61,7 @@ const MessageCompose = memo(
     showPluginSlot = false,
     ref
   }: TMessageComposeProps) => {
+    const { t } = useTranslation();
     const sendingRef = useRef(false);
     const containerRef = useRef<HTMLDivElement>(null);
     const [sending, setSending] = useState(false);
@@ -90,6 +95,16 @@ const MessageCompose = memo(
         can(Permission.EXECUTE_PLUGIN_COMMANDS) ? allPluginCommands : undefined,
       [can, allPluginCommands]
     );
+    const { textLength, lineCount } = useMemo(
+      () => getMessageTextMetrics(message),
+      [message]
+    );
+    const maxTextLength =
+      publicSettings?.messageMaxTextLength ?? MESSAGE_DEFAULT_TEXT_LENGTH_LIMIT;
+    const maxLines = publicSettings?.messageMaxLines ?? MESSAGE_DEFAULT_LINES_LIMIT;
+    const displayedLineCount = Math.max(1, lineCount);
+    const charsExceeded = textLength > maxTextLength;
+    const linesExceeded = displayedLineCount > maxLines;
 
     const {
       files,
@@ -223,6 +238,20 @@ const MessageCompose = memo(
           >
             <Send className="h-4 w-4" />
           </Button>
+        </div>
+        <div className="flex items-center justify-end gap-3 px-1 text-[11px]">
+          <span className={charsExceeded ? 'text-[#f97066]' : 'text-[#8fa2bb]'}>
+            {t('messageCharsCounter', {
+              current: textLength,
+              max: maxTextLength
+            })}
+          </span>
+          <span className={linesExceeded ? 'text-[#f97066]' : 'text-[#8fa2bb]'}>
+            {t('messageLinesCounter', {
+              current: displayedLineCount,
+              max: maxLines
+            })}
+          </span>
         </div>
       </div>
     );

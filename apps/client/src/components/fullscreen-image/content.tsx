@@ -6,9 +6,11 @@ import { createPortal } from 'react-dom';
 
 const portalRoot = document.getElementById('imagePortal')!;
 
-type TFullScreenImageProps = React.ImgHTMLAttributes<HTMLImageElement>;
+type TFullScreenImageProps = React.ImgHTMLAttributes<HTMLImageElement> & {
+  fullscreenSrc?: string;
+};
 
-const FullScreenImage = memo((props: TFullScreenImageProps) => {
+const FullScreenImage = memo(({ fullscreenSrc, ...props }: TFullScreenImageProps) => {
   const [open, setOpen] = useState(false);
   const [visible, setVisible] = useState(false);
 
@@ -131,6 +133,7 @@ const FullScreenImage = memo((props: TFullScreenImageProps) => {
         <img
           {...props}
           ref={imgRef}
+          src={fullscreenSrc ?? props.src}
           style={{
             transform: `scale(${scaleRef.current}) translate(${posRef.current.x}px, ${posRef.current.y}px)`,
             cursor: 'grab'

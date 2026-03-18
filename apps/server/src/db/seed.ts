@@ -1,6 +1,8 @@
 import {
   ChannelType,
   DEFAULT_ROLE_PERMISSIONS,
+  MESSAGE_DEFAULT_LINES_LIMIT,
+  MESSAGE_DEFAULT_TEXT_LENGTH_LIMIT,
   Permission,
   STORAGE_DEFAULT_MAX_AVATAR_SIZE,
   STORAGE_DEFAULT_MAX_BANNER_SIZE,
@@ -56,7 +58,9 @@ const seedDatabase = async () => {
     storageSpaceQuotaByUser: STORAGE_MIN_QUOTA_PER_USER,
     storageOverflowAction: STORAGE_OVERFLOW_ACTION,
     enablePlugins: false,
-    enableSearch: true
+    enableSearch: true,
+    messageMaxTextLength: MESSAGE_DEFAULT_TEXT_LENGTH_LIMIT,
+    messageMaxLines: MESSAGE_DEFAULT_LINES_LIMIT
   };
 
   await db.insert(settings).values(initialSettings);

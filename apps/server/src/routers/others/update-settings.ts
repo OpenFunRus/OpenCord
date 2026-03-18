@@ -1,5 +1,9 @@
 import {
   ActivityLogType,
+  MESSAGE_MAX_LINES,
+  MESSAGE_MAX_TEXT_LENGTH,
+  MESSAGE_MIN_LINES_LIMIT,
+  MESSAGE_MIN_TEXT_LENGTH_LIMIT,
   Permission,
   StorageOverflowAction
 } from '@opencord/shared';
@@ -29,7 +33,19 @@ const updateSettingsRoute = protectedProcedure
       storageSpaceQuotaByUser: z.number().min(0).optional(),
       storageOverflowAction: z.enum(StorageOverflowAction).optional(),
       enablePlugins: z.boolean().optional(),
-      enableSearch: z.boolean().optional()
+      enableSearch: z.boolean().optional(),
+      messageMaxTextLength: z
+        .number()
+        .int()
+        .min(MESSAGE_MIN_TEXT_LENGTH_LIMIT)
+        .max(MESSAGE_MAX_TEXT_LENGTH)
+        .optional(),
+      messageMaxLines: z
+        .number()
+        .int()
+        .min(MESSAGE_MIN_LINES_LIMIT)
+        .max(MESSAGE_MAX_LINES)
+        .optional()
     })
   )
   .mutation(async ({ input, ctx }) => {
@@ -54,7 +70,9 @@ const updateSettingsRoute = protectedProcedure
       storageSpaceQuotaByUser: input.storageSpaceQuotaByUser,
       storageOverflowAction: input.storageOverflowAction,
       enablePlugins: input.enablePlugins,
-      enableSearch: input.enableSearch
+      enableSearch: input.enableSearch,
+      messageMaxTextLength: input.messageMaxTextLength,
+      messageMaxLines: input.messageMaxLines
     });
 
     if (oldEnablePlugins !== input.enablePlugins) {

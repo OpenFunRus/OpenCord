@@ -46,6 +46,8 @@ export type TPublicServerSettings = Pick<
   | 'storageOverflowAction'
   | 'enablePlugins'
   | 'enableSearch'
+  | 'messageMaxTextLength'
+  | 'messageMaxLines'
 > & {
   webRtcMaxBitrate: number;
 };

@@ -1,6 +1,12 @@
 import { closeServerScreens } from '@/features/server-screens/actions';
 import { useAdminGeneral } from '@/features/server/admin/hooks';
 import {
+  MESSAGE_MAX_LINES,
+  MESSAGE_MAX_TEXT_LENGTH,
+  MESSAGE_MIN_LINES_LIMIT,
+  MESSAGE_MIN_TEXT_LENGTH_LIMIT
+} from '@opencord/shared';
+import {
   Button,
   Card,
   CardContent,
@@ -98,6 +104,64 @@ const General = memo(() => {
           <Switch
             checked={settings.enableSearch}
             onCheckedChange={(checked) => onChange('enableSearch', checked)}
+          />
+        </Group>
+
+        <Group
+          label={t('maxMessageCharsLabel')}
+          description={t('maxMessageCharsDesc')}
+        >
+          <Input
+            type="number"
+            min={MESSAGE_MIN_TEXT_LENGTH_LIMIT}
+            max={MESSAGE_MAX_TEXT_LENGTH}
+            step={1}
+            value={settings.messageMaxTextLength}
+            onChange={(e) => {
+              const value = Number(e.target.value);
+
+              if (!Number.isFinite(value)) {
+                return;
+              }
+
+              onChange(
+                'messageMaxTextLength',
+                Math.max(
+                  MESSAGE_MIN_TEXT_LENGTH_LIMIT,
+                  Math.min(MESSAGE_MAX_TEXT_LENGTH, Math.round(value))
+                )
+              );
+            }}
+            placeholder={t('maxMessageCharsPlaceholder')}
+          />
+        </Group>
+
+        <Group
+          label={t('maxMessageLinesLabel')}
+          description={t('maxMessageLinesDesc')}
+        >
+          <Input
+            type="number"
+            min={MESSAGE_MIN_LINES_LIMIT}
+            max={MESSAGE_MAX_LINES}
+            step={1}
+            value={settings.messageMaxLines}
+            onChange={(e) => {
+              const value = Number(e.target.value);
+
+              if (!Number.isFinite(value)) {
+                return;
+              }
+
+              onChange(
+                'messageMaxLines',
+                Math.max(
+                  MESSAGE_MIN_LINES_LIMIT,
+                  Math.min(MESSAGE_MAX_LINES, Math.round(value))
+                )
+              );
+            }}
+            placeholder={t('maxMessageLinesPlaceholder')}
           />
         </Group>
 

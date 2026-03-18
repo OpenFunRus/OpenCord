@@ -1,10 +1,11 @@
 import { TiptapInput } from '@/components/tiptap-input';
 import { useCustomEmojis } from '@/features/server/emojis/hooks';
+import { usePublicServerSettings } from '@/features/server/hooks';
 import { canonicalizeMessageEmojiHtml } from '@/helpers/message-emojis';
 import { getTRPCClient } from '@/lib/trpc';
 import {
-  MESSAGE_MAX_LINES,
-  MESSAGE_MAX_TEXT_LENGTH,
+  MESSAGE_DEFAULT_LINES_LIMIT,
+  MESSAGE_DEFAULT_TEXT_LENGTH_LIMIT,
   type TMessage,
   getMessageContentLimitError,
   getTrpcError,
@@ -26,6 +27,7 @@ const MessageEditInline = memo(
     const { t } = useTranslation();
     const [value, setValue] = useState<string>(message.content ?? '');
     const customEmojis = useCustomEmojis();
+    const publicSettings = usePublicServerSettings();
 
     const onSubmit = useCallback(
       async (newValue: string | undefined) => {
@@ -40,16 +42,24 @@ const MessageEditInline = memo(
         const preparedContent = prepareMessageHtml(
           canonicalizeMessageEmojiHtml(newValue, customEmojis)
         );
-        const contentLimitError = getMessageContentLimitError(preparedContent);
+        const maxTextLength =
+          publicSettings?.messageMaxTextLength ??
+          MESSAGE_DEFAULT_TEXT_LENGTH_LIMIT;
+        const maxLines =
+          publicSettings?.messageMaxLines ?? MESSAGE_DEFAULT_LINES_LIMIT;
+        const contentLimitError = getMessageContentLimitError(preparedContent, {
+          textLengthLimit: maxTextLength,
+          linesLimit: maxLines
+        });
 
         if (contentLimitError === 'MAX_LENGTH') {
-          toast.error(`Message cannot exceed ${MESSAGE_MAX_TEXT_LENGTH} characters.`);
+          toast.error(`Message cannot exceed ${maxTextLength} characters.`);
           onBlur();
           return;
         }
 
         if (contentLimitError === 'MAX_LINES') {
-          toast.error(`Message cannot exceed ${MESSAGE_MAX_LINES} lines.`);
+          toast.error(`Message cannot exceed ${maxLines} lines.`);
           onBlur();
           return;
         }
@@ -69,7 +79,14 @@ const MessageEditInline = memo(
           onBlur();
         }
       },
-      [customEmojis, message.id, onBlur, t]
+      [
+        customEmojis,
+        message.id,
+        onBlur,
+        publicSettings?.messageMaxLines,
+        publicSettings?.messageMaxTextLength,
+        t
+      ]
     );
 
     return (

@@ -1,13 +1,14 @@
 import { MessageCompose } from '@/components/message-compose';
 import { useCustomEmojis } from '@/features/server/emojis/hooks';
+import { usePublicServerSettings } from '@/features/server/hooks';
 import { playSound } from '@/features/server/sounds/actions';
 import { SoundType } from '@/features/server/types';
 import { canonicalizeMessageEmojiHtml } from '@/helpers/message-emojis';
 import { getTRPCClient } from '@/lib/trpc';
 import type { TJoinedPublicUser } from '@opencord/shared';
 import {
-  MESSAGE_MAX_LINES,
-  MESSAGE_MAX_TEXT_LENGTH,
+  MESSAGE_DEFAULT_LINES_LIMIT,
+  MESSAGE_DEFAULT_TEXT_LENGTH_LIMIT,
   TYPING_MS,
   getMessageContentLimitError,
   getTrpcError,
@@ -27,6 +28,7 @@ const ThreadCompose = memo(
   ({ parentMessageId, channelId, typingUsers }: TThreadComposeProps) => {
     const [newMessage, setNewMessage] = useState('');
     const customEmojis = useCustomEmojis();
+    const publicSettings = usePublicServerSettings();
 
     const sendTypingSignal = useMemo(
       () =>
@@ -53,15 +55,23 @@ const ThreadCompose = memo(
         const preparedContent = prepareMessageHtml(
           canonicalizeMessageEmojiHtml(message, customEmojis)
         );
-        const contentLimitError = getMessageContentLimitError(preparedContent);
+        const maxTextLength =
+          publicSettings?.messageMaxTextLength ??
+          MESSAGE_DEFAULT_TEXT_LENGTH_LIMIT;
+        const maxLines =
+          publicSettings?.messageMaxLines ?? MESSAGE_DEFAULT_LINES_LIMIT;
+        const contentLimitError = getMessageContentLimitError(preparedContent, {
+          textLengthLimit: maxTextLength,
+          linesLimit: maxLines
+        });
 
         if (contentLimitError === 'MAX_LENGTH') {
-          toast.error(`Message cannot exceed ${MESSAGE_MAX_TEXT_LENGTH} characters.`);
+          toast.error(`Message cannot exceed ${maxTextLength} characters.`);
           return false;
         }
 
         if (contentLimitError === 'MAX_LINES') {
-          toast.error(`Message cannot exceed ${MESSAGE_MAX_LINES} lines.`);
+          toast.error(`Message cannot exceed ${maxLines} lines.`);
           return false;
         }
 
@@ -82,7 +92,14 @@ const ThreadCompose = memo(
         setNewMessage('');
         return true;
       },
-      [channelId, customEmojis, sendTypingSignal, parentMessageId]
+      [
+        channelId,
+        customEmojis,
+        parentMessageId,
+        publicSettings?.messageMaxLines,
+        publicSettings?.messageMaxTextLength,
+        sendTypingSignal
+      ]
     );
 
     return (

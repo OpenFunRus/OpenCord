@@ -1,6 +1,8 @@
 import {
   ChannelType,
   DEFAULT_ROLE_PERMISSIONS,
+  MESSAGE_DEFAULT_LINES_LIMIT,
+  MESSAGE_DEFAULT_TEXT_LENGTH_LIMIT,
   OWNER_ROLE_ID,
   Permission,
   sha256,
@@ -75,7 +77,9 @@ const seedDatabase = async (db: BunSQLiteDatabase) => {
     storageSpaceQuotaByUser: STORAGE_MIN_QUOTA_PER_USER,
     storageOverflowAction: STORAGE_OVERFLOW_ACTION,
     enablePlugins: false,
-    enableSearch: true
+    enableSearch: true,
+    messageMaxTextLength: MESSAGE_DEFAULT_TEXT_LENGTH_LIMIT,
+    messageMaxLines: MESSAGE_DEFAULT_LINES_LIMIT
   };
 
   await db.insert(settings).values(initialSettings);

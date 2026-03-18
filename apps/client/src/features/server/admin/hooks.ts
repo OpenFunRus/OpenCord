@@ -2,6 +2,8 @@ import { useForm } from '@/hooks/use-form';
 import { getTRPCClient } from '@/lib/trpc';
 import {
   DELETED_USER_IDENTITY_AND_NAME,
+  MESSAGE_DEFAULT_LINES_LIMIT,
+  MESSAGE_DEFAULT_TEXT_LENGTH_LIMIT,
   parseTrpcErrors,
   STORAGE_DEFAULT_MAX_AVATAR_SIZE,
   STORAGE_DEFAULT_MAX_BANNER_SIZE,
@@ -44,7 +46,9 @@ export const useAdminGeneral = () => {
     allowNewUsers: false,
     directMessagesEnabled: true,
     enablePlugins: false,
-    enableSearch: true
+    enableSearch: true,
+    messageMaxTextLength: MESSAGE_DEFAULT_TEXT_LENGTH_LIMIT,
+    messageMaxLines: MESSAGE_DEFAULT_LINES_LIMIT
   });
   const [logo, setLogo] = useState<TFile | null>(null);
 
@@ -61,7 +65,10 @@ export const useAdminGeneral = () => {
       allowNewUsers: settings.allowNewUsers ?? false,
       directMessagesEnabled: settings.directMessagesEnabled ?? true,
       enablePlugins: settings.enablePlugins ?? false,
-      enableSearch: settings.enableSearch ?? true
+      enableSearch: settings.enableSearch ?? true,
+      messageMaxTextLength:
+        settings.messageMaxTextLength ?? MESSAGE_DEFAULT_TEXT_LENGTH_LIMIT,
+      messageMaxLines: settings.messageMaxLines ?? MESSAGE_DEFAULT_LINES_LIMIT
     });
     setLoading(false);
     setLogo(settings.logo);
@@ -78,7 +85,9 @@ export const useAdminGeneral = () => {
         allowNewUsers: settings.allowNewUsers,
         directMessagesEnabled: settings.directMessagesEnabled,
         enablePlugins: settings.enablePlugins,
-        enableSearch: settings.enableSearch
+        enableSearch: settings.enableSearch,
+        messageMaxTextLength: settings.messageMaxTextLength,
+        messageMaxLines: settings.messageMaxLines
       });
       toast.success('Settings updated');
     } catch (error) {

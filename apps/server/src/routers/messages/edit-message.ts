@@ -1,6 +1,6 @@
 import {
-  MESSAGE_MAX_LINES,
-  MESSAGE_MAX_TEXT_LENGTH,
+  MESSAGE_DEFAULT_LINES_LIMIT,
+  MESSAGE_DEFAULT_TEXT_LENGTH_LIMIT,
   Permission,
   getMessageContentLimitError,
   isEmptyMessage
@@ -11,6 +11,7 @@ import { config } from '../../config';
 import { db } from '../../db';
 import { publishMessage } from '../../db/publishers';
 import { assertDmChannel } from '../../db/queries/dms';
+import { getSettings } from '../../db/queries/server';
 import { messages } from '../../db/schema';
 import { sanitizeMessageHtml } from '../../helpers/sanitize-html';
 import { eventBus } from '../../plugins/event-bus';
@@ -75,14 +76,21 @@ const editMessageRoute = rateLimitedProcedure(protectedProcedure, {
         'Your message only contained unsupported or removed content, so there was nothing to send.'
     });
 
-    const contentLimitError = getMessageContentLimitError(sanitizedContent);
+    const settings = await getSettings();
+    const textLengthLimit =
+      settings.messageMaxTextLength ?? MESSAGE_DEFAULT_TEXT_LENGTH_LIMIT;
+    const linesLimit = settings.messageMaxLines ?? MESSAGE_DEFAULT_LINES_LIMIT;
+    const contentLimitError = getMessageContentLimitError(sanitizedContent, {
+      textLengthLimit,
+      linesLimit
+    });
     invariant(contentLimitError !== 'MAX_LENGTH', {
       code: 'BAD_REQUEST',
-      message: `Message cannot exceed ${MESSAGE_MAX_TEXT_LENGTH} characters.`
+      message: `Message cannot exceed ${textLengthLimit} characters.`
     });
     invariant(contentLimitError !== 'MAX_LINES', {
       code: 'BAD_REQUEST',
-      message: `Message cannot exceed ${MESSAGE_MAX_LINES} lines.`
+      message: `Message cannot exceed ${linesLimit} lines.`
     });
 
     await db

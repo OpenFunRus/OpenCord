@@ -162,9 +162,9 @@ export const useMessages = (channelId: number) => {
     number | null
   >(null);
 
-  const CURRENT_MESSAGES_LIMIT = 100;
-  const HISTORY_MESSAGES_LIMIT = 100;
-  const HISTORY_SHIFT_STEP = 50;
+  const CURRENT_MESSAGES_LIMIT = 50;
+  const HISTORY_MESSAGES_LIMIT = 50;
+  const HISTORY_SHIFT_STEP = 25;
 
   const groupedMessages = useGroupedMessages(messages);
 
@@ -374,7 +374,7 @@ export const useMessages = (channelId: number) => {
     setFetching(true);
 
     try {
-      // history window shift: load around current oldest message (-50/+50)
+      // history window shift: load around current oldest message (-25/+25)
       const historyShiftAnchorId = messages[0]?.id ?? historyAnchorMessageId ?? null;
 
       if (!historyShiftAnchorId) {

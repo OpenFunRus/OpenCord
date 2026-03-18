@@ -58,6 +58,8 @@
   "failedEditMessage": "Failed to edit message",
   "pressEnterToSave": "Press Enter to save, Esc to cancel",
   "failedSendMessage": "Failed to send message",
+  "messageCharsCounter": "Characters {{current}} / {{max}}",
+  "messageLinesCounter": "Lines {{current}} / {{max}}",
 
   "pinnedBy": "Pinned by {{name}}",
   "unknownTime": "Unknown time",

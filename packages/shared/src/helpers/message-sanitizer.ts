@@ -27,8 +27,12 @@ const removeEmojiElements = (html: string): string =>
     .replace(/<span[^>]*data-type="emoji"[^>]*>.*?<\/span>/gi, '')
     .replace(/<img[^>]*class="emoji-image"[^>]*\/?>/gi, '');
 
+const MESSAGE_DEFAULT_TEXT_LENGTH_LIMIT = 1024;
+const MESSAGE_DEFAULT_LINES_LIMIT = 32;
+const MESSAGE_MIN_TEXT_LENGTH_LIMIT = 1;
+const MESSAGE_MIN_LINES_LIMIT = 1;
 const MESSAGE_MAX_TEXT_LENGTH = 4096;
-const MESSAGE_MAX_LINES = 20;
+const MESSAGE_MAX_LINES = 200;
 
 const hasMediaTag = (html: string): boolean =>
   /<(img|video|audio|iframe)\b/i.test(html);
@@ -99,15 +103,22 @@ const getMessageTextMetrics = (content: string | undefined | null) => {
 };
 
 const getMessageContentLimitError = (
-  content: string | undefined | null
+  content: string | undefined | null,
+  limits?: {
+    textLengthLimit?: number;
+    linesLimit?: number;
+  }
 ): 'MAX_LENGTH' | 'MAX_LINES' | null => {
   const { textLength, lineCount } = getMessageTextMetrics(content);
+  const textLengthLimit =
+    limits?.textLengthLimit ?? MESSAGE_DEFAULT_TEXT_LENGTH_LIMIT;
+  const linesLimit = limits?.linesLimit ?? MESSAGE_DEFAULT_LINES_LIMIT;
 
-  if (textLength > MESSAGE_MAX_TEXT_LENGTH) {
+  if (textLength > textLengthLimit) {
     return 'MAX_LENGTH';
   }
 
-  if (lineCount > MESSAGE_MAX_LINES) {
+  if (lineCount > linesLimit) {
     return 'MAX_LINES';
   }
 
@@ -115,8 +126,12 @@ const getMessageContentLimitError = (
 };
 
 export {
+  MESSAGE_DEFAULT_LINES_LIMIT,
+  MESSAGE_DEFAULT_TEXT_LENGTH_LIMIT,
   MESSAGE_MAX_LINES,
   MESSAGE_MAX_TEXT_LENGTH,
+  MESSAGE_MIN_LINES_LIMIT,
+  MESSAGE_MIN_TEXT_LENGTH_LIMIT,
   getMessageContentLimitError,
   getMessageTextMetrics,
   getPlainTextFromHtml,

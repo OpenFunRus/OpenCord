@@ -67,7 +67,9 @@ const settings = sqliteTable(
     storageSpaceQuotaByUser: integer('storage_space_quota_by_user').notNull(),
     storageOverflowAction: text('storage_overflow_action').notNull(),
     enablePlugins: integer('enable_plugins', { mode: 'boolean' }).notNull(),
-    enableSearch: integer('enable_search', { mode: 'boolean' }).notNull()
+    enableSearch: integer('enable_search', { mode: 'boolean' }).notNull(),
+    messageMaxTextLength: integer('message_max_text_length').notNull(),
+    messageMaxLines: integer('message_max_lines').notNull()
   },
   (t) => [
     index('settings_server_idx').on(t.serverId),
