@@ -52,6 +52,20 @@ docker compose up -d --build
 docker compose logs -f
 ```
 
+## Обновление существующей установки (Ubuntu)
+
+Если OpenCord уже запущен на сервере, обновление делается так:
+
+```bash
+cd ~/opencord
+git pull origin main
+docker compose up -d --build
+docker compose ps
+docker compose logs -f --tail=200
+```
+
+Если используешь другой путь к проекту, замени `~/opencord` на свой реальный путь.
+
 После старта интерфейс будет доступен по адресу `http://SERVER_IP:4991`.
 
 Данные сервера сохраняются в `./data` и монтируются в `/home/bun/.config/opencord`.
