@@ -54,11 +54,33 @@ const interfaceRouteHandler = (
 
   const file = Bun.file(requestedPath);
   const fileStream = fs.createReadStream(requestedPath);
+  const relativePath = path.relative(basePath, requestedPath).replace(/\\/g, '/');
+  const isIndexHtml = relativePath === 'index.html';
+  const isViteHashedAsset = /^assets\/.+-[A-Za-z0-9_-]{6,}\.(js|css)$/.test(
+    relativePath
+  );
 
   fileStream.on('open', () => {
+    const cacheHeaders: Record<string, string> = isIndexHtml
+      ? {
+          // Always revalidate shell HTML so clients discover new asset hashes.
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+          Pragma: 'no-cache',
+          Expires: '0'
+        }
+      : isViteHashedAsset
+        ? {
+            // Hashed assets are content-addressed and safe to cache for long time.
+            'Cache-Control': 'public, max-age=31536000, immutable'
+          }
+        : {
+            'Cache-Control': 'public, max-age=3600'
+          };
+
     res.writeHead(200, {
       'Content-Type': file.type,
-      'Content-Length': file.size
+      'Content-Length': file.size,
+      ...cacheHeaders
     });
     fileStream.pipe(res);
   });
