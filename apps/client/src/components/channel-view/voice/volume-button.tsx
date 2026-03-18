@@ -10,7 +10,12 @@ import {
   Slider
 } from '@opencord/ui';
 import { Volume2, VolumeX } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { memo, useCallback } from 'react';
+import {
+  VOICE_CARD_ACTION_BUTTON_ACTIVE_CLASS,
+  VOICE_CARD_ACTION_BUTTON_BASE_CLASS
+} from './action-button-styles';
 
 type TVolumeButtonProps = {
   volumeKey: TVolumeKey;
@@ -40,7 +45,10 @@ const VolumeButton = memo(({ volumeKey }: TVolumeButtonProps) => {
           icon={isMuted ? VolumeX : Volume2}
           title={isMuted ? 'Unmute' : 'Volume'}
           size="sm"
-          className="rounded-lg border border-[#314055] bg-[#101926] text-[#8fa2bb] hover:border-[#3d516b] hover:bg-[#1b2940] hover:text-white"
+          className={cn(
+            VOICE_CARD_ACTION_BUTTON_BASE_CLASS,
+            isMuted && VOICE_CARD_ACTION_BUTTON_ACTIVE_CLASS
+          )}
         />
       </PopoverTrigger>
       <PopoverContent
@@ -56,7 +64,10 @@ const VolumeButton = memo(({ volumeKey }: TVolumeButtonProps) => {
             onClick={handleToggleMute}
             title={isMuted ? 'Unmute' : 'Mute'}
             size="sm"
-            className="rounded-lg border border-[#314055] bg-[#101926] text-[#8fa2bb] hover:border-[#3d516b] hover:bg-[#1b2940] hover:text-white"
+            className={cn(
+              VOICE_CARD_ACTION_BUTTON_BASE_CLASS,
+              isMuted && VOICE_CARD_ACTION_BUTTON_ACTIVE_CLASS
+            )}
           />
           <Slider
             value={[volume]}

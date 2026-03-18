@@ -149,7 +149,7 @@ const ExternalVideoCard = memo(
           }}
         />
 
-        <div className="absolute bottom-0 left-0 right-0 p-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="absolute bottom-0 left-0 right-0 z-10 p-2 transition-opacity max-sm:opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100">
           <div className="flex items-center gap-2 min-w-0">
             <Video className="size-3.5 text-blue-400 flex-shrink-0" />
             <span className="text-white font-medium text-xs truncate">

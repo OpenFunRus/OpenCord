@@ -203,7 +203,7 @@ const ScreenShareCard = memo(
           playsInline
         />
 
-        <div className="absolute bottom-0 left-0 right-0 z-10 border-t border-white/10 bg-[linear-gradient(180deg,rgba(11,18,32,0)_0%,rgba(11,18,32,0.84)_100%)] p-3 opacity-0 transition-opacity group-hover:opacity-100">
+        <div className="absolute bottom-0 left-0 right-0 z-10 border-t border-white/10 bg-[linear-gradient(180deg,rgba(11,18,32,0)_0%,rgba(11,18,32,0.84)_100%)] p-3 transition-opacity max-sm:opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100">
           <div className="flex min-w-0 items-center gap-2">
             <Monitor className="size-3.5 shrink-0 text-[#b895ff]" />
             <span className="truncate text-xs font-medium text-white">
