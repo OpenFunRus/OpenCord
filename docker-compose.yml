@@ -1,0 +1,19 @@
+services:
+  opencord:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: opencord
+    restart: unless-stopped
+    environment:
+      OPENCORD_PORT: "4991"
+      OPENCORD_WEBRTC_PORT: "40000"
+      OPENCORD_WEBRTC_ANNOUNCED_ADDRESS: "your.public.ip.or.domain"
+      PUID: "1000"
+      PGID: "1000"
+    ports:
+      - "4991:4991"
+      - "40000:40000/tcp"
+      - "40000:40000/udp"
+    volumes:
+      - ./data:/home/bun/.config/opencord

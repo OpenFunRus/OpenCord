@@ -1,0 +1,9 @@
+{
+  "name": "plugin-invalid-package",
+  "version": "not-a-valid-version",
+  "opencord": {
+    "entry": "index.js",
+    "description": "Invalid package.json"
+  }
+}
+

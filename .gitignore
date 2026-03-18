@@ -1,0 +1,13 @@
+/node_modules
+/.github/copilot-instructions.md
+/cenas.txt
+/cenas.md
+/DockerCenas
+/experiments
+.direnv/
+/apps/client/dist
+/apps/server/build/out
+/apps/server/build/temp
+/data
+*.bun-build
+.*.bun-build
