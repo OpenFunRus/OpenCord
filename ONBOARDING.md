@@ -338,6 +338,18 @@ taskkill /F /T /IM mediasoup-worker.exe
 - При прокрутке вверх до края: немедленный переход в history mode.
 - В history mode используется окно `100` с логикой `-50/+50` (якорение и скролл по центру).
 - Переходы из поиска и закрепов грузят окно вокруг цели (`100`) и центрируют целевое сообщение.
+- Для отправки GIF из picker-а добавлен усиленный автоскролл вниз (несколько отложенных вызовов), чтобы низ чата удерживался даже при поздней дорисовке медиа.
+
+### Что уже сделано по GIF/emoji picker
+
+- В emoji picker добавлена 3-я вкладка `Gifs` с поиском и выдачей до 10 элементов.
+- Без поискового запроса вкладка загружает featured/random GIF.
+- Интеграция Tenor переведена на серверный прокси `GET /tenor`:
+  - сначала используется Tenor v2;
+  - при проблемах ключа/доступа включается fallback на v1.
+- При клике на GIF сообщение отправляется сразу (без ручного Enter).
+- Для Tenor GIF в рендере сообщений скрыт сырой URL, отображается только сама GIF.
+- Вкладка табов picker-а компактно ужата (фиксированная высота, truncate текста, равные кнопки).
 
 ### Что уже сделано по голосу
 
@@ -361,7 +373,12 @@ taskkill /F /T /IM mediasoup-worker.exe
   - `apps/client/src/components/voice-provider/voice-audio-host.tsx`
   - `apps/client/src/components/left-sidebar/voice-control.tsx`
   - `apps/client/src/features/server/messages/hooks.ts`
+  - `apps/client/src/components/emoji-picker/index.tsx`
+  - `apps/client/src/components/emoji-picker/gifs-tab.tsx`
+  - `apps/server/src/http/tenor.ts`
+  - `apps/client/src/components/channel-view/text/renderer/serializer.tsx`
 - И дай формулировку: "Проверь, что voice playback не зависит от UI-окон и sidebar-mount/unmount".
+- Для GIF добавь формулировку: "Проверь, что Gifs-tab загружается, не вылезает из поповера и отправляет GIF с автоскроллом вниз".
 
 ## Production на Ubuntu 22.04.5
 

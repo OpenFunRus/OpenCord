@@ -89,6 +89,10 @@
   "searchAllEmojis": "Искать все эмодзи...",
   "emojiTab": "Эмодзи",
   "customTab": "Пользовательские",
+  "gifsTab": "Gifs",
+  "noGifsFound": "Гифки не найдены",
+  "gifsLoadFailed": "Не удалось загрузить гифки",
+  "gifAlt": "Гифка",
   "searchResults": "Результаты поиска ({{count}})",
   "wasReactedBy": "реагировали: {{reacters}}.",
   "andMore": "и еще {{count}}"

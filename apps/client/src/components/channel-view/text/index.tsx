@@ -125,9 +125,12 @@ const TextChannel = memo(({ channelId, onClose }: TChannelProps) => {
       }
 
       setNewMessageHandler('');
-      setTimeout(() => {
-        scrollToBottom();
-      }, 10);
+      // keep bottom lock even when media (e.g. GIF) grows after initial render
+      [10, 80, 220, 500, 900].forEach((delay) => {
+        setTimeout(() => {
+          scrollToBottom();
+        }, delay);
+      });
 
       return true;
     },

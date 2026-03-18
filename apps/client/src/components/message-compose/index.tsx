@@ -129,6 +129,25 @@ const MessageCompose = memo(
       }
     }, [message, files, canSendMessages, onSend, clearFiles, publicSettings]);
 
+    const handleGifSelect = useCallback(
+      async (gifUrl: string) => {
+        if (!gifUrl || uploading || !canSendMessages || sendingRef.current) {
+          return;
+        }
+
+        setSending(true);
+        sendingRef.current = true;
+
+        try {
+          await onSend(gifUrl, []);
+        } finally {
+          sendingRef.current = false;
+          setSending(false);
+        }
+      },
+      [uploading, canSendMessages, onSend]
+    );
+
     const onRemoveFileClick = useCallback(
       async (fileId: string) => {
         removeFile(fileId);
@@ -176,6 +195,7 @@ const MessageCompose = memo(
             value={message}
             onChange={onMessageChange}
             onSubmit={handleSend}
+            onGifSelect={handleGifSelect}
             onTyping={onTyping}
             disabled={uploading || !canSendMessages}
             readOnly={sending}

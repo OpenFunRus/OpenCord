@@ -19,6 +19,27 @@ const getMentionLabel = (element: Element) =>
     .replace(/^@/, '')
     .trim();
 
+const isImageUrl = (href: string) => {
+  if (!URL.canParse(href)) {
+    return false;
+  }
+
+  const parsed = new URL(href);
+  const pathname = parsed.pathname.toLowerCase();
+
+  return imageExtensions.some((ext) => pathname.endsWith(ext));
+};
+
+const isTenorUrl = (href: string) => {
+  if (!URL.canParse(href)) {
+    return false;
+  }
+
+  const hostname = new URL(href).hostname.toLowerCase();
+
+  return hostname.includes('tenor.com');
+};
+
 const serializer = (
   domNode: DOMNode,
   pushMedia: (media: TFoundMedia) => void,
@@ -40,7 +61,7 @@ const serializer = (
         url.hostname.match(/(youtube.com|youtu.be)/) &&
         href.match(youtubeRegex);
 
-      const isImage = imageExtensions.some((ext) => href.endsWith(ext));
+      const isImage = isImageUrl(href);
 
       if (isTweet) {
         const tweetId = href.match(twitterRegex)?.[0].split('/').pop();
@@ -58,6 +79,11 @@ const serializer = (
         }
       } else if (isImage) {
         pushMedia({ type: 'image', url: href });
+
+        // hide raw Tenor URL in chat body and render only GIF media block
+        if (isTenorUrl(href)) {
+          return <></>;
+        }
 
         return;
       }

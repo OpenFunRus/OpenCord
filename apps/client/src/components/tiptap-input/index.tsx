@@ -37,6 +37,7 @@ type TTiptapInputProps = {
   value?: string;
   onChange?: (html: string) => void;
   onSubmit?: () => void;
+  onGifSelect?: (gifUrl: string) => void;
   onCancel?: () => void;
   onTyping?: () => void;
   commands?: TCommandInfo[];
@@ -47,6 +48,7 @@ const TiptapInput = memo(
     value,
     onChange,
     onSubmit,
+    onGifSelect,
     onCancel,
     onTyping,
     disabled,
@@ -192,6 +194,18 @@ const TiptapInput = memo(
       }
     };
 
+    const handleGifSelect = (gifUrl: string) => {
+      if (disabled || readOnly) return;
+
+      if (onGifSelect) {
+        onGifSelect(gifUrl);
+        return;
+      }
+
+      if (!editor) return;
+      editor.chain().focus().insertContent(`${gifUrl} `).run();
+    };
+
     // keep emoji storage in sync with custom emojis from the store
     // this ensures newly added emojis appear in autocomplete without refreshing the app
     useEffect(() => {
@@ -304,7 +318,10 @@ const TiptapInput = memo(
           )}
         </div>
 
-        <EmojiPicker onEmojiSelect={handleEmojiSelect}>
+        <EmojiPicker
+          onEmojiSelect={handleEmojiSelect}
+          onGifSelect={handleGifSelect}
+        >
           <Button
             variant="ghost"
             size="icon"

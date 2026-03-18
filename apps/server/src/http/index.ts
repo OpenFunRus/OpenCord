@@ -18,6 +18,7 @@ import { manifestRouteHandler } from './manifest';
 import { pluginBundleRouteHandler } from './plugin-bundle';
 import { pluginsComponentsRouteHandler } from './plugins-components';
 import { publicRouteHandler } from './public';
+import { tenorRouteHandler } from './tenor';
 import { uploadFileRouteHandler } from './upload';
 import { HttpValidationError } from './utils';
 
@@ -40,7 +41,8 @@ const routeHandlers: Partial<
     exact: {
       '/healthz': (req, res) => healthRouteHandler(req, res),
       '/info': (req, res) => infoRouteHandler(req, res),
-      '/manifest.json': (req, res) => manifestRouteHandler(req, res)
+      '/manifest.json': (req, res) => manifestRouteHandler(req, res),
+      '/tenor': (req, res) => tenorRouteHandler(req, res)
     },
     prefix: {
       '/public': (req, res) => publicRouteHandler(req, res),

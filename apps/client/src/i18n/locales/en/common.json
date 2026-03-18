@@ -85,6 +85,10 @@
   "searchAllEmojis": "Search all emojis...",
   "emojiTab": "Emoji",
   "customTab": "Custom",
+  "gifsTab": "Gifs",
+  "noGifsFound": "No gifs found",
+  "gifsLoadFailed": "Failed to load gifs",
+  "gifAlt": "Gif",
   "searchResults": "Search results ({{count}})",
   "wasReactedBy": "was reacted by {{reacters}}.",
   "andMore": "and {{count}} more"
