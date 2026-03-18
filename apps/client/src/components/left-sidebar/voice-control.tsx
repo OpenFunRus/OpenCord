@@ -18,8 +18,6 @@ import {
 } from 'lucide-react';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ExternalAudioStreams } from '../channel-view/voice/external-audio-streams';
-import { VoiceAudioStreams } from '../channel-view/voice/voice-audio-streams';
 import { StatsPopover } from './stats-popover';
 
 const VoiceControl = memo(() => {
@@ -65,8 +63,6 @@ const VoiceControl = memo(() => {
 
   return (
     <>
-      <VoiceAudioStreams channelId={voiceChannelId} />
-      <ExternalAudioStreams channelId={voiceChannelId} />
       <div className="border-t border-[#2b3544] bg-[#172231]">
         <StatsPopover>
           <div className="flex cursor-pointer items-center gap-2 border-b border-[#243244] px-3 py-2 transition-colors hover:bg-[#1b2940]">

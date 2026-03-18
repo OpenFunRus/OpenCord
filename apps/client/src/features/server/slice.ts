@@ -251,6 +251,19 @@ export const serverSlice = createSlice({
     ) => {
       state.messagesMap[action.payload.channelId] = [];
     },
+    compactMessagesWindow: (
+      state,
+      action: PayloadAction<{ channelId: number; keepLatest: number }>
+    ) => {
+      const { channelId, keepLatest } = action.payload;
+      const messages = state.messagesMap[channelId];
+
+      if (!messages || messages.length <= keepLatest) {
+        return;
+      }
+
+      state.messagesMap[channelId] = messages.slice(-keepLatest);
+    },
 
     // THREAD MESSAGES ------------------------------------------------------------
 

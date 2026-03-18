@@ -1,12 +1,20 @@
 import type { IRootState } from '@/features/store';
 import { getTRPCClient } from '@/lib/trpc';
 import { DEFAULT_MESSAGES_LIMIT, type TJoinedMessage } from '@opencord/shared';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react';
 import { useSelector } from 'react-redux';
 import {
   addMessages,
   addThreadMessages,
   clearMessages,
+  compactMessagesWindow,
   clearThreadMessages
 } from './actions';
 import {
@@ -150,16 +158,25 @@ export const useMessages = (channelId: number) => {
   const [cursor, setCursor] = useState<number | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [isHistoryMode, setIsHistoryMode] = useState(false);
-  const [currentPagesLoaded, setCurrentPagesLoaded] = useState(1);
   const [historyAnchorMessageId, setHistoryAnchorMessageId] = useState<
     number | null
   >(null);
 
-  const CURRENT_MESSAGES_LIMIT = 50;
-  const MAX_CURRENT_PAGES = 3;
+  const CURRENT_MESSAGES_LIMIT = 100;
   const HISTORY_MESSAGES_LIMIT = 100;
+  const HISTORY_SHIFT_STEP = 50;
 
   const groupedMessages = useGroupedMessages(messages);
+
+  useLayoutEffect(() => {
+    if (isHistoryMode) {
+      return;
+    }
+
+    if (messages.length > CURRENT_MESSAGES_LIMIT) {
+      compactMessagesWindow(channelId, CURRENT_MESSAGES_LIMIT);
+    }
+  }, [channelId, isHistoryMode, messages.length, CURRENT_MESSAGES_LIMIT]);
 
   const fetchAndStore = useCallback(
     async ({
@@ -205,38 +222,15 @@ export const useMessages = (channelId: number) => {
     setCursor(null);
     setHasMore(true);
 
-    let nextCursor: number | null = null;
-    let hasMorePages = true;
-
-    for (let i = 0; i < 3; i++) {
-      const { messages: rawPage, nextCursor: newCursor } =
-        await fetchChannelMessagesPage({
-          channelId,
-          cursor: nextCursor,
-          limit: CURRENT_MESSAGES_LIMIT
-        });
-
-      storeChannelMessages(channelId, rawPage, {
-        prepend: nextCursor !== null
-      });
-
-      nextCursor = newCursor;
-      hasMorePages = newCursor !== null;
-
-      if (!hasMorePages) {
-        break;
-      }
-    }
-
-    setCursor(nextCursor);
-    setHasMore(hasMorePages);
-    setCurrentPagesLoaded(MAX_CURRENT_PAGES);
-  }, [channelId]);
+    await fetchAndStore({
+      cursorToFetch: null,
+      limit: CURRENT_MESSAGES_LIMIT
+    });
+  }, [channelId, fetchAndStore, CURRENT_MESSAGES_LIMIT]);
 
   const enterHistoryMode = useCallback(
     async (anchorMessageId: number) => {
       setIsHistoryMode(true);
-      setCurrentPagesLoaded(0);
       setHistoryAnchorMessageId(anchorMessageId);
       clearMessages(channelId);
       setCursor(null);
@@ -267,7 +261,6 @@ export const useMessages = (channelId: number) => {
     try {
       await loadCurrentWindow();
       setIsHistoryMode(false);
-      setCurrentPagesLoaded(MAX_CURRENT_PAGES);
       setHistoryAnchorMessageId(null);
     } finally {
       setFetching(false);
@@ -299,7 +292,10 @@ export const useMessages = (channelId: number) => {
       return;
     }
 
-    const forwardAnchor = Math.min(middleLoaded + 50, currentNewest);
+    const forwardAnchor = Math.min(
+      middleLoaded + HISTORY_SHIFT_STEP,
+      currentNewest
+    );
 
     if (forwardAnchor <= middleLoaded) {
       await exitHistoryMode();
@@ -341,32 +337,27 @@ export const useMessages = (channelId: number) => {
     exitHistoryMode,
     channelId,
     fetchAndStore,
-    HISTORY_MESSAGES_LIMIT
+    HISTORY_MESSAGES_LIMIT,
+    HISTORY_SHIFT_STEP
   ]);
 
   const loadMore = useCallback(async () => {
-    if (fetching || !hasMore || loadingMoreRef.current) {
+    if (fetching || loadingMoreRef.current) {
       return;
     }
 
-    loadingMoreRef.current = true;
-
-    // keep a lightweight current-chat window:
-    // 3 pages x 50 messages, then switch to history mode
-    if (!isHistoryMode && currentPagesLoaded >= MAX_CURRENT_PAGES) {
+    if (!isHistoryMode) {
       const oldestLoaded = messages[0];
 
       if (!oldestLoaded) {
         return;
       }
 
-      const historyAnchorMessageId =
-        cursor && cursor > 1 ? cursor - 1 : oldestLoaded.id;
-
+      loadingMoreRef.current = true;
       setFetching(true);
 
       try {
-        await enterHistoryMode(historyAnchorMessageId);
+        await enterHistoryMode(oldestLoaded.id);
         return { preserveScroll: false };
       } finally {
         loadingMoreRef.current = false;
@@ -375,61 +366,51 @@ export const useMessages = (channelId: number) => {
       }
     }
 
+    if (!hasMore) {
+      return;
+    }
+
+    loadingMoreRef.current = true;
     setFetching(true);
 
     try {
-      if (isHistoryMode) {
-        // history window shift: keep 50 overlap from previous page + 50 older
-        const historyShiftAnchorId =
-          messages[0]?.id ?? historyAnchorMessageId ?? null;
+      // history window shift: load around current oldest message (-50/+50)
+      const historyShiftAnchorId = messages[0]?.id ?? historyAnchorMessageId ?? null;
 
-        if (!historyShiftAnchorId) {
-          return { preserveScroll: false };
-        }
-
-        clearMessages(channelId);
-        setHistoryAnchorMessageId(historyShiftAnchorId);
-
-        const { page } = await fetchAndStore({
-          cursorToFetch: null,
-          limit: HISTORY_MESSAGES_LIMIT,
-          targetMessageId: historyShiftAnchorId
-        });
-
-        // magnet to center of the newly loaded history chunk
-        const middleMessage = page[Math.floor(page.length / 2)];
-
-        if (middleMessage) {
-          const element = await waitForMessageElement(middleMessage.id);
-
-          if (element) {
-            element.scrollIntoView({ behavior: 'auto', block: 'center' });
-          }
-        }
-
+      if (!historyShiftAnchorId) {
         return { preserveScroll: false };
       }
 
-      await fetchAndStore({
-        cursorToFetch: cursor,
-        limit: CURRENT_MESSAGES_LIMIT
+      clearMessages(channelId);
+      setHistoryAnchorMessageId(historyShiftAnchorId);
+
+      const { page } = await fetchAndStore({
+        cursorToFetch: null,
+        limit: HISTORY_MESSAGES_LIMIT,
+        targetMessageId: historyShiftAnchorId
       });
 
-      setCurrentPagesLoaded((prev) => prev + 1);
+      const middleMessage = page[Math.floor(page.length / 2)];
 
-      return { preserveScroll: true };
+      if (middleMessage) {
+        const element = await waitForMessageElement(middleMessage.id);
+
+        if (element) {
+          element.scrollIntoView({ behavior: 'auto', block: 'center' });
+        }
+      }
+
+      return { preserveScroll: false };
     } finally {
       loadingMoreRef.current = false;
       setFetching(false);
       setLoading(false);
     }
   }, [
-    cursor,
     enterHistoryMode,
     fetchAndStore,
     fetching,
     hasMore,
-    currentPagesLoaded,
     isHistoryMode,
     messages,
     channelId
@@ -444,7 +425,6 @@ export const useMessages = (channelId: number) => {
       cursorToFetch: null,
       limit: CURRENT_MESSAGES_LIMIT
     }).finally(() => {
-      setCurrentPagesLoaded(1);
       setFetching(false);
       setLoading(false);
     });
@@ -467,7 +447,6 @@ export const useMessages = (channelId: number) => {
 
       try {
         setIsHistoryMode(true);
-        setCurrentPagesLoaded(0);
         setHistoryAnchorMessageId(messageId);
         clearMessages(channelId);
         setCursor(null);

@@ -218,6 +218,15 @@ export const clearMessages = (channelId: number) => {
   store.dispatch(serverSliceActions.clearMessages({ channelId }));
 };
 
+export const compactMessagesWindow = (channelId: number, keepLatest: number) => {
+  store.dispatch(
+    serverSliceActions.compactMessagesWindow({
+      channelId,
+      keepLatest
+    })
+  );
+};
+
 export const addThreadMessages = (
   parentMessageId: number,
   messages: TJoinedMessage[],

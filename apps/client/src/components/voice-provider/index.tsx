@@ -50,6 +50,7 @@ import {
 import { useTransports } from './hooks/use-transports';
 import { useVoiceControls } from './hooks/use-voice-controls';
 import { useVoiceEvents } from './hooks/use-voice-events';
+import { VoiceAudioHost } from './voice-audio-host';
 import { VolumeControlProvider } from './volume-control-context';
 
 type AudioVideoRefs = {
@@ -378,7 +379,7 @@ const VoiceProvider = memo(({ children }: TVoiceProviderProps) => {
 
         logVoice('Obtained audio track', { audioTrack: rawAudioTrack });
 
-        localAudioProducer.current = await producerTransport.current?.produce({
+        const producedAudioProducer = await producerTransport.current?.produce({
           track: transmitTrack,
           codecOptions: {
             opusStereo: false,
@@ -389,12 +390,13 @@ const VoiceProvider = memo(({ children }: TVoiceProviderProps) => {
           },
           appData: { kind: StreamKind.AUDIO }
         });
+        localAudioProducer.current = producedAudioProducer;
 
         logVoice('Microphone audio producer created', {
-          producer: localAudioProducer.current
+          producer: producedAudioProducer
         });
 
-        localAudioProducer.current?.on('@close', async () => {
+        producedAudioProducer?.on('@close', async () => {
           logVoice('Audio producer closed');
 
           const trpc = getTRPCClient();
@@ -415,7 +417,10 @@ const VoiceProvider = memo(({ children }: TVoiceProviderProps) => {
             track.stop();
           });
           cleanupMicProcessingResources();
-          localAudioProducer.current?.close();
+          producedAudioProducer?.close();
+          if (localAudioProducer.current === producedAudioProducer) {
+            localAudioProducer.current = undefined;
+          }
 
           setLocalAudioStream(undefined);
         };
@@ -464,16 +469,17 @@ const VoiceProvider = memo(({ children }: TVoiceProviderProps) => {
       if (videoTrack) {
         logVoice('Obtained video track', { videoTrack });
 
-        localVideoProducer.current = await producerTransport.current?.produce({
+        const producedVideoProducer = await producerTransport.current?.produce({
           track: videoTrack,
           appData: { kind: StreamKind.VIDEO }
         });
+        localVideoProducer.current = producedVideoProducer;
 
         logVoice('Webcam video producer created', {
-          producer: localVideoProducer.current
+          producer: producedVideoProducer
         });
 
-        localVideoProducer.current?.on('@close', async () => {
+        producedVideoProducer?.on('@close', async () => {
           logVoice('Video producer closed');
 
           const trpc = getTRPCClient();
@@ -490,10 +496,13 @@ const VoiceProvider = memo(({ children }: TVoiceProviderProps) => {
         videoTrack.onended = () => {
           logVoice('Video track ended, cleaning up webcam');
 
-          localVideoStream?.getVideoTracks().forEach((track) => {
+          stream.getVideoTracks().forEach((track) => {
             track.stop();
           });
-          localVideoProducer.current?.close();
+          producedVideoProducer?.close();
+          if (localVideoProducer.current === producedVideoProducer) {
+            localVideoProducer.current = undefined;
+          }
 
           setLocalVideoStream(undefined);
         };
@@ -600,21 +609,21 @@ const VoiceProvider = memo(({ children }: TVoiceProviderProps) => {
 
         const maxBitrateKbps = devices.screenBitrate ?? DEFAULT_BITRATE;
 
-        localScreenShareProducer.current =
-          await producerTransport.current?.produce({
-            track: videoTrack,
-            codec: preferredCodec,
-            codecOptions: {
-              videoGoogleStartBitrate: Math.min(2000, maxBitrateKbps),
-              videoGoogleMaxBitrate: maxBitrateKbps,
-              videoGoogleMinBitrate: Math.min(200, maxBitrateKbps)
-            },
-            appData: { kind: StreamKind.SCREEN }
-          });
+        const producedScreenProducer = await producerTransport.current?.produce({
+          track: videoTrack,
+          codec: preferredCodec,
+          codecOptions: {
+            videoGoogleStartBitrate: Math.min(2000, maxBitrateKbps),
+            videoGoogleMaxBitrate: maxBitrateKbps,
+            videoGoogleMinBitrate: Math.min(200, maxBitrateKbps)
+          },
+          appData: { kind: StreamKind.SCREEN }
+        });
+        localScreenShareProducer.current = producedScreenProducer;
 
-        setScreenShareProducer(localScreenShareProducer.current);
+        setScreenShareProducer(producedScreenProducer);
 
-        localScreenShareProducer.current?.on('@close', async () => {
+        producedScreenProducer?.on('@close', async () => {
           logVoice('Screen share producer closed');
 
           const trpc = getTRPCClient();
@@ -631,10 +640,13 @@ const VoiceProvider = memo(({ children }: TVoiceProviderProps) => {
         videoTrack.onended = () => {
           logVoice('Screen share track ended, cleaning up screen share');
 
-          localScreenShareStream?.getTracks().forEach((track) => {
+          stream.getTracks().forEach((track) => {
             track.stop();
           });
-          localScreenShareProducer.current?.close();
+          producedScreenProducer?.close();
+          if (localScreenShareProducer.current === producedScreenProducer) {
+            localScreenShareProducer.current = undefined;
+          }
 
           setScreenShareProducer(null);
           setLocalScreenShare(undefined);
@@ -643,7 +655,7 @@ const VoiceProvider = memo(({ children }: TVoiceProviderProps) => {
         if (audioTrack) {
           logVoice('Obtained audio track', { audioTrack });
 
-          localScreenShareAudioProducer.current =
+          const producedScreenAudioProducer =
             await producerTransport.current?.produce({
               track: audioTrack,
               codecOptions: {
@@ -655,10 +667,15 @@ const VoiceProvider = memo(({ children }: TVoiceProviderProps) => {
               },
               appData: { kind: StreamKind.SCREEN_AUDIO }
             });
+          localScreenShareAudioProducer.current = producedScreenAudioProducer;
 
           audioTrack.onended = () => {
-            localScreenShareAudioProducer.current?.close();
-            localScreenShareAudioProducer.current = undefined;
+            producedScreenAudioProducer?.close();
+            if (
+              localScreenShareAudioProducer.current === producedScreenAudioProducer
+            ) {
+              localScreenShareAudioProducer.current = undefined;
+            }
           };
         }
 
@@ -864,6 +881,7 @@ const VoiceProvider = memo(({ children }: TVoiceProviderProps) => {
     <VoiceProviderContext.Provider value={contextValue}>
       <VolumeControlProvider>
         <div className="relative">
+          <VoiceAudioHost />
           <FloatingPinnedCard
             remoteUserStreams={remoteUserStreams}
             externalStreams={externalStreams}
