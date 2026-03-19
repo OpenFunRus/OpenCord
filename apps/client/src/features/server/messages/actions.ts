@@ -24,6 +24,10 @@ import { playSound } from '../sounds/actions';
 import { SoundType } from '../types';
 import { ownUserIdSelector, userByIdSelector } from '../users/selectors';
 import { threadMessagesMapSelector } from './selectors';
+import {
+  removeCachedMessage,
+  replaceCachedMessage
+} from './window-cache';
 
 const sendBrowserNotification = (
   message: TJoinedMessage,
@@ -179,6 +183,8 @@ export const addMessages = (
 };
 
 export const updateMessage = (channelId: number, message: TJoinedMessage) => {
+  replaceCachedMessage(channelId, message);
+
   if (message.parentMessageId) {
     store.dispatch(
       serverSliceActions.updateThreadMessage({
@@ -192,6 +198,8 @@ export const updateMessage = (channelId: number, message: TJoinedMessage) => {
 };
 
 export const deleteMessage = (channelId: number, messageId: number) => {
+  removeCachedMessage(channelId, messageId);
+
   // delete from both maps, the message could be a thread reply or root
   store.dispatch(serverSliceActions.deleteMessage({ channelId, messageId }));
 
@@ -216,6 +224,10 @@ export const deleteMessage = (channelId: number, messageId: number) => {
 
 export const clearMessages = (channelId: number) => {
   store.dispatch(serverSliceActions.clearMessages({ channelId }));
+};
+
+export const setMessages = (channelId: number, messages: TJoinedMessage[]) => {
+  store.dispatch(serverSliceActions.setMessages({ channelId, messages }));
 };
 
 export const compactMessagesWindow = (channelId: number, keepLatest: number) => {

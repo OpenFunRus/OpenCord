@@ -62,9 +62,17 @@ const ThreadContent = memo(
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {groupedMessages.map((group, index) => (
-                      <MessagesGroup key={index} group={group} />
-                    ))}
+                    {groupedMessages.map((group) => {
+                      const firstId = group[0]?.id ?? 'group-start';
+                      const lastId = group[group.length - 1]?.id ?? 'group-end';
+
+                      return (
+                        <MessagesGroup
+                          key={`${firstId}-${lastId}`}
+                          group={group}
+                        />
+                      );
+                    })}
                   </div>
                 )}
               </div>

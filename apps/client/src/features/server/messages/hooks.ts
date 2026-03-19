@@ -11,11 +11,10 @@ import {
 } from 'react';
 import { useSelector } from 'react-redux';
 import {
-  addMessages,
   addThreadMessages,
   clearMessages,
-  compactMessagesWindow,
-  clearThreadMessages
+  clearThreadMessages,
+  setMessages
 } from './actions';
 import {
   findMessageElement,
@@ -27,6 +26,16 @@ import {
   parentMessageByIdSelector,
   threadMessagesByParentIdSelector
 } from './selectors';
+import {
+  clearAfterBuffer,
+  getChannelWindowCache,
+  pushMessagesToAfterBuffer,
+  pushMessagesToBeforeBuffer,
+  resetChannelWindowCache,
+  setChannelWindowNewestId,
+  takeMessagesFromAfterBuffer,
+  takeMessagesFromBeforeBuffer
+} from './window-cache';
 
 export const useMessagesByChannelId = (channelId: number) =>
   useSelector((state: IRootState) =>
@@ -75,15 +84,21 @@ const fetchChannelMessagesPage = async (input: {
   return trpcClient.messages.get.query(input);
 };
 
-// reverse (newest-first -> oldest-first) and store messages
-const storeChannelMessages = (
-  channelId: number,
-  rawPage: TJoinedMessage[],
-  opts?: { prepend?: boolean }
+const mergeMessagesAsc = (
+  current: TJoinedMessage[],
+  incoming: TJoinedMessage[]
 ) => {
-  const page = [...rawPage].reverse();
+  const byId = new Map<number, TJoinedMessage>();
 
-  addMessages(channelId, page, opts);
+  current.forEach((message) => {
+    byId.set(message.id, message);
+  });
+
+  incoming.forEach((message) => {
+    byId.set(message.id, message);
+  });
+
+  return [...byId.values()].sort((a, b) => a.id - b.id);
 };
 
 const usePaginatedMessages = (
@@ -150,35 +165,78 @@ const usePaginatedMessages = (
 
 export const useMessages = (channelId: number) => {
   const messages = useMessagesByChannelId(channelId);
-  const inited = useRef(false);
   const loadingMoreRef = useRef(false);
-  const currentWindowNewestIdRef = useRef<number | null>(null);
+  const previousMessagesRef = useRef<TJoinedMessage[]>([]);
   const [fetching, setFetching] = useState(false);
   const [loading, setLoading] = useState(true);
   const [cursor, setCursor] = useState<number | null>(null);
   const [hasMore, setHasMore] = useState(true);
-  const [isHistoryMode, setIsHistoryMode] = useState(false);
-  const [historyAnchorMessageId, setHistoryAnchorMessageId] = useState<
-    number | null
-  >(null);
 
   const CURRENT_MESSAGES_LIMIT = 50;
   const HISTORY_MESSAGES_LIMIT = 50;
-  const HISTORY_SHIFT_STEP = 25;
+  const MAX_VISIBLE_MESSAGES = 100;
 
   const groupedMessages = useGroupedMessages(messages);
 
-  useLayoutEffect(() => {
-    if (isHistoryMode) {
-      return;
-    }
+  const applyVisibleMessages = useCallback(
+    (nextMessages: TJoinedMessage[]) => {
+      setMessages(channelId, nextMessages);
+      previousMessagesRef.current = nextMessages;
+    },
+    [channelId]
+  );
 
-    if (messages.length > CURRENT_MESSAGES_LIMIT) {
-      compactMessagesWindow(channelId, CURRENT_MESSAGES_LIMIT);
-    }
-  }, [channelId, isHistoryMode, messages.length, CURRENT_MESSAGES_LIMIT]);
+  const keepLatestMessages = useCallback(
+    (nextMessages: TJoinedMessage[], keepLatest: number) => {
+      if (nextMessages.length <= keepLatest) {
+        return nextMessages;
+      }
 
-  const fetchAndStore = useCallback(
+      const overflow = nextMessages.slice(0, nextMessages.length - keepLatest);
+      pushMessagesToBeforeBuffer(channelId, overflow);
+
+      return nextMessages.slice(-keepLatest);
+    },
+    [channelId]
+  );
+
+  const keepOldestMessages = useCallback(
+    (nextMessages: TJoinedMessage[], keepOldest: number) => {
+      if (nextMessages.length <= keepOldest) {
+        return nextMessages;
+      }
+
+      const overflow = nextMessages.slice(keepOldest);
+      pushMessagesToAfterBuffer(channelId, overflow);
+
+      return nextMessages.slice(0, keepOldest);
+    },
+    [channelId]
+  );
+
+  const getHasMoreAfter = useCallback(
+    (targetMessages: TJoinedMessage[]) => {
+      if (targetMessages.length === 0) {
+        return getChannelWindowCache(channelId).afterBuffer.length > 0;
+      }
+
+      const cache = getChannelWindowCache(channelId);
+      const visibleNewestId = targetMessages[targetMessages.length - 1]?.id ?? null;
+
+      if (visibleNewestId === null) {
+        return cache.afterBuffer.length > 0;
+      }
+
+      return (
+        cache.afterBuffer.length > 0 ||
+        (cache.currentWindowNewestId !== null &&
+          visibleNewestId < cache.currentWindowNewestId)
+      );
+    },
+    [channelId]
+  );
+
+  const fetchWindow = useCallback(
     async ({
       cursorToFetch,
       limit,
@@ -197,16 +255,8 @@ export const useMessages = (channelId: number) => {
 
       const pageAsc = [...rawPage].reverse();
 
-      storeChannelMessages(channelId, rawPage, {
-        prepend: cursorToFetch !== null
-      });
-
       if (rawPage.length > 0 && !targetMessageId) {
-        const newestFromPage = rawPage[0]!.id;
-        currentWindowNewestIdRef.current = Math.max(
-          currentWindowNewestIdRef.current ?? 0,
-          newestFromPage
-        );
+        setChannelWindowNewestId(channelId, rawPage[0]!.id);
       }
 
       setCursor(nextCursor);
@@ -218,41 +268,22 @@ export const useMessages = (channelId: number) => {
   );
 
   const loadCurrentWindow = useCallback(async () => {
+    resetChannelWindowCache(channelId);
     clearMessages(channelId);
     setCursor(null);
     setHasMore(true);
+    clearAfterBuffer(channelId);
 
-    await fetchAndStore({
+    const { page } = await fetchWindow({
       cursorToFetch: null,
       limit: CURRENT_MESSAGES_LIMIT
     });
-  }, [channelId, fetchAndStore, CURRENT_MESSAGES_LIMIT]);
 
-  const enterHistoryMode = useCallback(
-    async (anchorMessageId: number) => {
-      setIsHistoryMode(true);
-      setHistoryAnchorMessageId(anchorMessageId);
-      clearMessages(channelId);
-      setCursor(null);
-      setHasMore(true);
+    applyVisibleMessages(page);
+  }, [applyVisibleMessages, channelId, fetchWindow, CURRENT_MESSAGES_LIMIT]);
 
-      await fetchAndStore({
-        cursorToFetch: null,
-        limit: HISTORY_MESSAGES_LIMIT,
-        targetMessageId: anchorMessageId
-      });
-
-      const anchorElement = await waitForMessageElement(anchorMessageId);
-
-      if (anchorElement) {
-        anchorElement.scrollIntoView({ behavior: 'auto', block: 'center' });
-      }
-    },
-    [channelId, fetchAndStore]
-  );
-
-  const exitHistoryMode = useCallback(async () => {
-    if (!isHistoryMode) {
+  const jumpToPresent = useCallback(async () => {
+    if (!getHasMoreAfter(messages)) {
       return;
     }
 
@@ -260,45 +291,49 @@ export const useMessages = (channelId: number) => {
 
     try {
       await loadCurrentWindow();
-      setIsHistoryMode(false);
-      setHistoryAnchorMessageId(null);
     } finally {
       setFetching(false);
       setLoading(false);
     }
-  }, [isHistoryMode, loadCurrentWindow]);
+  }, [
+    getHasMoreAfter,
+    loadCurrentWindow,
+    messages,
+  ]);
 
-  const moveHistoryForwardOrExit = useCallback(async () => {
-    if (!isHistoryMode || loadingMoreRef.current) {
+  const loadNewer = useCallback(async () => {
+    if (fetching || loadingMoreRef.current || !getHasMoreAfter(messages)) {
+      return;
+    }
+
+    const cache = getChannelWindowCache(channelId);
+    const bufferedNextMessages = takeMessagesFromAfterBuffer(
+      channelId,
+      HISTORY_MESSAGES_LIMIT
+    );
+
+    if (bufferedNextMessages.length > 0) {
+      let nextVisible = mergeMessagesAsc(messages, bufferedNextMessages);
+      nextVisible = keepLatestMessages(nextVisible, MAX_VISIBLE_MESSAGES);
+      applyVisibleMessages(nextVisible);
       return;
     }
 
     const middleLoaded = messages[Math.floor(messages.length / 2)]?.id;
     const newestLoaded = messages[messages.length - 1]?.id;
+    const currentNewest = cache.currentWindowNewestId;
 
-    if (!middleLoaded || !newestLoaded) {
-      return;
-    }
-
-    const currentNewest = currentWindowNewestIdRef.current;
-
-    if (!currentNewest) {
-      await exitHistoryMode();
+    if (!middleLoaded || !newestLoaded || !currentNewest) {
       return;
     }
 
     if (newestLoaded >= currentNewest) {
-      await exitHistoryMode();
       return;
     }
 
-    const forwardAnchor = Math.min(
-      middleLoaded + HISTORY_SHIFT_STEP,
-      currentNewest
-    );
+    const forwardAnchor = Math.min(middleLoaded + 25, currentNewest);
 
     if (forwardAnchor <= middleLoaded) {
-      await exitHistoryMode();
       return;
     }
 
@@ -306,16 +341,13 @@ export const useMessages = (channelId: number) => {
     setFetching(true);
 
     try {
-      clearMessages(channelId);
-      setHistoryAnchorMessageId(forwardAnchor);
-      setCursor(null);
-      setHasMore(true);
-
-      const { page } = await fetchAndStore({
+      const { page } = await fetchWindow({
         cursorToFetch: null,
         limit: HISTORY_MESSAGES_LIMIT,
         targetMessageId: forwardAnchor
       });
+
+      applyVisibleMessages(page);
 
       const middleMessage = page[Math.floor(page.length / 2)];
 
@@ -332,13 +364,15 @@ export const useMessages = (channelId: number) => {
       setLoading(false);
     }
   }, [
-    isHistoryMode,
-    messages,
-    exitHistoryMode,
+    applyVisibleMessages,
     channelId,
-    fetchAndStore,
+    fetchWindow,
+    fetching,
+    getHasMoreAfter,
+    keepLatestMessages,
+    messages,
     HISTORY_MESSAGES_LIMIT,
-    HISTORY_SHIFT_STEP
+    MAX_VISIBLE_MESSAGES
   ]);
 
   const loadMore = useCallback(async () => {
@@ -346,24 +380,17 @@ export const useMessages = (channelId: number) => {
       return;
     }
 
-    if (!isHistoryMode) {
-      const oldestLoaded = messages[0];
+    const bufferedOlderMessages = takeMessagesFromBeforeBuffer(
+      channelId,
+      HISTORY_MESSAGES_LIMIT
+    );
 
-      if (!oldestLoaded) {
-        return;
-      }
+    if (bufferedOlderMessages.length > 0) {
+      let nextVisible = mergeMessagesAsc(bufferedOlderMessages, messages);
+      nextVisible = keepOldestMessages(nextVisible, MAX_VISIBLE_MESSAGES);
+      applyVisibleMessages(nextVisible);
 
-      loadingMoreRef.current = true;
-      setFetching(true);
-
-      try {
-        await enterHistoryMode(oldestLoaded.id);
-        return { preserveScroll: false };
-      } finally {
-        loadingMoreRef.current = false;
-        setFetching(false);
-        setLoading(false);
-      }
+      return;
     }
 
     if (!hasMore) {
@@ -374,63 +401,122 @@ export const useMessages = (channelId: number) => {
     setFetching(true);
 
     try {
-      // history window shift: load around current oldest message (-25/+25)
-      const historyShiftAnchorId = messages[0]?.id ?? historyAnchorMessageId ?? null;
-
-      if (!historyShiftAnchorId) {
-        return { preserveScroll: false };
-      }
-
-      clearMessages(channelId);
-      setHistoryAnchorMessageId(historyShiftAnchorId);
-
-      const { page } = await fetchAndStore({
-        cursorToFetch: null,
-        limit: HISTORY_MESSAGES_LIMIT,
-        targetMessageId: historyShiftAnchorId
+      const { page } = await fetchWindow({
+        cursorToFetch: cursor,
+        limit: HISTORY_MESSAGES_LIMIT
       });
 
-      const middleMessage = page[Math.floor(page.length / 2)];
-
-      if (middleMessage) {
-        const element = await waitForMessageElement(middleMessage.id);
-
-        if (element) {
-          element.scrollIntoView({ behavior: 'auto', block: 'center' });
-        }
+      if (page.length === 0) {
+        return;
       }
 
-      return { preserveScroll: false };
+      let nextVisible = mergeMessagesAsc(page, messages);
+      nextVisible = keepOldestMessages(nextVisible, MAX_VISIBLE_MESSAGES);
+      applyVisibleMessages(nextVisible);
     } finally {
       loadingMoreRef.current = false;
       setFetching(false);
       setLoading(false);
     }
   }, [
-    enterHistoryMode,
-    fetchAndStore,
+    fetchWindow,
     fetching,
     hasMore,
-    isHistoryMode,
     messages,
-    channelId
+    channelId,
+    cursor,
+    applyVisibleMessages,
+    keepOldestMessages,
+    MAX_VISIBLE_MESSAGES,
+    HISTORY_MESSAGES_LIMIT
   ]);
 
   useEffect(() => {
-    if (inited.current) return;
+    let cancelled = false;
 
+    resetChannelWindowCache(channelId);
+    previousMessagesRef.current = [];
+    clearMessages(channelId);
+    setCursor(null);
+    setHasMore(true);
     setFetching(true);
+    setLoading(true);
 
-    fetchAndStore({
+    fetchWindow({
       cursorToFetch: null,
       limit: CURRENT_MESSAGES_LIMIT
-    }).finally(() => {
-      setFetching(false);
-      setLoading(false);
-    });
+    })
+      .then(({ page }) => {
+        if (cancelled) {
+          return;
+        }
 
-    inited.current = true;
-  }, [fetchAndStore]);
+        applyVisibleMessages(page);
+      })
+      .finally(() => {
+        if (cancelled) {
+          return;
+        }
+
+        setFetching(false);
+        setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [applyVisibleMessages, channelId, fetchWindow, CURRENT_MESSAGES_LIMIT]);
+
+  useLayoutEffect(() => {
+    if (messages.length === 0) {
+      previousMessagesRef.current = messages;
+      return;
+    }
+
+    setChannelWindowNewestId(channelId, messages[messages.length - 1]!.id);
+
+    if (!getHasMoreAfter(messages) && messages.length > MAX_VISIBLE_MESSAGES) {
+      const nextVisible = keepLatestMessages(messages, MAX_VISIBLE_MESSAGES);
+
+      if (nextVisible.length !== messages.length) {
+        applyVisibleMessages(nextVisible);
+        return;
+      }
+    }
+
+    const previousMessages = previousMessagesRef.current;
+
+    if (getHasMoreAfter(previousMessages) && previousMessages.length > 0) {
+      const previousIds = new Set(previousMessages.map((message) => message.id));
+      const newestPreviousId =
+        previousMessages[previousMessages.length - 1]?.id ?? 0;
+      const unexpectedNewerMessages = messages.filter(
+        (message) =>
+          !previousIds.has(message.id) && message.id > newestPreviousId
+      );
+
+      if (unexpectedNewerMessages.length > 0) {
+        pushMessagesToAfterBuffer(channelId, unexpectedNewerMessages);
+
+        const newerIds = new Set(
+          unexpectedNewerMessages.map((message) => message.id)
+        );
+        const nextVisible = messages.filter((message) => !newerIds.has(message.id));
+
+        applyVisibleMessages(nextVisible);
+        return;
+      }
+    }
+
+    previousMessagesRef.current = messages;
+  }, [
+    applyVisibleMessages,
+    channelId,
+    getHasMoreAfter,
+    keepLatestMessages,
+    messages,
+    MAX_VISIBLE_MESSAGES
+  ]);
 
   const scrollToMessage = useCallback(
     async (messageId: number, highlightTime = 4000) => {
@@ -446,17 +532,23 @@ export const useMessages = (channelId: number) => {
       setFetching(true);
 
       try {
-        setIsHistoryMode(true);
-        setHistoryAnchorMessageId(messageId);
-        clearMessages(channelId);
+        const currentNewestId =
+          getChannelWindowCache(channelId).currentWindowNewestId ??
+          messages[messages.length - 1]?.id ??
+          null;
+
+        resetChannelWindowCache(channelId);
+        setChannelWindowNewestId(channelId, currentNewestId);
         setCursor(null);
         setHasMore(true);
 
-        await fetchAndStore({
+        const { page } = await fetchWindow({
           cursorToFetch: null,
           limit: HISTORY_MESSAGES_LIMIT,
           targetMessageId: messageId
         });
+
+        applyVisibleMessages(page);
       } finally {
         setFetching(false);
         setLoading(false);
@@ -468,22 +560,26 @@ export const useMessages = (channelId: number) => {
         highlightMessageElement(element, highlightTime);
       }
     },
-    [channelId, fetchAndStore]
+    [applyVisibleMessages, channelId, fetchWindow, messages, HISTORY_MESSAGES_LIMIT]
   );
+
+  const hasMoreAfter = getHasMoreAfter(messages);
+  const bufferedHasMore = getChannelWindowCache(channelId).beforeBuffer.length > 0;
+  const canJumpToPresent = hasMoreAfter || messages.length > CURRENT_MESSAGES_LIMIT;
 
   return {
     messages,
     groupedMessages,
     fetching,
     loading,
-    hasMore,
+    hasMore: hasMore || bufferedHasMore,
+    hasMoreAfter,
+    canJumpToPresent,
     cursor,
     loadMore,
+    loadNewer,
+    jumpToPresent,
     scrollToMessage,
-    isHistoryMode,
-    historyAnchorMessageId,
-    exitHistoryMode,
-    moveHistoryForwardOrExit
   };
 };
 

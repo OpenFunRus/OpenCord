@@ -51,14 +51,15 @@ const TextChannel = memo(({ channelId, onClose }: TChannelProps) => {
   const {
     messages,
     hasMore,
+    hasMoreAfter,
+    canJumpToPresent,
     loadMore,
+    loadNewer,
     loading,
     fetching,
     groupedMessages,
     scrollToMessage,
-    isHistoryMode,
-    exitHistoryMode,
-    moveHistoryForwardOrExit
+    jumpToPresent
   } = useMessages(channelId);
 
   useScrollToJumpTarget(channelId, scrollToMessage);
@@ -71,16 +72,19 @@ const TextChannel = memo(({ channelId, onClose }: TChannelProps) => {
   const typingUsers = useTypingUsersByChannelId(channelId);
   const composeRef = useRef<TMessageComposeHandle>(null);
   const customEmojis = useCustomEmojis();
+  const jumpButtonLabel = canJumpToPresent
+    ? 'К последним сообщениям'
+    : t('scrollToBottom');
 
   const { containerRef, onScroll, scrollToBottom, showScrollToBottom } =
     useScrollController({
-    messages,
-    fetching,
-    hasMore,
-    loadMore,
-    hasTypingUsers: typingUsers.length > 0,
-    isHistoryMode,
-    onHistoryBottomReached: moveHistoryForwardOrExit
+      messages,
+      fetching,
+      hasMore,
+      hasMoreAfter,
+      loadMore,
+      loadNewer,
+      hasTypingUsers: typingUsers.length > 0
     });
 
   const channelCan = useChannelCan(channelId);
@@ -200,9 +204,17 @@ const TextChannel = memo(({ channelId, onClose }: TChannelProps) => {
           className="h-full min-h-0 overflow-y-auto overflow-x-hidden px-3 py-4 animate-in fade-in duration-500 lg:px-4"
         >
           <div className="w-full space-y-4">
-            {groupedMessages.map((group, index) => (
-              <MessagesGroup key={index} group={group} />
-            ))}
+            {groupedMessages.map((group) => {
+              const firstId = group[0]?.id ?? 'group-start';
+              const lastId = group[group.length - 1]?.id ?? 'group-end';
+
+              return (
+                <MessagesGroup
+                  key={`${firstId}-${lastId}`}
+                  group={group}
+                />
+              );
+            })}
           </div>
         </div>
         {showScrollToBottom && (
@@ -210,23 +222,12 @@ const TextChannel = memo(({ channelId, onClose }: TChannelProps) => {
             <Button
               type="button"
               size="icon"
-              onClick={scrollToBottom}
-              title={t('scrollToBottom')}
-              aria-label={t('scrollToBottom')}
+              onClick={canJumpToPresent ? jumpToPresent : scrollToBottom}
+              title={jumpButtonLabel}
+              aria-label={jumpButtonLabel}
               className="pointer-events-auto h-10 w-10 rounded-full border border-[#4677b8] bg-[#206bc4] text-white shadow-[0_16px_32px_rgba(15,23,42,0.45)] hover:border-[#5f90d1] hover:bg-[#2b5ea7]"
             >
               <ArrowDown className="h-4 w-4" />
-            </Button>
-          </div>
-        )}
-        {isHistoryMode && (
-          <div className="pointer-events-none absolute bottom-4 left-1/2 z-20 -translate-x-1/2">
-            <Button
-              type="button"
-              onClick={exitHistoryMode}
-              className="pointer-events-auto h-10 rounded-full border border-[#7b2a2a] bg-[#b42318] px-4 text-sm text-white shadow-[0_16px_32px_rgba(15,23,42,0.45)] hover:border-[#8f3131] hover:bg-[#d92d20]"
-            >
-              Выйти из истории
             </Button>
           </div>
         )}

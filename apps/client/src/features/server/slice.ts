@@ -199,6 +199,17 @@ export const serverSlice = createSlice({
         (a, b) => a.id - b.id
       );
     },
+    setMessages: (
+      state,
+      action: PayloadAction<{
+        channelId: number;
+        messages: TJoinedMessage[];
+      }>
+    ) => {
+      const { channelId, messages } = action.payload;
+
+      state.messagesMap[channelId] = [...messages].sort((a, b) => a.id - b.id);
+    },
     updateMessage: (
       state,
       action: PayloadAction<{ channelId: number; message: TJoinedMessage }>

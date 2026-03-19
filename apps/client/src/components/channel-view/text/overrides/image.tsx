@@ -1,6 +1,7 @@
 import { FullScreenImage } from '@/components/fullscreen-image/content';
+import { cn } from '@/lib/utils';
 import { Skeleton } from '@opencord/ui';
-import { memo, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { OverrideLayout } from './layout';
 import { LinkOverride } from './link';
@@ -41,49 +42,6 @@ const ImageOverride = memo(({ src, alt }: TImageOverrideProps) => {
   }, [thumbnailBaseSrc]);
 
   useEffect(() => {
-    if (thumbnailReady) {
-      return;
-    }
-
-    let cancelled = false;
-    const image = new Image();
-
-    image.onload = () => {
-      if (cancelled) {
-        return;
-      }
-
-      setThumbnailReady(true);
-      if (retryTimeoutRef.current) {
-        clearTimeout(retryTimeoutRef.current);
-        retryTimeoutRef.current = null;
-      }
-    };
-
-    image.onerror = () => {
-      if (cancelled) {
-        return;
-      }
-
-      retryTimeoutRef.current = setTimeout(() => {
-        setThumbnailAttempt((prev) => prev + 1);
-      }, 1200);
-    };
-
-    image.src = thumbnailSrc;
-
-    return () => {
-      cancelled = true;
-      if (retryTimeoutRef.current) {
-        clearTimeout(retryTimeoutRef.current);
-        retryTimeoutRef.current = null;
-      }
-      image.onload = null;
-      image.onerror = null;
-    };
-  }, [thumbnailReady, thumbnailSrc]);
-
-  useEffect(() => {
     return () => {
       if (retryTimeoutRef.current) {
         clearTimeout(retryTimeoutRef.current);
@@ -91,21 +49,48 @@ const ImageOverride = memo(({ src, alt }: TImageOverrideProps) => {
     };
   }, []);
 
+  const handleThumbnailLoad = useCallback(() => {
+    setThumbnailReady(true);
+
+    if (retryTimeoutRef.current) {
+      clearTimeout(retryTimeoutRef.current);
+      retryTimeoutRef.current = null;
+    }
+  }, []);
+
+  const handleThumbnailError = useCallback(() => {
+    if (retryTimeoutRef.current) {
+      clearTimeout(retryTimeoutRef.current);
+    }
+
+    retryTimeoutRef.current = setTimeout(() => {
+      setThumbnailAttempt((prev) => prev + 1);
+    }, 1200);
+  }, []);
+
   return (
     <OverrideLayout>
-      {thumbnailReady ? (
+      <div className="relative min-h-75 min-w-75 w-fit max-w-full">
+        {!thumbnailReady && (
+          <div className="absolute inset-0">
+            <Skeleton className="h-75 w-75 max-w-full" />
+          </div>
+        )}
         <FullScreenImage
           src={thumbnailSrc}
           fullscreenSrc={src}
           alt={alt}
-          className="max-w-full max-h-75 object-contain object-left w-fit"
+          className={cn(
+            'max-h-75 max-w-full object-contain object-left w-fit',
+            !thumbnailReady && 'opacity-0'
+          )}
           crossOrigin="anonymous"
+          loading="lazy"
+          decoding="async"
+          onLoad={handleThumbnailLoad}
+          onError={handleThumbnailError}
         />
-      ) : (
-        <div className="w-fit">
-          <Skeleton className="h-75 w-75 max-w-full" />
-        </div>
-      )}
+      </div>
 
       <LinkOverride link={src} label={t('openInNewTab')} />
     </OverrideLayout>

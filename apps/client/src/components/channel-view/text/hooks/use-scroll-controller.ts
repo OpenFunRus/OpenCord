@@ -6,10 +6,10 @@ type TUseScrollControllerProps = {
   messages: unknown[];
   fetching: boolean;
   hasMore: boolean;
+  hasMoreAfter?: boolean;
   loadMore: () => Promise<{ preserveScroll?: boolean } | void>;
+  loadNewer?: () => Promise<void> | void;
   hasTypingUsers?: boolean;
-  isHistoryMode?: boolean;
-  onHistoryBottomReached?: () => Promise<unknown>;
 };
 
 type TUseScrollControllerReturn = {
@@ -50,18 +50,17 @@ const useScrollController = ({
   messages,
   fetching,
   hasMore,
+  hasMoreAfter = false,
   loadMore,
-  hasTypingUsers = false,
-  isHistoryMode = false,
-  onHistoryBottomReached
+  loadNewer,
+  hasTypingUsers = false
 }: TUseScrollControllerProps): TUseScrollControllerReturn => {
   const containerRef = useRef<HTMLDivElement>(null);
   const hasInitialScroll = useRef(false);
   const shouldStickToBottom = useRef(true);
-  const isHandlingHistoryExit = useRef(false);
   const previousScrollTop = useRef(0);
-  const canAutoExitHistory = useRef(false);
   const topLoadLocked = useRef(false);
+  const bottomLoadLocked = useRef(false);
   const [showScrollToBottom, setShowScrollToBottom] = useState(false);
 
   const isNearBottom = useCallback((container: HTMLDivElement) => {
@@ -95,29 +94,15 @@ const useScrollController = ({
       topLoadLocked.current = false;
     }
 
+    const distanceFromBottom =
+      container.scrollHeight - (container.scrollTop + container.clientHeight);
+
+    if (distanceFromBottom > SCROLL_THRESHOLD * 2) {
+      bottomLoadLocked.current = false;
+    }
+
     shouldStickToBottom.current = isNearBottom(container);
-    setShowScrollToBottom(!isHistoryMode && !shouldStickToBottom.current);
-
-    if (
-      isHistoryMode &&
-      shouldStickToBottom.current &&
-      onHistoryBottomReached &&
-      !isHandlingHistoryExit.current &&
-      !fetching &&
-      canAutoExitHistory.current &&
-      isScrollingDown
-    ) {
-      isHandlingHistoryExit.current = true;
-      onHistoryBottomReached().finally(() => {
-        isHandlingHistoryExit.current = false;
-        canAutoExitHistory.current = false;
-      });
-      return;
-    }
-
-    if (isHistoryMode && isScrollingDown) {
-      canAutoExitHistory.current = true;
-    }
+    setShowScrollToBottom(hasMoreAfter || !shouldStickToBottom.current);
 
     if (fetching) return;
 
@@ -127,6 +112,7 @@ const useScrollController = ({
 
       loadMore().then((result) => {
         if (result?.preserveScroll === false) {
+          topLoadLocked.current = false;
           return;
         }
 
@@ -145,17 +131,50 @@ const useScrollController = ({
           }
         }
 
+        topLoadLocked.current = false;
         shouldStickToBottom.current = isNearBottom(container);
-        setShowScrollToBottom(!isHistoryMode && !shouldStickToBottom.current);
+        setShowScrollToBottom(hasMoreAfter || !shouldStickToBottom.current);
+      });
+    }
+
+    if (
+      loadNewer &&
+      hasMoreAfter &&
+      isScrollingDown &&
+      distanceFromBottom <= SCROLL_THRESHOLD &&
+      !bottomLoadLocked.current
+    ) {
+      bottomLoadLocked.current = true;
+      const topAnchor = getTopVisibleAnchor(container);
+
+      Promise.resolve(loadNewer()).finally(() => {
+        if (topAnchor?.messageId) {
+          const target = container.querySelector<HTMLElement>(
+            `[data-message-id="${topAnchor.messageId}"]`
+          );
+
+          if (target) {
+            const containerRect = container.getBoundingClientRect();
+            const targetRect = target.getBoundingClientRect();
+            const delta =
+              targetRect.top - containerRect.top - topAnchor.offsetTop;
+
+            container.scrollTop += delta;
+          }
+        }
+
+        bottomLoadLocked.current = false;
+        shouldStickToBottom.current = isNearBottom(container);
+        setShowScrollToBottom(hasMoreAfter || !shouldStickToBottom.current);
       });
     }
   }, [
     loadMore,
+    loadNewer,
     hasMore,
+    hasMoreAfter,
     fetching,
-    isHistoryMode,
-    isNearBottom,
-    onHistoryBottomReached
+    isNearBottom
   ]);
 
   // Handle initial scroll after messages load
@@ -197,9 +216,10 @@ const useScrollController = ({
     if (!container) return;
 
     previousScrollTop.current = container.scrollTop;
-    canAutoExitHistory.current = false;
     topLoadLocked.current = false;
-  }, [isHistoryMode]);
+    bottomLoadLocked.current = hasMoreAfter;
+    setShowScrollToBottom(hasMoreAfter || !shouldStickToBottom.current);
+  }, [hasMoreAfter, messages]);
 
   // auto-scroll on new messages if user is near bottom
   useEffect(() => {
@@ -207,7 +227,7 @@ const useScrollController = ({
     if (!container || !hasInitialScroll.current || messages.length === 0)
       return;
 
-    if (isHistoryMode) {
+    if (hasMoreAfter) {
       return;
     }
 
@@ -217,7 +237,7 @@ const useScrollController = ({
         scrollToBottom();
       }, 10);
     }
-  }, [messages, hasTypingUsers, isHistoryMode, scrollToBottom]);
+  }, [messages, hasTypingUsers, hasMoreAfter, scrollToBottom]);
 
   // keep bottom lock on container resize (input/footer height changes)
   useEffect(() => {
@@ -227,7 +247,7 @@ const useScrollController = ({
       return;
     }
 
-    if (isHistoryMode) {
+    if (hasMoreAfter) {
       return;
     }
 
@@ -244,13 +264,13 @@ const useScrollController = ({
     return () => {
       observer.disconnect();
     };
-  }, [isHistoryMode, scrollToBottom]);
+  }, [hasMoreAfter, scrollToBottom]);
 
   return {
     containerRef,
     onScroll,
     scrollToBottom,
-    showScrollToBottom: isHistoryMode ? false : showScrollToBottom
+    showScrollToBottom
   };
 };
 

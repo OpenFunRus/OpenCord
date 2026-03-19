@@ -62,10 +62,7 @@ const getMessagesRoute = protectedProcedure
     if (targetMessageId) {
       // history/jump mode: fetch a window around the target id
       const targetMessage = await db
-        .select({
-          id: messages.id,
-          parentMessageId: messages.parentMessageId
-        })
+        .select()
         .from(messages)
         .where(
           and(

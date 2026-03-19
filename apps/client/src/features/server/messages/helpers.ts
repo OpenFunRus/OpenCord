@@ -19,6 +19,12 @@ export const highlightMessageElement = async (
   await nextFrame();
 
   element.scrollIntoView({ behavior: 'auto', block: 'center' });
+
+  // A second centering pass helps after late layout shifts
+  setTimeout(() => {
+    element.scrollIntoView({ behavior: 'auto', block: 'center' });
+  }, 50);
+
   element.classList.add('message-jump-highlight');
 
   if (messageHighlightTimeouts.has(element)) {
