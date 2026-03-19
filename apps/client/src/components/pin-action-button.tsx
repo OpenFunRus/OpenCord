@@ -44,8 +44,8 @@ const PinActionButton = memo(
         className={cn(
           'h-8 w-8 rounded-lg border p-0 shadow-none',
           active
-            ? 'border-[#4677b8] bg-[#1c2e48] text-[#a8c9ff] hover:border-[#5f90d1] hover:bg-[#22385a] hover:text-white'
-            : 'border-[#314055] bg-[#101926] text-[#8fa2bb] hover:border-[#3d516b] hover:bg-[#1b2940] hover:text-white',
+            ? 'border-[#4677b8] !bg-[#1c2e48] text-[#a8c9ff] hover:border-[#5f90d1] hover:!bg-[#22385a] hover:text-white'
+            : 'border-[#314055] !bg-[#101926] text-[#8fa2bb] hover:border-[#3d516b] hover:!bg-[#1b2940] hover:text-white',
           className
         )}
         {...props}

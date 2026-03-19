@@ -12,21 +12,21 @@ const DEFAULT_DEVICE_NAME = 'default';
 
 const getWebcamErrorMessage = (error: unknown) => {
   if (!(error instanceof DOMException)) {
-    return 'Failed to access webcam.';
+    return 'WEBCAM_ERROR_ACCESS_FAILED';
   }
 
   switch (error.name) {
     case 'NotAllowedError':
     case 'PermissionDeniedError':
-      return 'Webcam permission was denied.';
+      return 'WEBCAM_ERROR_PERMISSION_DENIED';
     case 'NotFoundError':
-      return 'No webcam was found.';
+      return 'WEBCAM_ERROR_NOT_FOUND';
     case 'NotReadableError':
-      return 'Webcam is already in use by another application.';
+      return 'WEBCAM_ERROR_BUSY';
     case 'OverconstrainedError':
-      return 'Selected webcam is unavailable.';
+      return 'WEBCAM_ERROR_UNAVAILABLE';
     default:
-      return 'Failed to access webcam.';
+      return 'WEBCAM_ERROR_ACCESS_FAILED';
   }
 };
 
@@ -189,7 +189,7 @@ const useWebcamTest = ({
       if (attemptCount >= maxAttempts) {
         setIsStarting(false);
         setError(
-          'Failed to start webcam preview. Please retry or choose another webcam.'
+          'WEBCAM_ERROR_PREVIEW_START_FAILED'
         );
 
         return;

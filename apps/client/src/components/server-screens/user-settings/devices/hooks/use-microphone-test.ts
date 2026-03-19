@@ -44,21 +44,21 @@ const isPermissionDeniedError = (error: unknown) =>
 
 const getMicrophoneErrorMessage = (error: unknown) => {
   if (!(error instanceof DOMException)) {
-    return 'Failed to access microphone.';
+    return 'MIC_ERROR_ACCESS_FAILED';
   }
 
   switch (error.name) {
     case 'NotAllowedError':
     case 'PermissionDeniedError':
-      return 'Microphone permission was denied.';
+      return 'MIC_ERROR_PERMISSION_DENIED';
     case 'NotFoundError':
-      return 'No microphone was found.';
+      return 'MIC_ERROR_NOT_FOUND';
     case 'NotReadableError':
-      return 'Microphone is already in use by another application.';
+      return 'MIC_ERROR_BUSY';
     case 'OverconstrainedError':
-      return 'Selected microphone is unavailable.';
+      return 'MIC_ERROR_UNAVAILABLE';
     default:
-      return 'Failed to access microphone.';
+      return 'MIC_ERROR_ACCESS_FAILED';
   }
 };
 

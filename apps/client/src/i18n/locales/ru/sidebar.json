@@ -66,6 +66,7 @@
   "cpuEncoder": "CPU ({{encoder}})",
   "unknownEncoder": "Неизвестно ({{encoder}})",
   "membersHeader": "Участники — {{count}}",
+  "userInfoAction": "Информация",
   "openDirectMessages": "Открыть личные сообщения",
   "closeDirectMessages": "Закрыть личные сообщения",
   "openChat": "Открыть текстовый чат",

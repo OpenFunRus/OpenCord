@@ -111,7 +111,40 @@ const Devices = memo(() => {
     saveDevices(values);
     toast.success(t('deviceSettingsSaved'));
   }, [saveDevices, values, t]);
+  const getDeviceErrorText = useCallback(
+    (errorCode: string) => {
+      switch (errorCode) {
+        case 'MIC_ERROR_PERMISSION_DENIED':
+          return t('deviceErrorMicrophonePermissionDenied');
+        case 'MIC_ERROR_NOT_FOUND':
+          return t('deviceErrorMicrophoneNotFound');
+        case 'MIC_ERROR_BUSY':
+          return t('deviceErrorMicrophoneBusy');
+        case 'MIC_ERROR_UNAVAILABLE':
+          return t('deviceErrorMicrophoneUnavailable');
+        case 'WEBCAM_ERROR_PERMISSION_DENIED':
+          return t('deviceErrorWebcamPermissionDenied');
+        case 'WEBCAM_ERROR_NOT_FOUND':
+          return t('deviceErrorWebcamNotFound');
+        case 'WEBCAM_ERROR_BUSY':
+          return t('deviceErrorWebcamBusy');
+        case 'WEBCAM_ERROR_UNAVAILABLE':
+          return t('deviceErrorWebcamUnavailable');
+        case 'WEBCAM_ERROR_PREVIEW_START_FAILED':
+          return t('deviceErrorWebcamPreviewStartFailed');
+        case 'MIC_ERROR_ACCESS_FAILED':
+          return t('deviceErrorMicrophoneAccessFailed');
+        case 'WEBCAM_ERROR_ACCESS_FAILED':
+          return t('deviceErrorWebcamAccessFailed');
+        default:
+          return errorCode;
+      }
+    },
+    [t]
+  );
   const didPrimeDevicesOnGrantedRef = useRef(false);
+  const lastMicErrorToastRef = useRef<string | undefined>(undefined);
+  const lastWebcamErrorToastRef = useRef<string | undefined>(undefined);
   const mutedByTestRef = useRef<{
     previousMicMuted: boolean;
     previousSoundMuted: boolean;
@@ -216,6 +249,26 @@ const Devices = memo(() => {
       void restoreVoiceStateAfterTestRef.current();
     };
   }, []);
+
+  useEffect(() => {
+    if (!microphoneTestError) {
+      lastMicErrorToastRef.current = undefined;
+      return;
+    }
+    if (lastMicErrorToastRef.current === microphoneTestError) return;
+    lastMicErrorToastRef.current = microphoneTestError;
+    toast.error(getDeviceErrorText(microphoneTestError));
+  }, [microphoneTestError, getDeviceErrorText]);
+
+  useEffect(() => {
+    if (!webcamTestError) {
+      lastWebcamErrorToastRef.current = undefined;
+      return;
+    }
+    if (lastWebcamErrorToastRef.current === webcamTestError) return;
+    lastWebcamErrorToastRef.current = webcamTestError;
+    toast.error(getDeviceErrorText(webcamTestError));
+  }, [webcamTestError, getDeviceErrorText]);
 
   const hasMicrophones = inputDevices.length > 0;
   const hasDefaultPlaybackOption = playbackDevices.some(
@@ -408,13 +461,6 @@ const Devices = memo(() => {
               getAudioLevelSnapshot={getAudioLevelSnapshot}
             />
 
-            {microphoneTestError && (
-              <Alert variant="destructive">
-                <Info />
-                <AlertDescription>{microphoneTestError}</AlertDescription>
-              </Alert>
-            )}
-
             <audio ref={testAudioRef} className="hidden" />
           </Group>
         </div>
@@ -492,13 +538,6 @@ const Devices = memo(() => {
                   </div>
                 )}
               </div>
-
-              {webcamTestError && (
-                <Alert variant="destructive">
-                  <Info />
-                  <AlertDescription>{webcamTestError}</AlertDescription>
-                </Alert>
-              )}
 
               <ResolutionFpsControl
                 framerate={values.webcamFramerate}

@@ -1,5 +1,27 @@
 # OpenCord Roadmap
 
+## 2026-03-19
+
+### Moderation modal и единый modal-close стиль
+
+- В `User Moderation Panel` пересобран layout прокрутки:
+  - header-модуль закреплён;
+  - скролл вынесен в контентную область, чтобы верх не уезжал при длинных списках.
+- Кнопка закрытия (`X`) в модальных окнах приведена к единому стилю OpenCord (tabler-like), удалены старые серые рамки и hover-цвета.
+- Единый стиль close-кнопки распространён на:
+  - `mod-view-sheet`;
+  - `create channel/category/invite`;
+  - `channel settings`, `user settings`, `server settings`.
+
+### Users right sidebar: контекст-меню по ПКМ
+
+- Для элементов участников в правой панели добавлено рабочее контекстное меню по правому клику:
+  - `Информация`;
+  - `Написать`;
+  - `Модерация` (по правам).
+- Исправлен trigger-кейс, из-за которого меню не открывалось корректно при вложенных компонентах.
+- В user popover quick-actions обновлены до икон-кнопок в общем стиле OpenCord.
+
 ## 2026-03-18
 
 ### Voice/video UX: fullscreen и rotate для mobile

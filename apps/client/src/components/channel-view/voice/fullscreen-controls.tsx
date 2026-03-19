@@ -16,7 +16,7 @@ type TFullscreenControlsProps = {
 const FullscreenControls = memo(
   ({ isFullscreen, onToggleFullscreen, onRotate }: TFullscreenControlsProps) => {
     return (
-      <div className="absolute left-2 top-2 z-20 flex items-center gap-1 rounded-lg border border-[#314055] bg-[#172231]/92 p-1 opacity-0 shadow-[0_12px_32px_rgba(2,6,23,0.38)] backdrop-blur-sm transition-opacity group-hover:opacity-100 group-focus-within:opacity-100 max-sm:group-active:opacity-100">
+      <div className="absolute left-2 top-2 z-20 flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100 max-sm:group-active:opacity-100">
         <IconButton
           variant="ghost"
           icon={isFullscreen ? Minimize2 : Maximize2}

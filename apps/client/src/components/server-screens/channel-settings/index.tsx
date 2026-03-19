@@ -27,7 +27,7 @@ const ChannelSettings = memo(({ close, isOpen, channelId }: TChannelSettingsProp
       <DialogContent
         close={close}
         overlayClassName="bg-[#0b1220]/80 backdrop-blur-sm"
-        closeClassName="top-4 right-4 rounded-sm border border-[#2d3949] bg-[#111a26] p-2 text-[#8fa2bb] opacity-100 hover:border-[#3a4b61] hover:bg-[#182434] hover:text-white data-[state=open]:bg-[#111a26] data-[state=open]:text-[#8fa2bb]"
+        closeClassName="top-4 right-4 h-9 w-9 rounded-lg border border-[#314055] !bg-[#101926] p-0 text-[#8fa2bb] opacity-100 shadow-none hover:border-[#3d516b] hover:!bg-[#1b2940] hover:text-white data-[state=open]:!bg-[#101926] data-[state=open]:text-[#8fa2bb]"
         className="h-[min(88vh,880px)] w-[min(1040px,calc(100vw-2rem))] max-w-[min(1040px,calc(100vw-2rem))] sm:max-w-[min(1040px,calc(100vw-2rem))] gap-0 overflow-hidden rounded-[12px] border border-[#2b3544] bg-[#182433] p-0 text-[#d7e2f0] shadow-[0_24px_64px_rgba(2,6,23,0.5)]"
         onInteractOutside={(e) => e.preventDefault()}
       >

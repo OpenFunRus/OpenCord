@@ -16,7 +16,6 @@ import {
   getTrpcError
 } from '@opencord/shared';
 import {
-  Button,
   IconButton,
   Popover,
   PopoverContent,
@@ -35,9 +34,12 @@ import { UserStatusBadge } from '../user-status';
 type TUserPopoverProps = {
   userId: number;
   children: React.ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 };
 
-const UserPopover = memo(({ userId, children }: TUserPopoverProps) => {
+const UserPopover = memo(
+  ({ userId, children, open, onOpenChange }: TUserPopoverProps) => {
   const { t } = useTranslation();
   const dateLocale = useDateLocale();
   const user = useUserById(userId);
@@ -64,8 +66,8 @@ const UserPopover = memo(({ userId, children }: TUserPopoverProps) => {
   const showDmButton =
     settings?.directMessagesEnabled && !isDeleted && !isOwnUser;
 
-  return (
-    <Popover>
+    return (
+      <Popover open={open} onOpenChange={onOpenChange}>
       <PopoverTrigger asChild>{children}</PopoverTrigger>
       <PopoverContent
         className="w-80 border border-[#314055] bg-[#182433] p-0 text-[#d7e2f0] shadow-[0_24px_64px_rgba(2,6,23,0.45)]"
@@ -153,16 +155,14 @@ const UserPopover = memo(({ userId, children }: TUserPopoverProps) => {
 
             <div className="flex items-center gap-2">
               {showDmButton && (
-                <Button
+                <IconButton
+                  icon={MessageSquare}
                   variant="ghost"
                   size="sm"
                   onClick={onDirectMessageClick}
-                  className="h-8 rounded-lg border border-[#314055] !bg-[#101926] px-3 text-xs font-medium text-[#8fa2bb] hover:border-[#3d516b] hover:!bg-[#1b2940] hover:text-white"
+                  className="h-8 w-8 rounded-lg border border-[#314055] !bg-[#101926] text-[#8fa2bb] hover:border-[#3d516b] hover:!bg-[#1b2940] hover:text-white"
                   title={t('directMessage')}
-                >
-                  <MessageSquare className="h-3.5 w-3.5" />
-                  <span>{t('directMessage')}</span>
-                </Button>
+                />
               )}
 
               {
@@ -173,7 +173,7 @@ const UserPopover = memo(({ userId, children }: TUserPopoverProps) => {
                     size="sm"
                     title={t('moderationView')}
                     onClick={() => setModViewOpen(true, user.id)}
-                    className="border border-[#314055] !bg-[#101926] text-[#8fa2bb] hover:border-[#3d516b] hover:!bg-[#1b2940] hover:text-white"
+                    className="h-8 w-8 rounded-lg border border-[#314055] !bg-[#101926] text-[#8fa2bb] hover:border-[#3d516b] hover:!bg-[#1b2940] hover:text-white"
                   />
                 </Protect>
               }
@@ -181,9 +181,10 @@ const UserPopover = memo(({ userId, children }: TUserPopoverProps) => {
           </div>
         </div>
       </PopoverContent>
-    </Popover>
-  );
-});
+      </Popover>
+    );
+  }
+);
 
 UserPopover.displayName = 'UserPopover';
 
