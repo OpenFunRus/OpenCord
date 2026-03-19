@@ -1,18 +1,18 @@
 import { FullScreenImage } from '@/components/fullscreen-image/content';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@opencord/ui';
+import { Download, Trash } from 'lucide-react';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { OverrideLayout } from './layout';
-import { LinkOverride } from './link';
 
 type TImageOverrideProps = {
   src: string;
   alt?: string;
   title?: string;
+  onRemove?: () => void;
 };
 
-const ImageOverride = memo(({ src, alt }: TImageOverrideProps) => {
+const ImageOverride = memo(({ src, alt, onRemove }: TImageOverrideProps) => {
   const { t } = useTranslation('common');
   const thumbnailBaseSrc = useMemo(() => {
     if (!URL.canParse(src)) {
@@ -69,11 +69,39 @@ const ImageOverride = memo(({ src, alt }: TImageOverrideProps) => {
   }, []);
 
   return (
-    <OverrideLayout>
-      <div className="relative min-h-75 min-w-75 w-fit max-w-full">
+    <div className="relative w-full min-w-0 overflow-hidden rounded-xl">
+      <div className="absolute top-2 left-2 z-10 flex items-center gap-2">
+        <a
+          href={src}
+          download
+          target="_blank"
+          rel="noreferrer"
+          onClick={(event) => event.stopPropagation()}
+          className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#314055] bg-[#172231]/92 text-[#d7e2f0] shadow-[0_12px_28px_rgba(2,6,23,0.35)] transition-colors hover:border-[#4a6280] hover:bg-[#1b2940]"
+          title={t('download')}
+          aria-label={t('download')}
+        >
+          <Download className="h-4 w-4" />
+        </a>
+      </div>
+      {onRemove && (
+        <button
+          type="button"
+          onClick={(event) => {
+            event.stopPropagation();
+            onRemove();
+          }}
+          className="absolute top-2 right-2 z-10 flex h-8 w-8 items-center justify-center rounded-lg border border-[#314055] bg-[#172231]/92 text-[#d7e2f0] shadow-[0_12px_28px_rgba(2,6,23,0.35)] transition-colors hover:border-[#4a6280] hover:bg-[#1b2940]"
+          title={t('deleteLabel')}
+          aria-label={t('deleteLabel')}
+        >
+          <Trash className="h-4 w-4" />
+        </button>
+      )}
+      <div className="relative w-full min-w-0 overflow-hidden rounded-xl">
         {!thumbnailReady && (
           <div className="absolute inset-0">
-            <Skeleton className="h-75 w-75 max-w-full" />
+            <Skeleton className="aspect-[4/3] w-full" />
           </div>
         )}
         <FullScreenImage
@@ -81,7 +109,7 @@ const ImageOverride = memo(({ src, alt }: TImageOverrideProps) => {
           fullscreenSrc={src}
           alt={alt}
           className={cn(
-            'max-h-75 max-w-full object-contain object-left w-fit',
+            'h-auto w-full rounded-xl object-left-top',
             !thumbnailReady && 'opacity-0'
           )}
           crossOrigin="anonymous"
@@ -91,9 +119,7 @@ const ImageOverride = memo(({ src, alt }: TImageOverrideProps) => {
           onError={handleThumbnailError}
         />
       </div>
-
-      <LinkOverride link={src} label={t('openInNewTab')} />
-    </OverrideLayout>
+    </div>
   );
 });
 

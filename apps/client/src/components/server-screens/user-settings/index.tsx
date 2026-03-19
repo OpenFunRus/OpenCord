@@ -87,7 +87,7 @@ const UserSettings = memo(({ close, isOpen }: TUserSettingsProps) => {
                   <TabsTrigger
                     key={value}
                     value={value}
-                    className="h-11 min-w-0 justify-center gap-2 rounded-sm border border-[#2b3544] bg-[#101926] px-3 py-2 text-sm font-medium text-[#8fa2bb] shadow-none transition-all hover:border-[#38506d] hover:bg-[#172231] hover:text-white data-[state=active]:border-[#4677b8] data-[state=active]:bg-[#1b2b40] data-[state=active]:text-white data-[state=active]:shadow-none"
+                    className="h-11 min-w-0 justify-center gap-2 rounded-sm border border-[#314055] !bg-[#101926] px-3 py-2 text-sm font-medium !text-[#8fa2bb] shadow-none transition-all hover:!border-[#3d516b] hover:!bg-[#1b2940] hover:!text-white focus-visible:!border-[#4677b8] focus-visible:!bg-[#1b2940] focus-visible:!text-white focus-visible:!ring-[#4677b8]/25 data-[state=active]:!border-[#4677b8] data-[state=active]:!bg-[#223146] data-[state=active]:!text-white data-[state=active]:shadow-none"
                   >
                     <Icon className="h-4 w-4 shrink-0" />
                     <span className="truncate">{label}</span>

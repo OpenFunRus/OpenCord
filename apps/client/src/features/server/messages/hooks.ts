@@ -473,6 +473,9 @@ export const useMessages = (channelId: number) => {
       return;
     }
 
+    const previousMessages = previousMessagesRef.current;
+    const previousHadMoreAfter = getHasMoreAfter(previousMessages);
+
     setChannelWindowNewestId(channelId, messages[messages.length - 1]!.id);
 
     if (!getHasMoreAfter(messages) && messages.length > MAX_VISIBLE_MESSAGES) {
@@ -484,9 +487,7 @@ export const useMessages = (channelId: number) => {
       }
     }
 
-    const previousMessages = previousMessagesRef.current;
-
-    if (getHasMoreAfter(previousMessages) && previousMessages.length > 0) {
+    if (previousHadMoreAfter && previousMessages.length > 0) {
       const previousIds = new Set(previousMessages.map((message) => message.id));
       const newestPreviousId =
         previousMessages[previousMessages.length - 1]?.id ?? 0;
