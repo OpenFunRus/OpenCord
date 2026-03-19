@@ -150,12 +150,13 @@ const ExternalStreamCard = memo(
       <div
         ref={containerRef}
         className={cn(
-          'group relative overflow-hidden rounded-2xl border border-[#2b3544] bg-[#172231]',
+          'group relative overflow-hidden rounded-2xl border border-[#2b3544] bg-[#172231] focus-visible:outline-none',
           'flex items-center justify-center',
           'w-full h-full',
           'shadow-[0_16px_40px_rgba(2,6,23,0.28)]',
           className
         )}
+        tabIndex={0}
         onWheel={hasVideo ? handleWheel : undefined}
         onMouseDown={hasVideo ? handleMouseDown : undefined}
         onMouseMove={hasVideo ? handleMouseMove : undefined}
@@ -225,7 +226,7 @@ const ExternalStreamCard = memo(
           </div>
         )}
 
-        <div className="absolute bottom-0 left-0 right-0 z-10 border-t border-white/10 bg-[linear-gradient(180deg,rgba(11,18,32,0)_0%,rgba(11,18,32,0.84)_100%)] p-3 transition-opacity max-sm:opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100">
+        <div className="absolute bottom-0 left-0 right-0 z-10 border-t border-white/10 bg-[linear-gradient(180deg,rgba(11,18,32,0)_0%,rgba(11,18,32,0.84)_100%)] p-3 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100 max-sm:group-active:opacity-100">
           <div className="flex min-w-0 items-center gap-2">
             {stream.avatarUrl ? (
               <img

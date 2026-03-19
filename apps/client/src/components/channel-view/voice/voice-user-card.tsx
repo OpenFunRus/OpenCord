@@ -62,13 +62,14 @@ const VoiceUserCard = memo(
       <div
         ref={containerRef}
         className={cn(
-          'group relative overflow-hidden rounded-2xl border border-[#2b3544] bg-[#172231]',
+          'group relative overflow-hidden rounded-2xl border border-[#2b3544] bg-[#172231] focus-visible:outline-none',
           'flex items-center justify-center',
           'w-full h-full',
           'shadow-[0_16px_40px_rgba(2,6,23,0.28)]',
           isActivelySpeaking && speakingEffectClass,
           className
         )}
+        tabIndex={0}
       >
         {voiceUser.banner && showUserBanners ? (
           <div

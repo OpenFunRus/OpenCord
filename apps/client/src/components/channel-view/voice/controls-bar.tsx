@@ -3,8 +3,10 @@ import { leaveVoice } from '@/features/server/voice/actions';
 import { useOwnVoiceState, useVoice } from '@/features/server/voice/hooks';
 import { cn } from '@/lib/utils';
 import { ChannelPermission } from '@opencord/shared';
-import { Button, Tooltip } from '@opencord/ui';
+import { Button } from '@opencord/ui';
 import {
+  ChevronDown,
+  ChevronUp,
   Mic,
   MicOff,
   Monitor,
@@ -13,7 +15,7 @@ import {
   Video,
   VideoOff
 } from 'lucide-react';
-import { memo, useMemo } from 'react';
+import { memo, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ControlToggleButton } from './control-toggle-button';
 import { useControlsBarVisibility } from './hooks/use-controls-bar-visibility';
@@ -28,6 +30,7 @@ const ControlsBar = memo(({ channelId }: TControlsBarProps) => {
   const ownVoiceState = useOwnVoiceState();
   const channelCan = useChannelCan(channelId);
   const isVisible = useControlsBarVisibility();
+  const [isMobileExpanded, setIsMobileExpanded] = useState(false);
 
   const permissions = useMemo(
     () => ({
@@ -41,15 +44,18 @@ const ControlsBar = memo(({ channelId }: TControlsBarProps) => {
   return (
     <div
       className={cn(
-        'absolute bottom-8 left-0 right-0 hidden md:flex justify-center items-center pointer-events-none',
-        'transition-all duration-300 ease-in-out gap-3',
-        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+        'absolute bottom-4 left-0 right-0 z-30 flex flex-col items-center gap-2 px-2 pointer-events-none md:bottom-8'
       )}
     >
       <div
         className={cn(
           'flex items-center gap-2 pointer-events-auto',
-          'h-14 rounded-xl border border-[#314055] bg-[#172231]/96 px-2 shadow-[0_18px_42px_rgba(2,6,23,0.38)] backdrop-blur-md'
+          'h-14 rounded-xl border border-[#314055] bg-[#172231]/96 px-2 shadow-[0_18px_42px_rgba(2,6,23,0.38)] backdrop-blur-md',
+          'transition-all duration-300 ease-in-out',
+          isVisible ? 'md:opacity-100 md:translate-y-0' : 'md:opacity-0 md:translate-y-10',
+          isMobileExpanded
+            ? 'max-md:opacity-100 max-md:translate-y-0'
+            : 'max-md:pointer-events-none max-md:max-h-0 max-md:overflow-hidden max-md:opacity-0 max-md:translate-y-2'
         )}
       >
         <ControlToggleButton
@@ -84,21 +90,34 @@ const ControlsBar = memo(({ channelId }: TControlsBarProps) => {
           onClick={toggleScreenShare}
           disabled={!permissions.canShareScreen}
         />
-      </div>
-
-      <Tooltip content={t('sidebar:disconnectVoice')}>
         <Button
-          size="icon"
+          size="sm"
           className={cn(
-            'pointer-events-auto h-14 w-18 rounded-xl border border-[#a9485a] text-white shadow-[0_18px_42px_rgba(2,6,23,0.38)] transition-all active:scale-95',
+            'pointer-events-auto h-10 rounded-lg border border-[#a9485a] px-3 text-white shadow-[0_18px_42px_rgba(2,6,23,0.38)] transition-all active:scale-95',
             '!bg-[#7d2d3a] hover:!bg-[#933445]'
           )}
           onClick={leaveVoice}
           aria-label={t('sidebar:disconnectVoice')}
+          title={t('sidebar:disconnectVoice')}
         >
-          <PhoneOff size={24} fill="currentColor" />
+          <PhoneOff size={20} fill="currentColor" />
         </Button>
-      </Tooltip>
+      </div>
+
+      <Button
+        variant="ghost"
+        size="icon"
+        className="pointer-events-auto md:hidden h-9 w-12 rounded-xl border border-[#314055] !bg-[#172231]/96 text-[#8fa2bb] shadow-[0_18px_42px_rgba(2,6,23,0.38)] backdrop-blur-md hover:border-[#3d516b] hover:!bg-[#1b2940] hover:text-white"
+        onClick={() => setIsMobileExpanded((prev) => !prev)}
+        aria-label={
+          isMobileExpanded ? t('common:hide', 'Hide controls') : t('common:show', 'Show controls')
+        }
+        title={
+          isMobileExpanded ? t('common:hide', 'Hide controls') : t('common:show', 'Show controls')
+        }
+      >
+        {isMobileExpanded ? <ChevronDown size={18} /> : <ChevronUp size={18} />}
+      </Button>
     </div>
   );
 });

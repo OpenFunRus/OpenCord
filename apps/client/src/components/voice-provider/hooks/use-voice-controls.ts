@@ -6,6 +6,7 @@ import { useOwnVoiceState } from '@/features/server/voice/hooks';
 import { getTRPCClient } from '@/lib/trpc';
 import { getTrpcError } from '@opencord/shared';
 import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
 type TUseVoiceControlsParams = {
@@ -27,8 +28,36 @@ const useVoiceControls = ({
   startScreenShareStream,
   stopScreenShareStream
 }: TUseVoiceControlsParams) => {
+  const { t } = useTranslation('common');
   const ownVoiceState = useOwnVoiceState();
   const currentVoiceChannelId = useCurrentVoiceChannelId();
+
+  const getMediaErrorText = useCallback(
+    (error: unknown, fallbackText: string) => {
+      if (!(error instanceof DOMException)) {
+        return fallbackText;
+      }
+
+      switch (error.name) {
+        case 'NotAllowedError':
+        case 'PermissionDeniedError':
+          return t('mediaErrorPermissionDenied');
+        case 'NotFoundError':
+          return t('mediaErrorDeviceNotFound');
+        case 'NotReadableError':
+          return t('mediaErrorDeviceBusy');
+        case 'OverconstrainedError':
+          return t('mediaErrorDeviceUnavailable');
+        case 'AbortError':
+          return t('mediaErrorAccessAborted');
+        case 'SecurityError':
+          return t('mediaErrorSecurity');
+        default:
+          return fallbackText;
+      }
+    },
+    [t]
+  );
 
   const toggleMic = useCallback(async () => {
     const newState = !ownVoiceState.micMuted;
@@ -51,13 +80,17 @@ const useVoiceControls = ({
       }
     } catch (error) {
       updateOwnVoiceState({ micMuted: !newState });
-      toast.error(getTrpcError(error, 'Failed to update microphone state'));
+      toast.error(
+        getMediaErrorText(error, t('voiceUpdateMicFailed'))
+      );
     }
   }, [
     ownVoiceState.micMuted,
     startMicStream,
     currentVoiceChannelId,
-    localAudioStream
+    localAudioStream,
+    t,
+    getMediaErrorText
   ]);
 
   const toggleSound = useCallback(async () => {
@@ -78,9 +111,9 @@ const useVoiceControls = ({
         soundMuted: newState
       });
     } catch (error) {
-      toast.error(getTrpcError(error, 'Failed to update sound state'));
+      toast.error(getTrpcError(error, t('voiceUpdateSoundFailed')));
     }
-  }, [ownVoiceState.soundMuted, currentVoiceChannelId]);
+  }, [ownVoiceState.soundMuted, currentVoiceChannelId, t]);
 
   const toggleWebcam = useCallback(async () => {
     if (!currentVoiceChannelId) return;
@@ -115,13 +148,15 @@ const useVoiceControls = ({
         // ignore
       }
 
-      toast.error(getTrpcError(error, 'Failed to update webcam state'));
+      toast.error(getMediaErrorText(error, t('voiceUpdateWebcamFailed')));
     }
   }, [
     ownVoiceState.webcamEnabled,
     currentVoiceChannelId,
     startWebcamStream,
-    stopWebcamStream
+    stopWebcamStream,
+    t,
+    getMediaErrorText
   ]);
 
   const toggleScreenShare = useCallback(async () => {
@@ -169,12 +204,16 @@ const useVoiceControls = ({
         // ignore
       }
 
-      toast.error(getTrpcError(error, 'Failed to update screen share state'));
+      toast.error(
+        getMediaErrorText(error, t('voiceUpdateScreenShareFailed'))
+      );
     }
   }, [
     ownVoiceState.sharingScreen,
     startScreenShareStream,
-    stopScreenShareStream
+    stopScreenShareStream,
+    t,
+    getMediaErrorText
   ]);
 
   return {
