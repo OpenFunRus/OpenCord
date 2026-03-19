@@ -51,6 +51,14 @@
   - active-состояние в палитре `#223146 / #4677b8`;
   - добавлены жёсткие focus/active overrides, чтобы компоненты не возвращались к дефолтным `shadcn/radix` оттенкам.
 
+### Voice fullscreen: зум и жесты для демо/видео
+
+- Для fullscreen-режима у `screen share`, `external stream` и `external video` расширено управление кадром:
+  - на desktop увеличение работает напрямую колесом мыши;
+  - при увеличении доступно перетаскивание области мышью;
+  - на mobile добавлен `pinch-to-zoom`;
+  - на mobile после увеличения область можно двигать одним пальцем.
+
 ## 2026-03-18
 
 ### Voice/video UX: fullscreen и rotate для mobile

@@ -113,6 +113,7 @@ bun run build:windows
   - добавлена защита от race-condition в producer lifecycle (`onended` старого трека больше не закрывает новый producer)
   - для видео/демо в voice-карточках добавлена кнопка fullscreen (слева сверху) и поворот на `90°` во fullscreen для мобильного просмотра
   - кнопки fullscreen/pin/zoom в voice-карточках унифицированы по стилю с кнопками верхней панели (та же подложка/рамка/hover)
+  - в fullscreen для screen share / external video / external stream зум и pan работают напрямую: на desktop через колесо мыши и перетаскивание, на mobile через pinch-to-zoom и drag одним пальцем
   - кнопка громкости в voice-карточках также приведена к единому стилю контролов
   - видимость fullscreen-кнопки синхронизирована с поведением pin/hover-контролов (на desktop не висит постоянно)
   - на mobile у карточек добавлен tap-показ контролов (аналог hover через focus/active), а нижняя панель звонка раскрывается по стрелке снизу

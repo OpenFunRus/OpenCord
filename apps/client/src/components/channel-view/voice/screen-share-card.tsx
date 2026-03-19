@@ -120,6 +120,8 @@ const ScreenShareCard = memo(
       userId
     ]);
 
+    const { isFullscreen, rotationDeg, toggleFullscreen, rotateClockwise } =
+      useMediaFullscreen();
     const {
       containerRef,
       isZoomEnabled,
@@ -131,11 +133,12 @@ const ScreenShareCard = memo(
       handleMouseDown,
       handleMouseMove,
       handleMouseUp,
+      handleTouchStart,
+      handleTouchMove,
+      handleTouchEnd,
       getCursor,
       resetZoom
-    } = useScreenShareZoom();
-    const { isFullscreen, rotationDeg, toggleFullscreen, rotateClockwise } =
-      useMediaFullscreen();
+    } = useScreenShareZoom({ forceEnable: isFullscreen });
 
     const handlePinToggle = useCallback(() => {
       if (isPinned) {
@@ -164,8 +167,12 @@ const ScreenShareCard = memo(
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
         style={{
-          cursor: getCursor()
+          cursor: getCursor(),
+          touchAction: isFullscreen ? 'none' : 'auto'
         }}
       >
         <CardGradient />

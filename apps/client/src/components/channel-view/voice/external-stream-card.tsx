@@ -106,6 +106,8 @@ const ExternalStreamCard = memo(
     const volume = getVolume(volumeKey);
     const isMuted = volume === 0;
 
+    const { isFullscreen, rotationDeg, toggleFullscreen, rotateClockwise } =
+      useMediaFullscreen();
     const {
       containerRef,
       isZoomEnabled,
@@ -117,11 +119,12 @@ const ExternalStreamCard = memo(
       handleMouseDown,
       handleMouseMove,
       handleMouseUp,
+      handleTouchStart,
+      handleTouchMove,
+      handleTouchEnd,
       getCursor,
       resetZoom
-    } = useScreenShareZoom();
-    const { isFullscreen, rotationDeg, toggleFullscreen, rotateClockwise } =
-      useMediaFullscreen();
+    } = useScreenShareZoom({ forceEnable: isFullscreen });
 
     const handlePinToggle = useCallback(() => {
       if (isPinned) {
@@ -162,8 +165,12 @@ const ExternalStreamCard = memo(
         onMouseMove={hasVideo ? handleMouseMove : undefined}
         onMouseUp={hasVideo ? handleMouseUp : undefined}
         onMouseLeave={hasVideo ? handleMouseUp : undefined}
+        onTouchStart={hasVideo ? handleTouchStart : undefined}
+        onTouchMove={hasVideo ? handleTouchMove : undefined}
+        onTouchEnd={hasVideo ? handleTouchEnd : undefined}
         style={{
-          cursor: hasVideo ? getCursor() : 'default'
+          cursor: hasVideo ? getCursor() : 'default',
+          touchAction: hasVideo && isFullscreen ? 'none' : 'auto'
         }}
       >
         <CardGradient />

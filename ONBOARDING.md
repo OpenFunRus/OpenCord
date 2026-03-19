@@ -381,6 +381,9 @@ taskkill /F /T /IM mediasoup-worker.exe
 - Видимость fullscreen-кнопки синхронизирована с панелью hover-кнопок (desktop), чтобы она не висела постоянно.
 - Для мобильной версии добавлен tap-показ контролов карточек (аналог hover через `focus/active`), чтобы кнопки появлялись по нажатию на карточку.
 - Нижняя панель звонка на mobile переведена на схему со стрелкой: по тапу раскрываются `микрофон / видео / экран / отключиться`.
+- Для fullscreen у `screen share`, `external video` и `external stream` расширено управление медиа:
+  - desktop: zoom по колесу мыши + pan перетаскиванием;
+  - mobile: `pinch-to-zoom` + drag одним пальцем после увеличения.
 - Обновлён стиль toast-уведомлений под dark theme (цветные жирные тексты в success/error/info/warning).
 - Добавлена локализация типовых media-device ошибок в popup, включая `Requested device not found`.
 
