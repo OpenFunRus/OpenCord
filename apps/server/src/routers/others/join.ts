@@ -2,16 +2,11 @@ import { ActivityLogType, ServerEvents, UserStatus } from '@opencord/shared';
 import { eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '../../db';
-import {
-  getAllChannelUserPermissions,
-  getChannelsForUser,
-  getChannelsReadStatesForUser
-} from '../../db/queries/channels';
-import { getEmojis } from '../../db/queries/emojis';
 import { getRoles } from '../../db/queries/roles';
 import { getPublicSettings, getSettings } from '../../db/queries/server';
+import { getVisibleServerStructureForUser } from '../../db/queries/spaces';
 import { getPublicUsers } from '../../db/queries/users';
-import { categories, users } from '../../db/schema';
+import { users } from '../../db/schema';
 import { logger } from '../../logger';
 import { pluginManager } from '../../plugins';
 import { eventBus } from '../../plugins/event-bus';
@@ -61,22 +56,14 @@ const joinServerRoute = rateLimitedProcedure(t.procedure, {
     ctx.setWsUserId(ctx.user.id);
 
     const [
-      allCategories,
-      channelsForUser,
+      visibleStructure,
       publicUsers,
       roles,
-      emojis,
-      channelPermissions,
-      readStates,
       publicSettings
     ] = await Promise.all([
-      db.select().from(categories),
-      getChannelsForUser(ctx.user.id), // filter channels based on permissions and DM participation
+      getVisibleServerStructureForUser(ctx.user.id),
       getPublicUsers(true), // return identity to get status of already connected users
       getRoles(),
-      getEmojis(),
-      getAllChannelUserPermissions(ctx.user.id),
-      getChannelsReadStatesForUser(ctx.user.id),
       getPublicSettings()
     ]);
 
@@ -127,18 +114,18 @@ const joinServerRoute = rateLimitedProcedure(t.procedure, {
     });
 
     return {
-      categories: allCategories,
-      channels: channelsForUser,
+      spaces: visibleStructure.spaces,
+      categories: visibleStructure.categories,
+      channels: visibleStructure.channels,
       users: processedPublicUsers,
       serverId: settings.serverId,
       serverName: settings.name,
       ownUserId: ctx.user.id,
       voiceMap,
       roles,
-      emojis,
       publicSettings,
-      channelPermissions,
-      readStates,
+      channelPermissions: visibleStructure.channelPermissions,
+      readStates: visibleStructure.readStates,
       commands: pluginManager.getCommands(),
       pluginIdsWithComponents: pluginManager.getPluginIdsWithComponents(),
       externalStreamsMap

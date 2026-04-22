@@ -7,7 +7,6 @@ import {
   channels,
   channelUserPermissions,
   directMessages,
-  emojis,
   files,
   invites,
   logins,
@@ -17,6 +16,8 @@ import {
   rolePermissions,
   roles,
   settings,
+  spaceRoles,
+  spaces,
   userRoles,
   users
 } from '../../../apps/server/src/db/schema';
@@ -25,6 +26,7 @@ import type { UserStatus } from './types';
 
 export type TSettings = InferSelectModel<typeof settings>;
 export type TRole = InferSelectModel<typeof roles>;
+export type TSpace = InferSelectModel<typeof spaces>;
 export type TCategory = InferSelectModel<typeof categories>;
 export type TChannel = InferSelectModel<typeof channels>;
 export type TFile = InferSelectModel<typeof files> & {
@@ -35,7 +37,7 @@ export type TLogin = InferSelectModel<typeof logins>;
 export type TMessage = InferSelectModel<typeof messages>;
 export type TMessageFile = InferSelectModel<typeof messageFiles>;
 export type TRolePermission = InferSelectModel<typeof rolePermissions>;
-export type TEmoji = InferSelectModel<typeof emojis>;
+export type TSpaceRole = InferSelectModel<typeof spaceRoles>;
 export type TMessageReaction = InferSelectModel<typeof messageReactions>;
 export type TInvite = InferSelectModel<typeof invites>;
 export type TActivityLog = InferSelectModel<typeof activityLog>;
@@ -51,6 +53,7 @@ export type TDirectMessage = InferSelectModel<typeof directMessages>;
 
 export type TISettings = InferInsertModel<typeof settings>;
 export type TIRole = InferInsertModel<typeof roles>;
+export type TISpace = InferInsertModel<typeof spaces>;
 export type TICategory = InferInsertModel<typeof categories>;
 export type TIChannel = InferInsertModel<typeof channels>;
 export type TIFile = InferInsertModel<typeof files>;
@@ -59,7 +62,7 @@ export type TILogin = InferInsertModel<typeof logins>;
 export type TIMessage = InferInsertModel<typeof messages>;
 export type TIMessageFile = InferInsertModel<typeof messageFiles>;
 export type TIRolePermission = InferInsertModel<typeof rolePermissions>;
-export type TIEmoji = InferInsertModel<typeof emojis>;
+export type TISpaceRole = InferInsertModel<typeof spaceRoles>;
 export type TIMessageReaction = InferInsertModel<typeof messageReactions>;
 export type TIInvite = InferInsertModel<typeof invites>;
 export type TIActivityLog = InferInsertModel<typeof activityLog>;
@@ -109,6 +112,11 @@ export type TJoinedRole = TRole & {
   permissions: Permission[];
 };
 
+export type TJoinedSpace = TSpace & {
+  avatar: TFile | null;
+  roleIds: number[];
+};
+
 export type TJoinedMessageReaction = TMessageReaction & {
   file: TFile | null;
 };
@@ -117,11 +125,6 @@ export type TJoinedMessage = TMessage & {
   files: TFile[];
   reactions: TJoinedMessageReaction[];
   replyCount?: number;
-};
-
-export type TJoinedEmoji = TEmoji & {
-  file: TFile;
-  user: TPublicUser;
 };
 
 export type TJoinedUser = TUser & {

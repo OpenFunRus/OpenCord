@@ -8,32 +8,21 @@ import { usePublicServerSettings } from '@/features/server/hooks';
 import { cn } from '@/lib/utils';
 import { PluginSlot } from '@opencord/shared';
 import { Button, Tooltip } from '@opencord/ui';
-import {
-  MessageSquare,
-  PanelRight,
-  PanelRightClose
-} from 'lucide-react';
+import { MessageSquare, PanelRight, PanelRightClose } from 'lucide-react';
 import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PluginSlotRenderer } from '../plugin-slot-renderer';
+import { ServerDropdownMenu } from '../left-sidebar/server-dropdown';
 import { ServerSearch } from './server-search';
 import { VoiceOptionsController } from './voice-options-controller';
 import { VolumeController } from './volume-controller';
 
 type TTopBarProps = {
   onToggleLeftSidebar: () => void;
-  onToggleRightSidebar: () => void;
   isLeftOpen: boolean;
-  isRightOpen: boolean;
 };
 
-const TopBar = memo(
-  ({
-    onToggleLeftSidebar,
-    onToggleRightSidebar,
-    isLeftOpen,
-    isRightOpen
-  }: TTopBarProps) => {
+const TopBar = memo(({ onToggleLeftSidebar, isLeftOpen }: TTopBarProps) => {
   const { t } = useTranslation('topbar');
   const isCurrentVoiceChannelSelected = useIsCurrentVoiceChannelSelected();
   const currentVoiceChannelId = useCurrentVoiceChannelId();
@@ -110,30 +99,10 @@ const TopBar = memo(
             </Button>
           </>
         )}
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onToggleRightSidebar}
-          className="h-9 rounded-lg border border-[#314055] !bg-[#172231] px-2.5 text-[#8fa2bb] transition-all duration-200 ease-in-out hover:border-[#3d516b] hover:!bg-[#1b2940] hover:text-white"
-        >
-          {isRightOpen ? (
-            <Tooltip content={t('closeMembersSidebar')}>
-              <div>
-                <PanelRightClose className="w-4 h-4 transition-transform duration-200 ease-in-out" />
-              </div>
-            </Tooltip>
-          ) : (
-            <Tooltip content={t('openMembersSidebar')}>
-              <div>
-                <PanelRight className="w-4 h-4 transition-transform duration-200 ease-in-out" />
-              </div>
-            </Tooltip>
-          )}
-        </Button>
+        <ServerDropdownMenu className="!bg-[#172231]" />
       </div>
     </div>
   );
 });
 
 export { TopBar };
-

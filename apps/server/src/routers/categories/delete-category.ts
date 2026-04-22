@@ -2,7 +2,7 @@ import { ActivityLogType, Permission } from '@opencord/shared';
 import { eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '../../db';
-import { publishCategory } from '../../db/publishers';
+import { publishSpacesSync } from '../../db/publishers';
 import { categories, channels } from '../../db/schema';
 import { enqueueActivityLog } from '../../queues/activity-log';
 import { invariant } from '../../utils/invariant';
@@ -29,7 +29,7 @@ const deleteCategoryRoute = protectedProcedure
       .delete(channels)
       .where(eq(channels.categoryId, removedCategory.id));
 
-    publishCategory(removedCategory.id, 'delete');
+    await publishSpacesSync();
     enqueueActivityLog({
       type: ActivityLogType.DELETED_CATEGORY,
       userId: ctx.user.id,

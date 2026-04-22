@@ -4,10 +4,10 @@ import { type TPublicServerSettings } from '@opencord/shared';
 import { setPublicServerSettings } from './actions';
 import { subscribeToCategories } from './categories/subscriptions';
 import { subscribeToChannels } from './channels/subscriptions';
-import { subscribeToEmojis } from './emojis/subscriptions';
 import { subscribeToMessages } from './messages/subscriptions';
 import { subscribeToPlugins } from './plugins/subscriptions';
 import { subscribeToRoles } from './roles/subscriptions';
+import { subscribeToSpaces } from './spaces/subscriptions';
 import { subscribeToUsers } from './users/subscriptions';
 import { subscribeToVoice } from './voice/subscriptions';
 
@@ -35,9 +35,9 @@ const initSubscriptions = () => {
   const subscriptors = [
     subscribeToChannels,
     subscribeToServer,
-    subscribeToEmojis,
     subscribeToRoles,
     subscribeToUsers,
+    subscribeToSpaces,
     subscribeToMessages,
     subscribeToVoice,
     subscribeToCategories,

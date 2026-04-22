@@ -183,7 +183,7 @@ const MessageActions = memo(
               </button>
             ))}
 
-            <EmojiPicker onEmojiSelect={onEmojiSelect}>
+            <EmojiPicker onEmojiSelect={onEmojiSelect} showGifs={false}>
               <IconButton
                 variant="ghost"
                 icon={Smile}

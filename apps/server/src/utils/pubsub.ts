@@ -6,7 +6,6 @@ import type {
   TChannelUserPermissionsMap,
   TCommandsMapByPlugin,
   TExternalStream,
-  TJoinedEmoji,
   TJoinedMessage,
   TJoinedPublicUser,
   TJoinedRole,
@@ -103,10 +102,6 @@ type Events = {
   [ServerEvents.PLUGIN_COMMANDS_CHANGE]: TCommandsMapByPlugin;
   [ServerEvents.PLUGIN_COMPONENTS_CHANGE]: string[]; // list of plugin ids that have components enabled
 
-  [ServerEvents.EMOJI_CREATE]: TJoinedEmoji;
-  [ServerEvents.EMOJI_UPDATE]: TJoinedEmoji;
-  [ServerEvents.EMOJI_DELETE]: number;
-
   [ServerEvents.ROLE_CREATE]: TJoinedRole;
   [ServerEvents.ROLE_UPDATE]: TJoinedRole;
   [ServerEvents.ROLE_DELETE]: number;
@@ -116,6 +111,8 @@ type Events = {
   [ServerEvents.CATEGORY_CREATE]: TCategory;
   [ServerEvents.CATEGORY_UPDATE]: TCategory;
   [ServerEvents.CATEGORY_DELETE]: number;
+
+  [ServerEvents.SPACES_SYNC]: null;
 
   [ServerEvents.DM_CONVERSATION_OPEN]: { channelId: number };
 };

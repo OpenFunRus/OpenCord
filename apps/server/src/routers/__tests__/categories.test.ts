@@ -38,7 +38,8 @@ describe('categories router', () => {
 
     await expect(
       caller.categories.add({
-        name: 'New Category'
+        name: 'New Category',
+        spaceId: 1
       })
     ).rejects.toThrow('Insufficient permissions');
   });
@@ -48,6 +49,7 @@ describe('categories router', () => {
 
     await expect(
       caller.categories.reorder({
+        spaceId: 1,
         categoryIds: [2, 1]
       })
     ).rejects.toThrow('Insufficient permissions');
@@ -69,7 +71,8 @@ describe('categories router', () => {
     const { caller } = await initTest();
 
     const id = await caller.categories.add({
-      name: 'New Category'
+      name: 'New Category',
+      spaceId: 1
     });
 
     const category = await caller.categories.get({
@@ -84,6 +87,7 @@ describe('categories router', () => {
     const { caller } = await initTest();
 
     await caller.categories.reorder({
+      spaceId: 1,
       categoryIds: [2, 1]
     });
 
@@ -103,10 +107,12 @@ describe('categories router', () => {
     const { caller } = await initTest();
 
     const categoryId = await caller.categories.add({
-      name: 'Third Category'
+      name: 'Third Category',
+      spaceId: 1
     });
 
     await caller.categories.reorder({
+      spaceId: 1,
       categoryIds: [categoryId]
     });
 

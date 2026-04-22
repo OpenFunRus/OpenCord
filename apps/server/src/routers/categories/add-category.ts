@@ -1,5 +1,5 @@
 import { ActivityLogType, Permission } from '@opencord/shared';
-import { sql } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '../../db';
 import { publishCategory } from '../../db/publishers';
@@ -10,7 +10,8 @@ import { protectedProcedure } from '../../utils/trpc';
 const addCategoryRoute = protectedProcedure
   .input(
     z.object({
-      name: z.string().min(1).max(32)
+      name: z.string().min(1).max(32),
+      spaceId: z.number().min(1)
     })
   )
   .mutation(async ({ input, ctx }) => {
@@ -18,7 +19,8 @@ const addCategoryRoute = protectedProcedure
 
     const [result] = await db
       .select({ maxPos: sql<number>`COALESCE(MAX(${categories.position}), 0)` })
-      .from(categories);
+      .from(categories)
+      .where(eq(categories.spaceId, input.spaceId));
 
     const targetPosition = (result?.maxPos ?? 0) + 1;
 
@@ -27,6 +29,7 @@ const addCategoryRoute = protectedProcedure
       .values({
         name: input.name,
         position: targetPosition,
+        spaceId: input.spaceId,
         createdAt: Date.now()
       })
       .returning()

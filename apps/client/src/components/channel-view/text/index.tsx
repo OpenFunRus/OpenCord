@@ -3,9 +3,6 @@ import {
   type TMessageComposeHandle
 } from '@/components/message-compose';
 import {
-  useCustomEmojis,
-} from '@/features/server/emojis/hooks';
-import {
   useChannelCan,
   usePublicServerSettings,
   useTypingUsersByChannelId
@@ -71,7 +68,6 @@ const TextChannel = memo(({ channelId, onClose }: TChannelProps) => {
   );
   const typingUsers = useTypingUsersByChannelId(channelId);
   const composeRef = useRef<TMessageComposeHandle>(null);
-  const customEmojis = useCustomEmojis();
   const jumpButtonLabel = canJumpToPresent
     ? 'К последним сообщениям'
     : t('scrollToBottom');
@@ -117,9 +113,7 @@ const TextChannel = memo(({ channelId, onClose }: TChannelProps) => {
       sendTypingSignal.cancel();
 
       const trpc = getTRPCClient();
-      const preparedContent = prepareMessageHtml(
-        canonicalizeMessageEmojiHtml(message, customEmojis)
-      );
+      const preparedContent = prepareMessageHtml(canonicalizeMessageEmojiHtml(message));
       const maxTextLength =
         publicSettings?.messageMaxTextLength ?? MESSAGE_DEFAULT_TEXT_LENGTH_LIMIT;
       const maxLines = publicSettings?.messageMaxLines ?? MESSAGE_DEFAULT_LINES_LIMIT;
@@ -163,7 +157,6 @@ const TextChannel = memo(({ channelId, onClose }: TChannelProps) => {
     },
     [
       channelId,
-      customEmojis,
       publicSettings?.messageMaxLines,
       publicSettings?.messageMaxTextLength,
       scrollToBottom,

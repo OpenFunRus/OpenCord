@@ -94,16 +94,60 @@ const roles = sqliteTable(
   ]
 );
 
+const spaces = sqliteTable(
+  'spaces',
+  {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    name: text('name').notNull(),
+    avatarId: integer('avatar_id').references(() => files.id, {
+      onDelete: 'set null'
+    }),
+    position: integer('position').notNull(),
+    isDefault: integer('is_default', { mode: 'boolean' }).notNull().default(false),
+    createdAt: integer('created_at').notNull(),
+    updatedAt: integer('updated_at')
+  },
+  (t) => [
+    index('spaces_position_idx').on(t.position),
+    index('spaces_is_default_idx').on(t.isDefault)
+  ]
+);
+
+const spaceRoles = sqliteTable(
+  'space_roles',
+  {
+    spaceId: integer('space_id')
+      .notNull()
+      .references(() => spaces.id, { onDelete: 'cascade' }),
+    roleId: integer('role_id')
+      .notNull()
+      .references(() => roles.id, { onDelete: 'cascade' }),
+    createdAt: integer('created_at').notNull()
+  },
+  (t) => [
+    primaryKey({ columns: [t.spaceId, t.roleId] }),
+    index('space_roles_space_idx').on(t.spaceId),
+    index('space_roles_role_idx').on(t.roleId)
+  ]
+);
+
 const categories = sqliteTable(
   'categories',
   {
     id: integer('id').primaryKey({ autoIncrement: true }),
     name: text('name').notNull(),
     position: integer('position').notNull(),
+    spaceId: integer('space_id').references(() => spaces.id, {
+      onDelete: 'cascade'
+    }),
     createdAt: integer('created_at').notNull(),
     updatedAt: integer('updated_at')
   },
-  (t) => [index('categories_position_idx').on(t.position)]
+  (t) => [
+    index('categories_position_idx').on(t.position),
+    index('categories_space_idx').on(t.spaceId),
+    index('categories_space_position_idx').on(t.spaceId, t.position)
+  ]
 );
 
 const channels = sqliteTable(
@@ -120,6 +164,9 @@ const channels = sqliteTable(
       .notNull()
       .default(false),
     position: integer('position').notNull(),
+    spaceId: integer('space_id').references(() => spaces.id, {
+      onDelete: 'cascade'
+    }),
     categoryId: integer('category_id').references(() => categories.id, {
       onDelete: 'cascade'
     }),
@@ -128,9 +175,15 @@ const channels = sqliteTable(
   },
   (t) => [
     index('channels_category_idx').on(t.categoryId),
+    index('channels_space_idx').on(t.spaceId),
     index('channels_position_idx').on(t.position),
     index('channels_type_idx').on(t.type),
-    index('channels_category_position_idx').on(t.categoryId, t.position)
+    index('channels_category_position_idx').on(t.categoryId, t.position),
+    index('channels_space_category_position_idx').on(
+      t.spaceId,
+      t.categoryId,
+      t.position
+    )
   ]
 );
 
@@ -282,27 +335,6 @@ const rolePermissions = sqliteTable(
     primaryKey({ columns: [t.roleId, t.permission] }),
     index('role_permissions_role_idx').on(t.roleId),
     index('role_permissions_permission_idx').on(t.permission)
-  ]
-);
-
-const emojis = sqliteTable(
-  'emojis',
-  {
-    id: integer('id').primaryKey({ autoIncrement: true }),
-    name: text('name').notNull().unique(),
-    fileId: integer('file_id')
-      .notNull()
-      .references(() => files.id, { onDelete: 'cascade' }),
-    userId: integer('user_id')
-      .notNull()
-      .references(() => users.id, { onDelete: 'cascade' }),
-    createdAt: integer('created_at').notNull(),
-    updatedAt: integer('updated_at')
-  },
-  (t) => [
-    index('emojis_user_idx').on(t.userId),
-    index('emojis_file_idx').on(t.fileId),
-    uniqueIndex('emojis_name_idx').on(t.name)
   ]
 );
 
@@ -493,7 +525,6 @@ export {
   channels,
   channelUserPermissions,
   directMessages,
-  emojis,
   files,
   invites,
   logins,
@@ -504,6 +535,8 @@ export {
   rolePermissions,
   roles,
   settings,
+  spaceRoles,
+  spaces,
   userRoles,
   users
 };

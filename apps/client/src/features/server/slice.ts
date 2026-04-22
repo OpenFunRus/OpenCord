@@ -9,10 +9,10 @@ import type {
   TCommandsMapByPlugin,
   TExternalStream,
   TExternalStreamsMap,
-  TJoinedEmoji,
   TJoinedMessage,
   TJoinedPublicUser,
   TJoinedRole,
+  TJoinedSpace,
   TPluginComponentsMap,
   TPluginComponentsMapBySlotId,
   TPublicServerSettings,
@@ -32,9 +32,10 @@ export interface IServerState {
   connecting: boolean;
   disconnectInfo?: TDisconnectInfo;
   serverId?: string;
+  spaces: TJoinedSpace[];
+  selectedSpaceId: number | undefined;
   categories: TCategory[];
   channels: TChannel[];
-  emojis: TJoinedEmoji[];
   ownUserId: number | undefined;
   selectedChannelId: number | undefined;
   currentVoiceChannelId: number | undefined;
@@ -71,9 +72,10 @@ const initialState: IServerState = {
   disconnectInfo: undefined,
   serverId: undefined,
   ownUserId: undefined,
+  spaces: [],
+  selectedSpaceId: undefined,
   categories: [],
   channels: [],
-  emojis: [],
   selectedChannelId: undefined,
   currentVoiceChannelId: undefined,
   messagesMap: {},
@@ -106,6 +108,17 @@ const initialState: IServerState = {
     true
   ),
   pluginComponents: {}
+};
+
+const pickSelectedSpaceId = (
+  spaces: TJoinedSpace[],
+  currentSelectedSpaceId?: number
+) => {
+  if (currentSelectedSpaceId && spaces.some((space) => space.id === currentSelectedSpaceId)) {
+    return currentSelectedSpaceId;
+  }
+
+  return spaces.find((space) => space.isDefault)?.id ?? spaces[0]?.id;
 };
 
 export const serverSlice = createSlice({
@@ -144,12 +157,12 @@ export const serverSlice = createSlice({
       state,
       action: PayloadAction<{
         serverId: string;
+        spaces: TJoinedSpace[];
         categories: TCategory[];
         channels: TChannel[];
         users: TJoinedPublicUser[];
         ownUserId: number;
         roles: TJoinedRole[];
-        emojis: TJoinedEmoji[];
         publicSettings: TPublicServerSettings | undefined;
         voiceMap: TVoiceMap;
         externalStreamsMap: TExternalStreamsMap;
@@ -158,9 +171,10 @@ export const serverSlice = createSlice({
       }>
     ) => {
       state.connected = true;
+      state.spaces = action.payload.spaces;
+      state.selectedSpaceId = pickSelectedSpaceId(action.payload.spaces);
       state.categories = action.payload.categories;
       state.channels = action.payload.channels;
-      state.emojis = action.payload.emojis;
       state.users = action.payload.users;
       state.roles = action.payload.roles;
       state.ownUserId = action.payload.ownUserId;
@@ -170,6 +184,19 @@ export const serverSlice = createSlice({
       state.serverId = action.payload.serverId;
       state.channelPermissions = action.payload.channelPermissions;
       state.readStatesMap = action.payload.readStates;
+    },
+    setSpaces: (state, action: PayloadAction<TJoinedSpace[]>) => {
+      state.spaces = action.payload;
+      state.selectedSpaceId = pickSelectedSpaceId(
+        action.payload,
+        state.selectedSpaceId
+      );
+    },
+    setSelectedSpaceId: (
+      state,
+      action: PayloadAction<number | undefined>
+    ) => {
+      state.selectedSpaceId = action.payload;
     },
     addMessages: (
       state,
@@ -461,8 +488,6 @@ export const serverSlice = createSlice({
           }));
       }
 
-      // remove user from emojis
-      state.emojis = state.emojis.filter((e) => e.userId !== userId);
     },
     reassignUser: (
       state,
@@ -515,10 +540,6 @@ export const serverSlice = createSlice({
         }));
       }
 
-      // reassign emojis
-      state.emojis = state.emojis.map((e) =>
-        e.userId === userId ? { ...e, userId: deletedUserId } : e
-      );
     },
 
     // SERVER SETTINGS ------------------------------------------------------------
@@ -628,35 +649,8 @@ export const serverSlice = createSlice({
 
       state.readStatesMap[channelId] = count;
     },
-
-    // EMOJIS ------------------------------------------------------------
-
-    setEmojis: (state, action: PayloadAction<TJoinedEmoji[]>) => {
-      state.emojis = action.payload;
-    },
-    updateEmoji: (
-      state,
-      action: PayloadAction<{ emojiId: number; emoji: Partial<TJoinedEmoji> }>
-    ) => {
-      const index = state.emojis.findIndex(
-        (e) => e.id === action.payload.emojiId
-      );
-      if (index === -1) return;
-      state.emojis[index] = {
-        ...state.emojis[index],
-        ...action.payload.emoji
-      };
-    },
-    addEmoji: (state, action: PayloadAction<TJoinedEmoji>) => {
-      const exists = state.emojis.find((e) => e.id === action.payload.id);
-
-      if (exists) return;
-      state.emojis.push(action.payload);
-    },
-    removeEmoji: (state, action: PayloadAction<{ emojiId: number }>) => {
-      state.emojis = state.emojis.filter(
-        (e) => e.id !== action.payload.emojiId
-      );
+    setAllReadStates: (state, action: PayloadAction<TReadStateMap>) => {
+      state.readStatesMap = action.payload;
     },
 
     // CATEGORIES ------------------------------------------------------------

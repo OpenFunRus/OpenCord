@@ -12,6 +12,7 @@ import { protectedProcedure } from '../../utils/trpc';
 const reorderCategoriesRoute = protectedProcedure
   .input(
     z.object({
+      spaceId: z.number(),
       categoryIds: z.array(z.number())
     })
   )
@@ -21,6 +22,7 @@ const reorderCategoriesRoute = protectedProcedure
     const existingCategories = await db
       .select({ id: categories.id })
       .from(categories)
+      .where(eq(categories.spaceId, input.spaceId))
       .orderBy(asc(categories.position), asc(categories.id));
 
     const existingCategoryIds = existingCategories.map(

@@ -10,31 +10,40 @@ type TImageOverrideProps = {
   alt?: string;
   title?: string;
   onRemove?: () => void;
+  mediaClassName?: string;
 };
 
-const ImageOverride = memo(({ src, alt, onRemove }: TImageOverrideProps) => {
+const ImageOverride = memo(({ src, alt, onRemove, mediaClassName }: TImageOverrideProps) => {
   const { t } = useTranslation('common');
+  const usesServerThumbnail = useMemo(() => {
+    try {
+      const parsed = new URL(src, window.location.href);
+      return parsed.origin === window.location.origin;
+    } catch {
+      return false;
+    }
+  }, [src]);
   const thumbnailBaseSrc = useMemo(() => {
-    if (!URL.canParse(src)) {
+    if (!usesServerThumbnail) {
       return src;
     }
 
-    const parsed = new URL(src);
+    const parsed = new URL(src, window.location.href);
     parsed.searchParams.set('thumb', '1');
     return parsed.toString();
-  }, [src]);
+  }, [src, usesServerThumbnail]);
   const retryTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [thumbnailAttempt, setThumbnailAttempt] = useState(0);
   const [thumbnailReady, setThumbnailReady] = useState(false);
   const thumbnailSrc = useMemo(() => {
-    if (!URL.canParse(thumbnailBaseSrc)) {
+    if (!usesServerThumbnail) {
       return thumbnailBaseSrc;
     }
 
-    const parsed = new URL(thumbnailBaseSrc);
+    const parsed = new URL(thumbnailBaseSrc, window.location.href);
     parsed.searchParams.set('_thumbTry', String(thumbnailAttempt));
     return parsed.toString();
-  }, [thumbnailAttempt, thumbnailBaseSrc]);
+  }, [thumbnailAttempt, thumbnailBaseSrc, usesServerThumbnail]);
 
   useEffect(() => {
     setThumbnailAttempt(0);
@@ -59,6 +68,10 @@ const ImageOverride = memo(({ src, alt, onRemove }: TImageOverrideProps) => {
   }, []);
 
   const handleThumbnailError = useCallback(() => {
+    if (!usesServerThumbnail) {
+      return;
+    }
+
     if (retryTimeoutRef.current) {
       clearTimeout(retryTimeoutRef.current);
     }
@@ -66,11 +79,16 @@ const ImageOverride = memo(({ src, alt, onRemove }: TImageOverrideProps) => {
     retryTimeoutRef.current = setTimeout(() => {
       setThumbnailAttempt((prev) => prev + 1);
     }, 1200);
-  }, []);
+  }, [usesServerThumbnail]);
 
   return (
-    <div className="relative w-full min-w-0 overflow-hidden rounded-xl">
-      <div className="absolute top-2 left-2 z-10 flex items-center gap-2">
+    <div
+      className={cn(
+        'group relative h-[320px] w-full min-w-0 overflow-hidden',
+        thumbnailReady ? 'border-transparent bg-transparent' : 'border border-[#2b3544] bg-[#101926]'
+      )}
+    >
+      <div className="pointer-events-none absolute top-2 left-2 z-10 flex items-center gap-2 opacity-0 transition-opacity duration-150 group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100">
         <a
           href={src}
           download
@@ -91,25 +109,28 @@ const ImageOverride = memo(({ src, alt, onRemove }: TImageOverrideProps) => {
             event.stopPropagation();
             onRemove();
           }}
-          className="absolute top-2 right-2 z-10 flex h-8 w-8 items-center justify-center rounded-lg border border-[#314055] bg-[#172231]/92 text-[#d7e2f0] shadow-[0_12px_28px_rgba(2,6,23,0.35)] transition-colors hover:border-[#4a6280] hover:bg-[#1b2940]"
+          className="pointer-events-none absolute top-2 right-2 z-10 flex h-8 w-8 items-center justify-center rounded-lg border border-[#314055] bg-[#172231]/92 text-[#d7e2f0] opacity-0 shadow-[0_12px_28px_rgba(2,6,23,0.35)] transition-[opacity,color,background-color,border-color] duration-150 group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100 hover:border-[#4a6280] hover:bg-[#1b2940]"
           title={t('deleteLabel')}
           aria-label={t('deleteLabel')}
         >
           <Trash className="h-4 w-4" />
         </button>
       )}
-      <div className="relative w-full min-w-0 overflow-hidden rounded-xl">
+      <div className="relative h-full w-full min-w-0 overflow-hidden">
         {!thumbnailReady && (
-          <div className="absolute inset-0">
-            <Skeleton className="aspect-[4/3] w-full" />
+          <div className="absolute inset-0 h-full w-full">
+            <Skeleton className="h-full w-full rounded-none" />
           </div>
         )}
         <FullScreenImage
           src={thumbnailSrc}
           fullscreenSrc={src}
           alt={alt}
+          fullscreenClassName="h-[80vh] w-auto max-w-[calc(100vw-2rem)] object-contain p-4"
           className={cn(
-            'h-auto w-full rounded-xl object-left-top',
+            'h-full w-full object-contain',
+            thumbnailReady ? 'bg-transparent' : 'bg-[#101926]',
+            mediaClassName,
             !thumbnailReady && 'opacity-0'
           )}
           crossOrigin="anonymous"

@@ -9,10 +9,35 @@ const STATUS_ORDER: Record<string, number> = {
   offline: 2
 };
 
+const hasSharedRole = (firstRoleIds: number[] = [], secondRoleIds: number[] = []) => {
+  if (firstRoleIds.length === 0 || secondRoleIds.length === 0) {
+    return false;
+  }
+
+  const firstSet = new Set(firstRoleIds);
+  return secondRoleIds.some((roleId) => firstSet.has(roleId));
+};
+
 export const ownUserIdSelector = (state: IRootState) => state.server.ownUserId;
+const rawUsersSelector = (state: IRootState) => state.server.users;
+
+export const visibleUsersSelector = createSelector(
+  [rawUsersSelector, ownUserIdSelector],
+  (users, ownUserId) => {
+    const ownUser = users.find((user) => user.id === ownUserId);
+
+    if (!ownUser) {
+      return users;
+    }
+
+    return users.filter(
+      (user) => user.id === ownUserId || hasSharedRole(ownUser.roleIds, user.roleIds)
+    );
+  }
+);
 
 export const usersSelector = createSelector(
-  (state: IRootState) => state.server.users,
+  visibleUsersSelector,
   (users) => {
     return [...users].sort((a, b) => {
       const aBanned = Boolean(a.banned);
@@ -50,12 +75,12 @@ export const mentionableUsersSelector = createSelector([usersSelector], (users) 
 );
 
 export const ownUserSelector = createSelector(
-  [ownUserIdSelector, usersSelector],
+  [ownUserIdSelector, rawUsersSelector],
   (ownUserId, users) => users.find((user) => user.id === ownUserId)
 );
 
 export const userByIdSelector = createCachedSelector(
-  [usersSelector, (_: IRootState, userId: number) => userId],
+  [rawUsersSelector, (_: IRootState, userId: number) => userId],
   (users, userId) => users.find((user) => user.id === userId)
 )((_, userId: number) => userId);
 
@@ -65,7 +90,7 @@ export const isOwnUserSelector = createCachedSelector(
 )((_, userId: number) => userId);
 
 export const ownPublicUserSelector = createSelector(
-  [ownUserIdSelector, usersSelector],
+  [ownUserIdSelector, rawUsersSelector],
   (ownUserId, users) => users.find((user) => user.id === ownUserId)
 );
 

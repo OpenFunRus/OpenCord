@@ -1,5 +1,4 @@
 import { TiptapInput } from '@/components/tiptap-input';
-import { useCustomEmojis } from '@/features/server/emojis/hooks';
 import { usePublicServerSettings } from '@/features/server/hooks';
 import { canonicalizeMessageEmojiHtml } from '@/helpers/message-emojis';
 import { getTRPCClient } from '@/lib/trpc';
@@ -26,7 +25,6 @@ const MessageEditInline = memo(
   ({ message, onBlur }: TMessageEditInlineProps) => {
     const { t } = useTranslation();
     const [value, setValue] = useState<string>(message.content ?? '');
-    const customEmojis = useCustomEmojis();
     const publicSettings = usePublicServerSettings();
 
     const onSubmit = useCallback(
@@ -39,9 +37,7 @@ const MessageEditInline = memo(
           return;
         }
 
-        const preparedContent = prepareMessageHtml(
-          canonicalizeMessageEmojiHtml(newValue, customEmojis)
-        );
+        const preparedContent = prepareMessageHtml(canonicalizeMessageEmojiHtml(newValue));
         const maxTextLength =
           publicSettings?.messageMaxTextLength ??
           MESSAGE_DEFAULT_TEXT_LENGTH_LIMIT;
@@ -80,7 +76,6 @@ const MessageEditInline = memo(
         }
       },
       [
-        customEmojis,
         message.id,
         onBlur,
         publicSettings?.messageMaxLines,

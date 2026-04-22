@@ -16,13 +16,11 @@ import {
   Puzzle,
   Settings2,
   Shield,
-  Smile,
   UsersRound
 } from 'lucide-react';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TServerScreenBaseProps } from '../screens';
-import { Emojis } from './emojis';
 import { General } from './general';
 import { Invites } from './invites';
 import { Plugins } from './plugins';
@@ -48,12 +46,6 @@ const ServerSettings = memo(({ close, isOpen }: TServerSettingsProps) => {
         label: t('rolesTab'),
         icon: Shield,
         enabled: can(Permission.MANAGE_ROLES)
-      },
-      {
-        value: 'emojis',
-        label: t('emojisTab'),
-        icon: Smile,
-        enabled: can(Permission.MANAGE_EMOJIS)
       },
       {
         value: 'storage',
@@ -86,7 +78,6 @@ const ServerSettings = memo(({ close, isOpen }: TServerSettingsProps) => {
   const defaultTab = useMemo(() => {
     if (can(Permission.MANAGE_SETTINGS)) return 'general';
     if (can(Permission.MANAGE_ROLES)) return 'roles';
-    if (can(Permission.MANAGE_EMOJIS)) return 'emojis';
     if (can(Permission.MANAGE_STORAGE)) return 'storage';
     if (can(Permission.MANAGE_USERS)) return 'users';
     if (can(Permission.MANAGE_INVITES)) return 'invites';
@@ -138,9 +129,6 @@ const ServerSettings = memo(({ close, isOpen }: TServerSettingsProps) => {
                 </TabsContent>
                 <TabsContent value="roles" className="space-y-6">
                   {can(Permission.MANAGE_ROLES) && <Roles />}
-                </TabsContent>
-                <TabsContent value="emojis" className="space-y-6">
-                  {can(Permission.MANAGE_EMOJIS) && <Emojis />}
                 </TabsContent>
                 <TabsContent value="storage" className="space-y-6">
                   {can(Permission.MANAGE_STORAGE) && <Storage />}

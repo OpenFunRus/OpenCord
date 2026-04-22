@@ -64,13 +64,13 @@ function ContextMenuSubTrigger({
       data-slot="context-menu-sub-trigger"
       data-inset={inset}
       className={cn(
-        "flex cursor-default items-center rounded-sm px-2 py-1.5 text-sm text-[#d7e2f0] outline-hidden select-none data-[inset]:pl-8 data-[state=open]:bg-[#1b2940] data-[state=open]:text-white [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-[#8fa2bb]",
+        "flex w-full cursor-default items-center rounded-sm px-2 py-1.5 text-sm text-[#d7e2f0] outline-hidden select-none data-[inset]:pl-8 data-[state=open]:bg-[#1b2940] data-[state=open]:text-white [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-[#8fa2bb]",
         className
       )}
       {...props}
     >
       {children}
-      <ChevronRightIcon className="ml-auto" />
+      <ChevronRightIcon className="ml-auto pl-4 size-4" />
     </ContextMenuPrimitive.SubTrigger>
   );
 }

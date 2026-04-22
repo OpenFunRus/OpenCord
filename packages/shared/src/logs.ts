@@ -30,10 +30,6 @@ export enum ActivityLogType {
   CREATED_INVITE = 'CREATED_INVITE',
   DELETED_INVITE = 'DELETED_INVITE',
   USED_INVITE = 'USED_INVITE',
-  // -------------------- EMOJIS --------------------
-  CREATED_EMOJI = 'CREATED_EMOJI',
-  DELETED_EMOJI = 'DELETED_EMOJI',
-  UPDATED_EMOJI = 'UPDATED_EMOJI',
   // -------------------- CATEGORIES --------------------
   CREATED_CATEGORY = 'CREATED_CATEGORY',
   DELETED_CATEGORY = 'DELETED_CATEGORY',
@@ -139,17 +135,6 @@ export type TActivityLogDetailsMap = {
   };
   [ActivityLogType.USED_INVITE]: {
     code: string;
-  };
-  // -------------------- EMOJIS --------------------
-  [ActivityLogType.CREATED_EMOJI]: {
-    name: string;
-  };
-  [ActivityLogType.DELETED_EMOJI]: {
-    name: string;
-  };
-  [ActivityLogType.UPDATED_EMOJI]: {
-    fromName: string;
-    toName: string;
   };
   // -------------------- CATEGORIES --------------------
   [ActivityLogType.CREATED_CATEGORY]: {

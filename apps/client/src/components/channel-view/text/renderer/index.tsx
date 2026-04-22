@@ -1,6 +1,5 @@
 import { RelativeTime } from '@/components/relative-time';
 import { requestConfirmation } from '@/features/dialogs/actions';
-import { useCustomEmojis } from '@/features/server/emojis/hooks';
 import { useCan } from '@/features/server/hooks';
 import { useOwnUserId, useUserById } from '@/features/server/users/hooks';
 import { getFileUrl } from '@/helpers/get-file-url';
@@ -30,13 +29,28 @@ type TMessageRendererProps = {
   disableReactions?: boolean;
 };
 
+const isGifUrl = (url: string) => {
+  try {
+    const parsed = new URL(url, window.location.href);
+    const pathname = parsed.pathname.toLowerCase();
+    const hostname = parsed.hostname.toLowerCase();
+
+    return (
+      pathname.endsWith('.gif') ||
+      parsed.searchParams.get('format') === 'gif' ||
+      hostname.includes('tenor.com')
+    );
+  } catch {
+    return url.toLowerCase().includes('.gif');
+  }
+};
+
 const MessageRenderer = memo(
   ({ message, disableFiles, disableReactions }: TMessageRendererProps) => {
     const { t } = useTranslation();
     const ownUserId = useOwnUserId();
     const can = useCan();
     const editedByUser = useUserById(message.editedBy ?? -1);
-    const customEmojis = useCustomEmojis();
     const isOwnMessage = useMemo(
       () => message.userId === ownUserId,
       [message.userId, ownUserId]
@@ -46,10 +60,7 @@ const MessageRenderer = memo(
       [can, isOwnMessage]
     );
 
-    const emojiOnly = useMemo(
-      () => isEmojiOnlyHtml(message.content, customEmojis),
-      [customEmojis, message.content]
-    );
+    const emojiOnly = useMemo(() => isEmojiOnlyHtml(message.content), [message.content]);
     const hasMessageText = useMemo(() => {
       const plainText = (message.content ?? '')
         .replace(/<[^>]+>/g, ' ')
@@ -65,11 +76,7 @@ const MessageRenderer = memo(
       const messageHtml = parse(message.content ?? '', {
         replace: (domNode, index) => {
           if (domNode instanceof Text) {
-            return renderMessageTextWithEmojis(
-              domNode.data,
-              customEmojis,
-              `${message.id}-${index}`
-            );
+            return renderMessageTextWithEmojis(domNode.data, `${message.id}-${index}`);
           }
 
           return serializer(domNode, (found) => foundMedia.push(found), message.id);
@@ -77,7 +84,7 @@ const MessageRenderer = memo(
       });
 
       return { messageHtml, foundMedia };
-    }, [customEmojis, message.content, message.id]);
+    }, [message.content, message.id]);
 
     const onCopy = useCallback(
       (event: ClipboardEvent<HTMLDivElement>) => {
@@ -96,15 +103,12 @@ const MessageRenderer = memo(
         const container = document.createElement('div');
         container.appendChild(range.cloneContents());
 
-        const plainText = getClipboardTextFromRenderedEmojiHtml(
-          container.innerHTML,
-          customEmojis
-        );
+        const plainText = getClipboardTextFromRenderedEmojiHtml(container.innerHTML);
 
         event.clipboardData.setData('text/plain', plainText);
         event.preventDefault();
       },
-      [customEmojis]
+      []
     );
 
     const onRemoveFileClick = useCallback(
@@ -147,6 +151,28 @@ const MessageRenderer = memo(
 
       return [...foundMedia, ...mediaFromFiles];
     }, [foundMedia, message.files]);
+
+    const { gifMedia, imageMedia } = useMemo(() => {
+      const gifs: TFoundMedia[] = [];
+      const images: TFoundMedia[] = [];
+
+      allMedia.forEach((media) => {
+        if (media.type !== 'image') {
+          return;
+        }
+
+        if (isGifUrl(media.url)) {
+          gifs.push(media);
+        } else {
+          images.push(media);
+        }
+      });
+
+      return {
+        gifMedia: gifs,
+        imageMedia: images
+      };
+    }, [allMedia]);
 
     const nonImageFiles = useMemo(
       () =>
@@ -193,26 +219,38 @@ const MessageRenderer = memo(
           </div>
         )}
 
-        {allMedia.length > 0 && (
-          <div className="grid w-full grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
-            {allMedia.map((media, index) => {
-              if (media.type === 'image') {
-                return (
-                  <div key={`media-image-${index}`} className="min-w-0">
-                    <ImageOverride
-                      src={media.url}
-                      onRemove={
-                        canRemoveFiles && media.fileId
-                          ? () => onRemoveFileClick(media.fileId!)
-                          : undefined
-                      }
-                    />
-                  </div>
-                );
-              }
+        {imageMedia.length > 0 && (
+          <div className="grid w-full grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            {imageMedia.map((media, index) => (
+              <div key={`media-image-${index}`} className="min-w-0">
+                <ImageOverride
+                  src={media.url}
+                  onRemove={
+                    canRemoveFiles && media.fileId
+                      ? () => onRemoveFileClick(media.fileId!)
+                      : undefined
+                  }
+                />
+              </div>
+            ))}
+          </div>
+        )}
 
-              return null;
-            })}
+        {gifMedia.length > 0 && (
+          <div className="flex w-full flex-col gap-2">
+            {gifMedia.map((media, index) => (
+              <div key={`media-gif-${index}`} className="mr-auto w-full sm:max-w-[420px]">
+                <ImageOverride
+                  src={media.url}
+                  mediaClassName="object-left"
+                  onRemove={
+                    canRemoveFiles && media.fileId
+                      ? () => onRemoveFileClick(media.fileId!)
+                      : undefined
+                  }
+                />
+              </div>
+            ))}
           </div>
         )}
 

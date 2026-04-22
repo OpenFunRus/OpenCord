@@ -13,6 +13,7 @@ import { PluginLogsDialog } from './plugin-logs';
 import { PluginSettingsDialog } from './plugin-settings';
 import { SearchDialog } from './search';
 import { ServerPasswordDialog } from './server-password';
+import { SpaceEditorDialog } from './space-editor';
 import { TextInputDialog } from './text-input';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -24,6 +25,7 @@ const DialogsMap: any = {
   [Dialog.ASSIGN_ROLE]: AssignRoleDialog,
   [Dialog.CREATE_INVITE]: CreateInviteDialog,
   [Dialog.CREATE_CATEGORY]: CreateCategoryDialog,
+  [Dialog.SPACE_EDITOR]: SpaceEditorDialog,
   [Dialog.PLUGIN_LOGS]: PluginLogsDialog,
   [Dialog.PLUGIN_COMMANDS]: PluginCommandsDialog,
   [Dialog.PLUGIN_SETTINGS]: PluginSettingsDialog,

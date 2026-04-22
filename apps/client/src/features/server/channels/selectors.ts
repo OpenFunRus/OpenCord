@@ -5,7 +5,16 @@ import { createCachedSelector } from 're-reselect';
 
 const DEFAULT_OBJECT = {};
 
-export const channelsSelector = (state: IRootState) => state.server.channels;
+export const channelsSelector = createSelector(
+  [
+    (state: IRootState) => state.server.channels,
+    (state: IRootState) => state.server.selectedSpaceId
+  ],
+  (channels, selectedSpaceId) =>
+    channels.filter(
+      (channel) => channel.isDm || channel.spaceId === selectedSpaceId
+    )
+);
 
 export const selectedChannelIdSelector = (state: IRootState) =>
   state.server.selectedChannelId;

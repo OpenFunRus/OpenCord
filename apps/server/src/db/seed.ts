@@ -1,6 +1,4 @@
 import {
-  ChannelType,
-  DEFAULT_ROLE_PERMISSIONS,
   MESSAGE_DEFAULT_LINES_LIMIT,
   MESSAGE_DEFAULT_TEXT_LENGTH_LIMIT,
   Permission,
@@ -11,25 +9,13 @@ import {
   STORAGE_MIN_QUOTA_PER_USER,
   STORAGE_OVERFLOW_ACTION,
   STORAGE_QUOTA,
-  type TICategory,
-  type TIChannel,
-  type TIMessage,
   type TIRole,
-  type TISettings,
-  type TIUser
+  type TISettings
 } from '@opencord/shared';
 import { randomUUIDv7 } from 'bun';
 import { logger } from '../logger';
 import { db } from './index';
-import {
-  categories,
-  channels,
-  messages,
-  rolePermissions,
-  roles,
-  settings,
-  users
-} from './schema';
+import { rolePermissions, roles, settings } from './schema';
 
 const seedDatabase = async () => {
   const needsSeeding = (await db.select().from(settings)).length === 0;
@@ -65,101 +51,19 @@ const seedDatabase = async () => {
 
   await db.insert(settings).values(initialSettings);
 
-  const initialCategories: TICategory[] = [
-    {
-      name: 'Text Channels',
-      position: 1,
-      createdAt: firstStart
-    },
-    {
-      name: 'Voice Channels',
-      position: 2,
-      createdAt: firstStart
-    }
-  ];
-
-  const initialChannels: TIChannel[] = [
-    {
-      type: ChannelType.TEXT,
-      name: 'OpenCord',
-      position: 0,
-      fileAccessToken: randomUUIDv7(),
-      fileAccessTokenUpdatedAt: Date.now(),
-      categoryId: 1,
-      topic: 'Главный канал OpenCord',
-      createdAt: firstStart
-    },
-    {
-      type: ChannelType.TEXT,
-      name: 'Главный',
-      position: 1,
-      fileAccessToken: randomUUIDv7(),
-      fileAccessTokenUpdatedAt: Date.now(),
-      categoryId: 1,
-      topic: 'Основное общение сервера',
-      createdAt: firstStart
-    },
-    {
-      type: ChannelType.VOICE,
-      name: 'OpenCord',
-      position: 0,
-      fileAccessToken: randomUUIDv7(),
-      fileAccessTokenUpdatedAt: Date.now(),
-      categoryId: 2,
-      topic: 'Основной голосовой канал OpenCord',
-      createdAt: firstStart
-    },
-    {
-      type: ChannelType.VOICE,
-      name: 'Общий',
-      position: 1,
-      fileAccessToken: randomUUIDv7(),
-      fileAccessTokenUpdatedAt: Date.now(),
-      categoryId: 2,
-      topic: 'Общий голосовой канал сервера',
-      createdAt: firstStart
-    }
-  ];
-
   const initialRoles: TIRole[] = [
     {
       name: 'Создатель',
-      color: '#FFFFFF',
+      color: '#ff0000',
       isDefault: false,
       isPersistent: true,
       createdAt: firstStart
     },
     {
-      name: 'Member',
-      color: '#FFFFFF',
+      name: 'Гость',
+      color: '#ffff00',
       isPersistent: true,
       isDefault: true,
-      createdAt: firstStart
-    }
-  ];
-
-  const systemUserPassword = await Bun.password.hash(randomUUIDv7());
-  const initialUsers: TIUser[] = [
-    {
-      identity: `opencord-system-${randomUUIDv7()}`,
-      name: 'OpenCord',
-      avatarId: null,
-      password: systemUserPassword,
-      bannerId: null,
-      bio: 'Системный пользователь OpenCord. Здесь публикуются стартовые сообщения сервера.',
-      bannerColor:
-        'linear-gradient(135deg, rgba(39,110,241,1) 0%, rgba(14,165,233,1) 100%)',
-      createdAt: firstStart
-    }
-  ];
-
-  const initialMessages: TIMessage[] = [
-    {
-      channelId: 1,
-      content:
-        '<p><strong>Добро пожаловать в OpenCord!</strong></p><p>Это основной канал сервера. Сюда можно отправлять сообщения, писать о найденных багах, делиться идеями по улучшению и сообщать обо всём, что поможет сделать OpenCord лучше.</p>',
-      metadata: null,
-      userId: 1,
       createdAt: firstStart
     }
   ];
@@ -168,14 +72,16 @@ const seedDatabase = async () => {
     [roleId: number]: Permission[];
   } = {
     1: Object.values(Permission), // Owner (all permissions)
-    2: DEFAULT_ROLE_PERMISSIONS // Member (default permissions)
+    2: [
+      Permission.SEND_MESSAGES,
+      Permission.JOIN_VOICE_CHANNELS,
+      Permission.SHARE_SCREEN,
+      Permission.ENABLE_WEBCAM,
+      Permission.UPLOAD_FILES
+    ]
   };
 
-  await db.insert(categories).values(initialCategories);
-  await db.insert(channels).values(initialChannels);
   await db.insert(roles).values(initialRoles);
-  await db.insert(users).values(initialUsers);
-  await db.insert(messages).values(initialMessages);
 
   for (const [roleId, permissions] of Object.entries(initialRolePermissions)) {
     for (const permission of permissions) {

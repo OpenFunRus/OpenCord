@@ -1,6 +1,5 @@
 import { EmojiPicker } from '@/components/emoji-picker';
 import { ALL_EMOJIS } from '@/components/emoji-picker/emoji-data';
-import { useCustomEmojis } from '@/features/server/emojis/hooks';
 import { useMentionableUsers } from '@/features/server/users/hooks';
 import type { TCommandInfo } from '@opencord/shared';
 import { Button } from '@opencord/ui';
@@ -65,7 +64,6 @@ const TiptapInput = memo(
     const [isFocused, setIsFocused] = useState(false);
     const editorWrapperRef = useRef<HTMLDivElement>(null);
 
-    const customEmojis = useCustomEmojis();
     const users = useMentionableUsers();
 
     const extensions = useMemo(() => {
@@ -90,7 +88,7 @@ const TiptapInput = memo(
           }
         }),
         Emoji.configure({
-          emojis: [...ALL_EMOJIS, ...customEmojis] as EmojiItem[],
+          emojis: ALL_EMOJIS as EmojiItem[],
           enableEmoticons: true,
           suggestion: EmojiSuggestion,
           HTMLAttributes: {
@@ -115,7 +113,7 @@ const TiptapInput = memo(
       }
 
       return exts;
-    }, [customEmojis, commands, users]);
+    }, [commands, users]);
 
     const editor = useEditor({
       extensions,
@@ -206,30 +204,6 @@ const TiptapInput = memo(
       editor.chain().focus().insertContent(`${gifUrl} `).run();
     };
 
-    // keep emoji storage in sync with custom emojis from the store
-    // this ensures newly added emojis appear in autocomplete without refreshing the app
-    useEffect(() => {
-      if (editor) {
-        const allEmojis = [...ALL_EMOJIS, ...customEmojis] as EmojiItem[];
-
-        if (editor.storage.emoji) {
-          editor.storage.emoji.emojis = allEmojis;
-        }
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const applyEmojiOptions = (extension: any) => {
-          const typed = extension;
-
-          if (typed.name === 'emoji' && typed.options) {
-            typed.options.emojis = allEmojis;
-          }
-        };
-
-        editor.extensionManager.extensions.forEach(applyEmojiOptions);
-        editor.options.extensions?.forEach(applyEmojiOptions);
-      }
-    }, [editor, customEmojis]);
-
     // keep commands storage in sync with plugin commands from the store
     useEffect(() => {
       if (editor && commands) {
@@ -285,7 +259,7 @@ const TiptapInput = memo(
     const showExpandButton = hasOverflow || isExpanded;
 
     return (
-      <div className="flex flex-1 items-center gap-2 min-w-0">
+      <div className="flex min-w-0 flex-1 items-center gap-1.5">
         <div
           ref={editorWrapperRef}
           className="relative flex min-w-0 flex-1"
@@ -296,7 +270,7 @@ const TiptapInput = memo(
         >
           <EditorContent
             editor={editor}
-            className={`tiptap relative min-h-10 w-full overflow-auto rounded-xl border border-[#314055] bg-[#101926] p-2 text-[#d7e2f0] transition-[border-color,background-color,box-shadow] duration-200 focus-within:border-[#3d516b] focus-within:bg-[#162132] focus-within:shadow-[0_0_0_3px_rgba(32,107,196,0.12)] [&_.ProseMirror:focus]:outline-none ${
+            className={`tiptap relative min-h-9 w-full overflow-auto rounded-lg border border-[#314055] bg-[#101926] px-2 py-1.5 text-[#d7e2f0] transition-[border-color,background-color,box-shadow] duration-200 focus-within:border-[#4677b8] focus-within:bg-[#162132] focus-within:shadow-[0_0_0_3px_rgba(70,119,184,0.16)] [&_.ProseMirror:focus]:outline-none ${
               isExpanded ? 'max-h-80' : 'max-h-20'
             } ${disabled ? 'cursor-not-allowed opacity-50' : ''}`}
           />
@@ -326,7 +300,7 @@ const TiptapInput = memo(
             variant="ghost"
             size="icon"
             disabled={disabled}
-            className="h-9 w-9 rounded-lg border border-[#314055] !bg-[#172231] text-[#8fa2bb] hover:border-[#3d516b] hover:!bg-[#223146] hover:text-white"
+            className="h-8 w-8 rounded-lg border border-[#314055] !bg-[#172231] text-[#8fa2bb] hover:border-[#3d516b] hover:!bg-[#223146] hover:text-white"
           >
             <Smile className="h-5 w-5" />
           </Button>

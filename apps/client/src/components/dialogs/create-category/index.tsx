@@ -15,10 +15,12 @@ import { memo, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TDialogBaseProps } from '../types';
 
-type TCreateCategoryDialogProps = TDialogBaseProps;
+type TCreateCategoryDialogProps = TDialogBaseProps & {
+  spaceId: number;
+};
 
 const CreateCategoryDialog = memo(
-  ({ isOpen, close }: TCreateCategoryDialogProps) => {
+  ({ isOpen, close, spaceId }: TCreateCategoryDialogProps) => {
     const { t } = useTranslation('dialogs');
     const { values, r, setTrpcErrors } = useForm({
       name: 'New Category'
@@ -32,7 +34,8 @@ const CreateCategoryDialog = memo(
 
       try {
         await trpc.categories.add.mutate({
-          name: values.name
+          name: values.name,
+          spaceId
         });
 
         close();
@@ -41,7 +44,7 @@ const CreateCategoryDialog = memo(
       } finally {
         setLoading(false);
       }
-    }, [values.name, close, setTrpcErrors]);
+    }, [values.name, close, setTrpcErrors, spaceId]);
 
     return (
       <Dialog open={isOpen}>

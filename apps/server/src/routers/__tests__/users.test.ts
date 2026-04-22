@@ -10,7 +10,6 @@ import { initTest, uploadFile } from '../../__tests__/helpers';
 import { tdb } from '../../__tests__/setup';
 import {
   channels,
-  emojis,
   files,
   logins,
   messageReactions,
@@ -685,35 +684,6 @@ describe('users router', () => {
     expect(messageBeforeDelete).toBeDefined();
     expect(messageBeforeDelete!.userId).toBe(targetUserId);
 
-    const emojiFileName = `emoji-file-${now}.png`;
-    const emojiName = `emoji_${now}`;
-
-    const insertedEmojiFile = await tdb
-      .insert(files)
-      .values({
-        name: emojiFileName,
-        originalName: emojiFileName,
-        md5: `md5-${now}`,
-        userId: targetUserId,
-        size: 123,
-        mimeType: 'image/png',
-        extension: 'png',
-        createdAt: now,
-        updatedAt: now
-      })
-      .returning({ id: files.id })
-      .get();
-
-    expect(insertedEmojiFile).toBeDefined();
-
-    await tdb.insert(emojis).values({
-      name: emojiName,
-      fileId: insertedEmojiFile!.id,
-      userId: targetUserId,
-      createdAt: now,
-      updatedAt: now
-    });
-
     await tdb.insert(messageReactions).values({
       messageId: messageBeforeDelete!.id,
       userId: targetUserId,
@@ -751,24 +721,6 @@ describe('users router', () => {
 
     expect(messageAfterDelete).toBeDefined();
     expect(messageAfterDelete!.userId).toBe(deletedPlaceholderUser!.id);
-
-    const emojiAfterDelete = await tdb
-      .select({ userId: emojis.userId })
-      .from(emojis)
-      .where(eq(emojis.name, emojiName))
-      .get();
-
-    expect(emojiAfterDelete).toBeDefined();
-    expect(emojiAfterDelete!.userId).toBe(deletedPlaceholderUser!.id);
-
-    const emojiFileAfterDelete = await tdb
-      .select({ userId: files.userId })
-      .from(files)
-      .where(eq(files.id, insertedEmojiFile!.id))
-      .get();
-
-    expect(emojiFileAfterDelete).toBeDefined();
-    expect(emojiFileAfterDelete!.userId).toBe(deletedPlaceholderUser!.id);
 
     const reactionAfterDelete = await tdb
       .select({ userId: messageReactions.userId })
@@ -814,32 +766,7 @@ describe('users router', () => {
       .returning({ id: files.id })
       .get();
 
-    const insertedEmojiFile = await tdb
-      .insert(files)
-      .values({
-        name: `wipe-emoji-file-${now}.png`,
-        originalName: `wipe-emoji-file-${now}.png`,
-        md5: `wipe-md5-emoji-${now}`,
-        userId: targetUserId,
-        size: 120,
-        mimeType: 'image/png',
-        extension: 'png',
-        createdAt: now,
-        updatedAt: now
-      })
-      .returning({ id: files.id })
-      .get();
-
     expect(insertedMessageFile).toBeDefined();
-    expect(insertedEmojiFile).toBeDefined();
-
-    await tdb.insert(emojis).values({
-      name: `wipe_emoji_${now}`,
-      fileId: insertedEmojiFile!.id,
-      userId: targetUserId,
-      createdAt: now,
-      updatedAt: now
-    });
 
     await tdb.insert(messages).values({
       content: `wipe-message-${now}`,
@@ -903,14 +830,6 @@ describe('users router', () => {
 
     expect(wipedMessage).toBeUndefined();
 
-    const wipedEmoji = await tdb
-      .select({ id: emojis.id })
-      .from(emojis)
-      .where(eq(emojis.name, `wipe_emoji_${now}`))
-      .get();
-
-    expect(wipedEmoji).toBeUndefined();
-
     const wipedReactionFromOtherMessage = await tdb
       .select({ userId: messageReactions.userId })
       .from(messageReactions)
@@ -932,15 +851,6 @@ describe('users router', () => {
 
     expect(wipedMessageFile).toBeDefined();
     expect(wipedMessageFile!.userId).toBe(targetUserId);
-
-    const wipedEmojiFile = await tdb
-      .select({ id: files.id, userId: files.userId })
-      .from(files)
-      .where(eq(files.id, insertedEmojiFile!.id))
-      .get();
-
-    expect(wipedEmojiFile).toBeDefined();
-    expect(wipedEmojiFile!.userId).toBe(targetUserId);
   });
 
   test('should unban user', async () => {

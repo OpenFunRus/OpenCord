@@ -19,7 +19,6 @@ import {
   type TChannelUserPermission,
   type TDiskMetrics,
   type TFile,
-  type TJoinedEmoji,
   type TJoinedInvite,
   type TJoinedRole,
   type TJoinedUser,
@@ -260,44 +259,6 @@ export const useAdminCategoryGeneral = (categoryId: number) => {
     errors,
     onChange,
     submit
-  };
-};
-
-export const useAdminEmojis = () => {
-  const [loading, setLoading] = useState(true);
-  const [errors, setErrors] = useState<TTrpcErrors>({});
-  const [emojis, setEmojis] = useState<TJoinedEmoji[]>([]);
-
-  const fetchEmojis = useCallback(async () => {
-    setLoading(true);
-
-    const trpc = getTRPCClient();
-    const emojis = await trpc.emojis.getAll.query();
-
-    setEmojis(emojis);
-    setLoading(false);
-  }, []);
-
-  const onChange = useCallback(
-    (field: keyof TJoinedEmoji, value: string | null) => {
-      if (!emojis) return;
-
-      setEmojis((c) => (c ? { ...c, [field]: value } : c));
-      setErrors((e) => ({ ...e, [field]: undefined }));
-    },
-    [emojis]
-  );
-
-  useEffect(() => {
-    fetchEmojis();
-  }, [fetchEmojis]);
-
-  return {
-    emojis,
-    refetch: fetchEmojis,
-    loading,
-    errors,
-    onChange
   };
 };
 

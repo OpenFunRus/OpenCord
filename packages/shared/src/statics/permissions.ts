@@ -10,8 +10,8 @@ export enum Permission {
   MANAGE_CHANNELS = 'MANAGE_CHANNELS',
   MANAGE_CHANNEL_PERMISSIONS = 'MANAGE_CHANNEL_PERMISSIONS',
   MANAGE_CATEGORIES = 'MANAGE_CATEGORIES',
+  MANAGE_SPACES = 'MANAGE_SPACES',
   MANAGE_ROLES = 'MANAGE_ROLES',
-  MANAGE_EMOJIS = 'MANAGE_EMOJIS',
   MANAGE_SETTINGS = 'MANAGE_SETTINGS',
   MANAGE_USERS = 'MANAGE_USERS',
   MANAGE_MESSAGES = 'MANAGE_MESSAGES',
@@ -34,8 +34,8 @@ export const permissionLabels: Record<Permission, string> = {
   [Permission.MANAGE_CHANNELS]: 'Manage channels',
   [Permission.MANAGE_CHANNEL_PERMISSIONS]: 'Manage channel permissions',
   [Permission.MANAGE_CATEGORIES]: 'Manage categories',
+  [Permission.MANAGE_SPACES]: 'Manage spaces',
   [Permission.MANAGE_ROLES]: 'Manage roles',
-  [Permission.MANAGE_EMOJIS]: 'Manage emojis',
   [Permission.MANAGE_SETTINGS]: 'Manage server settings',
   [Permission.MANAGE_USERS]: 'Manage users',
   [Permission.MANAGE_MESSAGES]: 'Manage messages',
@@ -63,10 +63,10 @@ export const permissionDescriptions: Record<Permission, string> = {
     'Grants the ability to manage channel-specific permissions for roles and users.',
   [Permission.MANAGE_CATEGORIES]:
     'Grants the ability to create, update, and delete categories.',
+  [Permission.MANAGE_SPACES]:
+    'Grants the ability to create, update, and delete spaces and manage their visibility.',
   [Permission.MANAGE_ROLES]:
     'Grants the ability to create, update, and delete roles.',
-  [Permission.MANAGE_EMOJIS]:
-    'Grants the ability to create, update, and delete emojis.',
   [Permission.MANAGE_SETTINGS]: 'Grants the ability to manage server settings.',
   [Permission.MANAGE_USERS]: 'Grants the ability to manage users.',
   [Permission.MANAGE_MESSAGES]:

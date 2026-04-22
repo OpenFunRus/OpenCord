@@ -31,7 +31,6 @@ import {
   useState,
   type Ref
 } from 'react';
-import { useTranslation } from 'react-i18next';
 import { FileCard } from '../channel-view/text/file-card';
 import { UsersTypingIndicator } from '../channel-view/text/users-typing';
 
@@ -61,7 +60,6 @@ const MessageCompose = memo(
     showPluginSlot = false,
     ref
   }: TMessageComposeProps) => {
-    const { t } = useTranslation();
     const sendingRef = useRef(false);
     const containerRef = useRef<HTMLDivElement>(null);
     const [sending, setSending] = useState(false);
@@ -105,7 +103,6 @@ const MessageCompose = memo(
     const displayedLineCount = Math.max(1, lineCount);
     const charsExceeded = textLength > maxTextLength;
     const linesExceeded = displayedLineCount > maxLines;
-
     const {
       files,
       removeFile,
@@ -181,7 +178,7 @@ const MessageCompose = memo(
     return (
       <div
         ref={containerRef}
-        className="flex shrink-0 flex-col gap-2 border-t border-[#2b3544] bg-[#172231]/85 px-3 py-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] backdrop-blur-sm lg:px-4"
+        className="flex min-h-[95px] shrink-0 flex-col justify-center gap-2 border-t border-[#2b3544] bg-[#172231]/85 px-3 py-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] backdrop-blur-sm lg:px-4"
       >
         {uploading && (
           <div className="flex items-center gap-2">
@@ -204,8 +201,22 @@ const MessageCompose = memo(
             ))}
           </div>
         )}
-        <UsersTypingIndicator typingUsers={typingUsers} />
-        <div className="flex items-center gap-2 rounded-xl border border-[#314055] bg-[#101926] p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] transition-[border-color,box-shadow] duration-200 hover:border-[#3d516b] focus-within:border-[#3d516b] focus-within:shadow-[0_0_0_3px_rgba(32,107,196,0.12)]">
+        <div className="flex min-h-4 items-center justify-between gap-3 px-1">
+          <div className="min-w-0 flex-1">
+            <UsersTypingIndicator typingUsers={typingUsers} />
+          </div>
+          <div className="shrink-0 text-right text-[10px] font-medium tracking-[0.01em] text-[#8fa2bb]">
+            <span className={charsExceeded ? 'text-[#f97066]' : undefined}>
+              {textLength}
+            </span>{' '}
+            / {maxTextLength} ·{' '}
+            <span className={linesExceeded ? 'text-[#f97066]' : undefined}>
+              {displayedLineCount}
+            </span>{' '}
+            / {maxLines}
+          </div>
+        </div>
+        <div className="flex items-center gap-1.5 rounded-xl border border-[#314055] bg-[#101926] p-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] transition-[border-color,box-shadow] duration-200 hover:border-[#3d516b] focus-within:border-[#4677b8] focus-within:shadow-[0_0_0_3px_rgba(70,119,184,0.16)]">
           <TiptapInput
             value={message}
             onChange={onMessageChange}
@@ -223,7 +234,7 @@ const MessageCompose = memo(
           <Button
             size="icon"
             variant="ghost"
-            className="h-9 w-9 rounded-lg border border-[#314055] !bg-[#172231] text-[#8fa2bb] hover:border-[#3d516b] hover:!bg-[#223146] hover:text-white"
+            className="h-8 w-8 rounded-lg border border-[#314055] !bg-[#172231] text-[#8fa2bb] hover:border-[#3d516b] hover:!bg-[#223146] hover:text-white"
             disabled={uploading || !canUploadFiles}
             onClick={openFileDialog}
           >
@@ -232,26 +243,12 @@ const MessageCompose = memo(
           <Button
             size="icon"
             variant="ghost"
-            className="h-9 w-9 rounded-lg border border-[#314055] !bg-[#172231] text-[#8fa2bb] hover:border-[#3d516b] hover:!bg-[#223146] hover:text-white"
+            className="h-8 w-8 rounded-lg border border-[#314055] !bg-[#172231] text-[#8fa2bb] hover:border-[#3d516b] hover:!bg-[#223146] hover:text-white"
             onClick={handleSend}
             disabled={uploading || sending || !canSendMessages}
           >
             <Send className="h-4 w-4" />
           </Button>
-        </div>
-        <div className="flex items-center justify-end gap-3 px-1 text-[11px]">
-          <span className={charsExceeded ? 'text-[#f97066]' : 'text-[#8fa2bb]'}>
-            {t('messageCharsCounter', {
-              current: textLength,
-              max: maxTextLength
-            })}
-          </span>
-          <span className={linesExceeded ? 'text-[#f97066]' : 'text-[#8fa2bb]'}>
-            {t('messageLinesCounter', {
-              current: displayedLineCount,
-              max: maxLines
-            })}
-          </span>
         </div>
       </div>
     );

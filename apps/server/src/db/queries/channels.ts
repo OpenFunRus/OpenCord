@@ -22,6 +22,10 @@ import {
 } from './dms';
 import { getUserRoleIds } from './roles';
 import { getAllUserIds } from './users';
+import {
+  getAffectedUserIdsForSpace,
+  getVisibleSpaceIdsForUser
+} from './spaces';
 
 const getPermissions = async (
   userId: number,
@@ -104,6 +108,14 @@ const channelUserCan = async (
     return false;
   }
 
+  if (!channel.isDm && channel.spaceId) {
+    const visibleSpaceIds = await getVisibleSpaceIdsForUser(userId);
+
+    if (!visibleSpaceIds.includes(channel.spaceId)) {
+      return false;
+    }
+  }
+
   if (!channel.private) {
     return true;
   }
@@ -132,6 +144,7 @@ const channelUserCan = async (
 
 const getChannelsForUser = async (userId: number): Promise<TChannel[]> => {
   const roleIds = await getUserRoleIds(userId);
+  const visibleSpaceIds = await getVisibleSpaceIdsForUser(userId);
 
   if (roleIds.includes(OWNER_ROLE_ID)) {
     return await db.select().from(channels);
@@ -145,6 +158,16 @@ const getChannelsForUser = async (userId: number): Promise<TChannel[]> => {
     ]);
 
   const accessibleChannels = allChannels.filter((channel) => {
+    if (!channel.isDm) {
+      if (!channel.spaceId) {
+        return false;
+      }
+
+      if (!visibleSpaceIds.includes(channel.spaceId)) {
+        return false;
+      }
+    }
+
     const isPublicChannel = !channel.private;
     const isDmChannelParticipant = dmChannelIds.includes(channel.id);
 
@@ -170,7 +193,7 @@ const getAllChannelUserPermissions = async (
   userId: number
 ): Promise<TChannelUserPermissionsMap> => {
   const roleIds = await getUserRoleIds(userId);
-  const allChannels = await db.select().from(channels);
+  const allChannels = await getChannelsForUser(userId);
 
   const userPermissions = await db
     .select({
@@ -359,7 +382,7 @@ const getAffectedUserIdsForChannel = async (
 
   // if channel is public, return all user IDs
   if (!channel.private || options?.forceAllUsers) {
-    return getAllUserIds();
+    return channel.spaceId ? getAffectedUserIdsForSpace(channel.spaceId) : getAllUserIds();
   }
 
   // if a specific permission is required, filter by it
@@ -414,7 +437,13 @@ const getAffectedUserIdsForChannel = async (
   usersWithRoles.forEach((u) => userIdSet.add(u.userId));
   owners.forEach((u) => userIdSet.add(u.userId));
 
-  return Array.from(userIdSet);
+  if (!channel.spaceId) {
+    return Array.from(userIdSet);
+  }
+
+  const spaceUserIds = await getAffectedUserIdsForSpace(channel.spaceId);
+
+  return Array.from(userIdSet).filter((userId) => spaceUserIds.includes(userId));
 };
 
 const getChannelsReadStatesForUser = async (
@@ -423,7 +452,10 @@ const getChannelsReadStatesForUser = async (
 ): Promise<TReadStateMap> => {
   // get DM channel IDs the user participates in so we can exclude
   // DM channels between other users from the read state results
-  const dmChannelIds = await getDirectMessageChannelIdsForUser(userId);
+  const [dmChannelIds, visibleSpaceIds] = await Promise.all([
+    getDirectMessageChannelIdsForUser(userId),
+    getVisibleSpaceIdsForUser(userId)
+  ]);
 
   const conditions = [];
 
@@ -435,13 +467,32 @@ const getChannelsReadStatesForUser = async (
   // include the message if the channel is NOT a DM, or if it IS a DM the user is part of
   if (dmChannelIds.length > 0) {
     conditions.push(
-      sql`(${channels.isDm} = 0 OR ${messages.channelId} IN (${sql.join(
-        dmChannelIds.map((id) => sql`${id}`),
-        sql`, `
-      )}))`
+      sql`(
+        (${channels.isDm} = 0 AND ${
+          visibleSpaceIds.length > 0
+            ? sql`${channels.spaceId} IN (${sql.join(
+                visibleSpaceIds.map((id) => sql`${id}`),
+                sql`, `
+              )})`
+            : sql`0 = 1`
+        })
+        OR ${messages.channelId} IN (${sql.join(
+          dmChannelIds.map((id) => sql`${id}`),
+          sql`, `
+        )})
+      )`
     );
   } else {
-    conditions.push(eq(channels.isDm, false));
+    conditions.push(
+      sql`${
+        visibleSpaceIds.length > 0
+          ? sql`${channels.isDm} = 0 AND ${channels.spaceId} IN (${sql.join(
+              visibleSpaceIds.map((id) => sql`${id}`),
+              sql`, `
+            )})`
+          : sql`0 = 1`
+      }`
+    );
   }
 
   const results = await db

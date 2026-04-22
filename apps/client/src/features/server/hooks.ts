@@ -10,7 +10,6 @@ import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import type { IRootState } from '../store';
 import { useChannelById, useChannelPermissionsById } from './channels/hooks';
-import { useCustomEmojis } from './emojis/hooks';
 import { channelReadStateByIdSelector } from './channels/selectors';
 import {
   connectedSelector,
@@ -140,7 +139,6 @@ export const useHasSharingScreenUsers = (channelId: number) =>
 
 export const usePluginComponentContext = (): TPluginSlotContext => {
   const stateCtx = useSelector(pluginComponentContextSelector);
-  const customEmojis = useCustomEmojis();
   const controller = useMemo(
     () => ({
       sendMessage: async (channelId: number, content: string) => {
@@ -148,14 +146,12 @@ export const usePluginComponentContext = (): TPluginSlotContext => {
 
         await trpc.messages.send.mutate({
           channelId,
-          content: prepareMessageHtml(
-            canonicalizeMessageEmojiHtml(`<p>${content}</p>`, customEmojis)
-          ),
+          content: prepareMessageHtml(canonicalizeMessageEmojiHtml(`<p>${content}</p>`)),
           files: []
         });
       }
     }),
-    [customEmojis]
+    []
   );
 
   return useMemo<TPluginSlotContext>(

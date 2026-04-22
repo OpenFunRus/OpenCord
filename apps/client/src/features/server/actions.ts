@@ -18,6 +18,7 @@ import {
   setPluginCommands,
   setPluginComponents
 } from './plugins/actions';
+import { setSelectedSpaceId } from './spaces/actions';
 import { infoSelector } from './selectors';
 import { serverSliceActions } from './slice';
 import { initSubscriptions } from './subscriptions';
@@ -115,6 +116,13 @@ export const jumpToMessage = (target: TMessageJumpToTarget) => {
 
   setDmsOpen(false);
   setSelectedDmChannelId(undefined);
+  const state = store.getState();
+  const channel = state.server.channels.find((item) => item.id === target.channelId);
+
+  if (channel?.spaceId) {
+    setSelectedSpaceId(channel.spaceId);
+  }
+
   setSelectedChannelId(target.channelId);
 };
 

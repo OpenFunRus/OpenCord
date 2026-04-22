@@ -11,7 +11,6 @@ import { db } from '../../db';
 import { publishUser } from '../../db/publishers';
 import { getUserByIdentity } from '../../db/queries/users';
 import {
-  emojis,
   files,
   messageReactions,
   messages,
@@ -107,11 +106,6 @@ const deleteUserRoute = protectedProcedure
           .update(messages)
           .set({ userId: deletedUserId })
           .where(eq(messages.userId, input.userId));
-
-        await tx
-          .update(emojis)
-          .set({ userId: deletedUserId })
-          .where(eq(emojis.userId, input.userId));
 
         await tx
           .update(messageReactions)

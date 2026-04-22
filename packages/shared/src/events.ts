@@ -25,10 +25,6 @@ export enum ServerEvents {
   VOICE_NEW_PRODUCER = 'voiceNewProducer',
   VOICE_PRODUCER_CLOSED = 'voiceProducerClosed',
 
-  EMOJI_CREATE = 'emojiCreate',
-  EMOJI_UPDATE = 'emojiUpdate',
-  EMOJI_DELETE = 'emojiDelete',
-
   ROLE_CREATE = 'roleCreate',
   ROLE_UPDATE = 'roleUpdate',
   ROLE_DELETE = 'roleDelete',
@@ -46,6 +42,8 @@ export enum ServerEvents {
   CATEGORY_CREATE = 'categoryCreate',
   CATEGORY_UPDATE = 'categoryUpdate',
   CATEGORY_DELETE = 'categoryDelete',
+
+  SPACES_SYNC = 'spacesSync',
 
   DM_CONVERSATION_OPEN = 'dmConversationOpen'
 }

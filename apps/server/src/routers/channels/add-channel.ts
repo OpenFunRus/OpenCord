@@ -4,8 +4,9 @@ import { desc, eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '../../db';
 import { publishChannel } from '../../db/publishers';
-import { channels } from '../../db/schema';
+import { categories, channels } from '../../db/schema';
 import { enqueueActivityLog } from '../../queues/activity-log';
+import { invariant } from '../../utils/invariant';
 import { VoiceRuntime } from '../../runtimes/voice';
 import { protectedProcedure } from '../../utils/trpc';
 
@@ -19,6 +20,17 @@ const addChannelRoute = protectedProcedure
   )
   .mutation(async ({ input, ctx }) => {
     await ctx.needsPermission(Permission.MANAGE_CHANNELS);
+
+    const category = await db
+      .select({ id: categories.id, spaceId: categories.spaceId })
+      .from(categories)
+      .where(eq(categories.id, input.categoryId))
+      .get();
+
+    invariant(category?.spaceId, {
+      code: 'NOT_FOUND',
+      message: 'Category not found.'
+    });
 
     const channel = await db.transaction(async (tx) => {
       const maxPositionChannel = await tx
@@ -42,6 +54,7 @@ const addChannelRoute = protectedProcedure
           type: input.type,
           fileAccessToken: randomUUIDv7(),
           fileAccessTokenUpdatedAt: now,
+          spaceId: category.spaceId,
           categoryId: input.categoryId,
           createdAt: now
         })

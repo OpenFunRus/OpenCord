@@ -9,6 +9,7 @@ type TResizableSidebarProps = {
   maxWidth: number;
   defaultWidth: number;
   edge: 'left' | 'right';
+  resizable?: boolean;
   isOpen?: boolean;
   className?: string;
   children: ReactNode;
@@ -21,6 +22,7 @@ const ResizableSidebar = memo(
     maxWidth,
     defaultWidth,
     edge,
+    resizable = true,
     isOpen = true,
     className,
     children
@@ -35,6 +37,7 @@ const ResizableSidebar = memo(
       });
 
     const isLeftEdge = edge === 'left';
+    const sidebarWidth = resizable ? width : defaultWidth;
 
     return (
       <div
@@ -47,19 +50,21 @@ const ResizableSidebar = memo(
           className
         )}
         style={{
-          width: isOpen ? `${width}px` : '0px'
+          width: isOpen ? `${sidebarWidth}px` : '0px'
         }}
       >
         {isOpen && (
           <>
-            <div
-              className={cn(
-                'absolute top-0 bottom-0 z-50 hidden w-1 cursor-col-resize transition-colors lg:block',
-                isLeftEdge ? 'left-0' : 'right-0',
-                isResizing ? 'bg-[#206bc4]/80' : 'hover:bg-[#206bc4]/30'
-              )}
-              onMouseDown={handleMouseDown}
-            />
+            {resizable && (
+              <div
+                className={cn(
+                  'absolute top-0 bottom-0 z-50 hidden w-1 cursor-col-resize transition-colors lg:block',
+                  isLeftEdge ? 'left-0' : 'right-0',
+                  isResizing ? 'bg-[#206bc4]/80' : 'hover:bg-[#206bc4]/30'
+                )}
+                onMouseDown={handleMouseDown}
+              />
+            )}
             {children}
           </>
         )}

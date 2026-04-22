@@ -13,13 +13,18 @@ import { getTRPCClient } from '@/lib/trpc';
 import { cn } from '@/lib/utils';
 import {
   DELETED_USER_IDENTITY_AND_NAME,
-  type TDirectMessageConversation
+  UserStatus,
+  type TDirectMessageConversation,
+  type TJoinedPublicUser
 } from '@opencord/shared';
 import { Spinner } from '@opencord/ui';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { SearchUserDropdown } from './search-user-dropdown';
+
+const isPresenceOnline = (status: UserStatus | undefined) =>
+  status === UserStatus.ONLINE || status === UserStatus.IDLE;
 
 type TDirectMessageItemProps = {
   dm: TDirectMessageConversation;
@@ -54,6 +59,22 @@ const DirectMessageItem = memo(
   }
 );
 
+type TDmUserRowProps = {
+  user: TJoinedPublicUser;
+  onOpen: () => void;
+};
+
+const DmUserRow = memo(({ user, onOpen }: TDmUserRowProps) => (
+  <button
+    type="button"
+    className="flex w-full items-center gap-2 rounded-lg border border-transparent px-2.5 py-2 text-sm font-medium text-[#9fb2c8] transition-all hover:border-[#3d516b] hover:bg-[#1b2940] hover:text-white"
+    onClick={onOpen}
+  >
+    <UserAvatar userId={user.id} className="h-6 w-6" showUserPopover />
+    <span className="truncate flex-1 text-left">{user.name}</span>
+  </button>
+));
+
 const DirectMessages = memo(() => {
   const { t } = useTranslation('sidebar');
   const [loading, setLoading] = useState(true);
@@ -65,6 +86,10 @@ const DirectMessages = memo(() => {
   const channels = useChannels();
   const ownUserId = useOwnUserId();
   const selectedDmChannelId = useSelectedDmChannelId();
+  const visibleUserIds = useMemo(
+    () => new Set(users.map((user) => user.id)),
+    [users]
+  );
 
   const fetchConversations = useCallback(async () => {
     const trpc = getTRPCClient();
@@ -86,7 +111,6 @@ const DirectMessages = memo(() => {
     fetchConversations();
   }, [channels.length, fetchConversations]);
 
-  // subscribe to new conversations being opened, when a new conversation is opened we refetch the list of conversations
   useEffect(() => {
     const trpc = getTRPCClient();
 
@@ -97,9 +121,12 @@ const DirectMessages = memo(() => {
     return () => sub.unsubscribe();
   }, [fetchConversations]);
 
-  const usersToStartDm = useMemo(() => {
-    const directMessageUserIds = new Set(conversations.map((dm) => dm.userId));
+  const directMessageUserIds = useMemo(
+    () => new Set(conversations.map((dm) => dm.userId)),
+    [conversations]
+  );
 
+  const usersToStartDm = useMemo(() => {
     return users.filter(
       (user) =>
         user.id !== ownUserId &&
@@ -108,7 +135,52 @@ const DirectMessages = memo(() => {
         !directMessageUserIds.has(user.id) &&
         user.name.toLowerCase().includes(query.trim().toLowerCase())
     );
-  }, [conversations, ownUserId, query, users]);
+  }, [directMessageUserIds, ownUserId, query, users]);
+
+  const visibleConversations = useMemo(
+    () => conversations.filter((dm) => visibleUserIds.has(dm.userId)),
+    [conversations, visibleUserIds]
+  );
+
+  const conversationUserIds = useMemo(
+    () => new Set(visibleConversations.map((dm) => dm.userId)),
+    [visibleConversations]
+  );
+
+  const q = query.trim().toLowerCase();
+
+  const sortedRecentDms = useMemo(() => {
+    let list = [...visibleConversations].sort(
+      (a, b) => b.lastMessageAt - a.lastMessageAt
+    );
+    if (q) {
+      list = list.filter((dm) => {
+        const u = users.find((x) => x.id === dm.userId);
+        return u?.name.toLowerCase().includes(q);
+      });
+    }
+    return list;
+  }, [visibleConversations, users, q]);
+
+  const { onlineOthers, offlineOthers } = useMemo(() => {
+    const rest = users.filter(
+      (u) =>
+        u.id !== ownUserId &&
+        !u.banned &&
+        u.name !== DELETED_USER_IDENTITY_AND_NAME &&
+        !conversationUserIds.has(u.id)
+    );
+    const nameMatch = (u: TJoinedPublicUser) =>
+      !q || u.name.toLowerCase().includes(q);
+    const filtered = rest.filter(nameMatch);
+    const online = filtered
+      .filter((u) => isPresenceOnline(u.status))
+      .sort((a, b) => a.name.localeCompare(b.name));
+    const offline = filtered
+      .filter((u) => !isPresenceOnline(u.status))
+      .sort((a, b) => a.name.localeCompare(b.name));
+    return { onlineOthers: online, offlineOthers: offline };
+  }, [users, ownUserId, conversationUserIds, q]);
 
   const onStartDm = useCallback(
     async (userId: number) => {
@@ -125,6 +197,12 @@ const DirectMessages = memo(() => {
     },
     [fetchConversations, t]
   );
+
+  const listEmpty =
+    !loading &&
+    sortedRecentDms.length === 0 &&
+    onlineOthers.length === 0 &&
+    offlineOthers.length === 0;
 
   return (
     <div className="flex-1 overflow-y-auto px-2 py-3">
@@ -145,18 +223,56 @@ const DirectMessages = memo(() => {
           <Spinner size="sm" />
         </div>
       ) : (
-        <div className="space-y-0.5">
-          {conversations.map((dm) => (
-            <DirectMessageItem
-              key={dm.channelId}
-              dm={dm}
-              selected={selectedDmChannelId === dm.channelId}
-              onSelect={() => setSelectedDmChannelId(dm.channelId)}
-            />
-          ))}
-          {conversations.length === 0 && (
+        <div className="space-y-3">
+          {sortedRecentDms.length > 0 && (
+            <div className="space-y-0.5">
+              <div className="px-2 pb-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-[#6b7c94]">
+                {t('recentConversations')}
+              </div>
+              {sortedRecentDms.map((dm) => (
+                <DirectMessageItem
+                  key={dm.channelId}
+                  dm={dm}
+                  selected={selectedDmChannelId === dm.channelId}
+                  onSelect={() => setSelectedDmChannelId(dm.channelId)}
+                />
+              ))}
+            </div>
+          )}
+
+          {onlineOthers.length > 0 && (
+            <div className="space-y-0.5">
+              <div className="px-2 pb-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-[#6b7c94]">
+                {t('onlineWithoutDm')}
+              </div>
+              {onlineOthers.map((user) => (
+                <DmUserRow
+                  key={user.id}
+                  user={user}
+                  onOpen={() => onStartDm(user.id)}
+                />
+              ))}
+            </div>
+          )}
+
+          {offlineOthers.length > 0 && (
+            <div className="space-y-0.5">
+              <div className="px-2 pb-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-[#6b7c94]">
+                {t('offlineWithoutDm')}
+              </div>
+              {offlineOthers.map((user) => (
+                <DmUserRow
+                  key={user.id}
+                  user={user}
+                  onOpen={() => onStartDm(user.id)}
+                />
+              ))}
+            </div>
+          )}
+
+          {listEmpty && (
             <div className="px-2 py-4 text-xs text-[#8fa2bb]">
-              {t('noDMsYet')}
+              {q ? t('noUsersAvailable') : t('noDMsYet')}
             </div>
           )}
         </div>
@@ -166,4 +282,3 @@ const DirectMessages = memo(() => {
 });
 
 export { DirectMessages };
-

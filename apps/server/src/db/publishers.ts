@@ -11,10 +11,10 @@ import {
   getAffectedUserIdsForChannel,
   getAllChannelUserPermissions
 } from './queries/channels';
-import { getEmojiById } from './queries/emojis';
 import { getMessage } from './queries/messages';
 import { getRole } from './queries/roles';
 import { getPublicSettings } from './queries/server';
+import { getAffectedUserIdsForSpace } from './queries/spaces';
 import { getAllUserIds, getPublicUserById } from './queries/users';
 import { categories, channels, messages, users } from './schema';
 
@@ -67,27 +67,6 @@ const publishMessage = async (
   }
 };
 
-const publishEmoji = async (
-  emojiId: number | undefined,
-  type: 'create' | 'update' | 'delete'
-) => {
-  if (!emojiId) return;
-
-  if (type === 'delete') {
-    pubsub.publish(ServerEvents.EMOJI_DELETE, emojiId);
-    return;
-  }
-
-  const emoji = await getEmojiById(emojiId);
-
-  if (!emoji) return;
-
-  const targetEvent =
-    type === 'create' ? ServerEvents.EMOJI_CREATE : ServerEvents.EMOJI_UPDATE;
-
-  pubsub.publish(targetEvent, emoji);
-};
-
 const publishRole = async (
   roleId: number | undefined,
   type: 'create' | 'update' | 'delete'
@@ -96,6 +75,7 @@ const publishRole = async (
 
   if (type === 'delete') {
     pubsub.publish(ServerEvents.ROLE_DELETE, roleId);
+    await publishSpacesSync();
     return;
   }
 
@@ -107,6 +87,7 @@ const publishRole = async (
     type === 'create' ? ServerEvents.ROLE_CREATE : ServerEvents.ROLE_UPDATE;
 
   pubsub.publish(targetEvent, role);
+  await publishSpacesSync();
 };
 
 const publishUser = async (
@@ -123,6 +104,7 @@ const publishUser = async (
     type === 'create' ? ServerEvents.USER_CREATE : ServerEvents.USER_UPDATE;
 
   pubsub.publish(targetEvent, user);
+  await publishSpacesSync(userId);
 };
 
 const publishChannel = async (
@@ -204,7 +186,6 @@ const publishCategory = async (
   if (!categoryId) return;
 
   if (type === 'delete') {
-    pubsub.publish(ServerEvents.CATEGORY_DELETE, categoryId);
     return;
   }
 
@@ -221,7 +202,22 @@ const publishCategory = async (
       ? ServerEvents.CATEGORY_CREATE
       : ServerEvents.CATEGORY_UPDATE;
 
-  pubsub.publish(targetEvent, category);
+  if (!category.spaceId) return;
+
+  const affectedUserIds = await getAffectedUserIdsForSpace(category.spaceId);
+
+  pubsub.publishFor(affectedUserIds, targetEvent, category);
+};
+
+const publishSpacesSync = async (userId?: number) => {
+  if (typeof userId === 'number') {
+    pubsub.publishFor(userId, ServerEvents.SPACES_SYNC, null);
+    return;
+  }
+
+  const userIds = await getAllUserIds();
+
+  pubsub.publishFor(userIds, ServerEvents.SPACES_SYNC, null);
 };
 
 const publishChannelPermissions = async (affectedUserIds: number[]) => {
@@ -284,12 +280,12 @@ export {
   publishCategory,
   publishChannel,
   publishChannelPermissions,
-  publishEmoji,
   publishMessage,
   publishPluginCommands,
   publishPluginComponents,
   publishReplyCount,
   publishRole,
+  publishSpacesSync,
   publishSettings,
   publishUser
 };

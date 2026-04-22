@@ -27,76 +27,78 @@ const UserControl = memo(() => {
   if (!ownPublicUser) return null;
 
   return (
-    <div className="flex h-16 items-center justify-between border-t border-[#2b3544] bg-[#172231] px-3">
-      <UserPopover userId={ownPublicUser.id}>
-        <div className="flex min-w-0 flex-1 cursor-pointer items-center space-x-3 rounded-lg border border-transparent p-1.5 transition-colors hover:border-[#3d516b] hover:bg-[#1b2940]">
-          <UserAvatar
-            userId={ownPublicUser.id}
-            className="h-9 w-9 flex-shrink-0"
-            showUserPopover={false}
-          />
-          <div className="flex flex-col min-w-0 flex-1">
-            <span className="truncate text-sm font-semibold text-white">
-              {ownPublicUser.name}
-            </span>
-            <div className="flex items-center space-x-1">
-              <span className="text-xs capitalize text-[#8fa2bb]">
-                {ownPublicUser.status}
+    <div className="flex min-h-[95px] items-center border-t border-[#2b3544] bg-[#172231] px-3 py-2">
+      <div className="flex w-full items-center justify-between gap-2 rounded-xl border border-[#314055] bg-[#101926] p-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
+        <UserPopover userId={ownPublicUser.id}>
+          <div className="flex min-w-0 flex-1 cursor-pointer items-center space-x-3 rounded-lg border border-transparent p-1.5 transition-colors hover:border-[#3d516b] hover:bg-[#1b2940]">
+            <UserAvatar
+              userId={ownPublicUser.id}
+              className="h-9 w-9 flex-shrink-0"
+              showUserPopover={false}
+            />
+            <div className="flex min-w-0 flex-1 flex-col">
+              <span className="truncate text-sm font-semibold text-white">
+                {ownPublicUser.name}
               </span>
+              <div className="flex items-center space-x-1">
+                <span className="text-xs capitalize text-[#8fa2bb]">
+                  {ownPublicUser.status}
+                </span>
+              </div>
             </div>
           </div>
+        </UserPopover>
+
+        <div className="flex items-center space-x-0.5">
+          <Button
+            variant="ghost"
+            size="icon"
+            className={cn(
+              'h-8 w-8 rounded-lg border border-[#314055] !bg-[#172231] text-[#8fa2bb] hover:border-[#3d516b] hover:!bg-[#1b2940] hover:text-white',
+              ownVoiceState.micMuted
+                ? 'border-red-500/20 !bg-red-500/10 text-red-500 hover:!bg-red-500/20 hover:text-red-400'
+                : 'text-[#8fa2bb] hover:text-white'
+            )}
+            onClick={toggleMic}
+            title={ownVoiceState.micMuted ? t('unmuteMic') : t('muteMic')}
+            disabled={!channelCan(ChannelPermission.SPEAK)}
+          >
+            {ownVoiceState.micMuted ? (
+              <MicOff className="h-4 w-4" />
+            ) : (
+              <Mic className="h-4 w-4" />
+            )}
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            className={cn(
+              'h-8 w-8 rounded-lg border border-[#314055] !bg-[#172231] text-[#8fa2bb] hover:border-[#3d516b] hover:!bg-[#1b2940] hover:text-white',
+              ownVoiceState.soundMuted
+                ? 'border-red-500/20 !bg-red-500/10 text-red-500 hover:!bg-red-500/20 hover:text-red-400'
+                : 'text-[#8fa2bb] hover:text-white'
+            )}
+            onClick={toggleSound}
+            title={ownVoiceState.soundMuted ? t('undeafen') : t('deafen')}
+          >
+            {ownVoiceState.soundMuted ? (
+              <HeadphoneOff className="h-4 w-4" />
+            ) : (
+              <Headphones className="h-4 w-4" />
+            )}
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 rounded-lg border border-[#314055] !bg-[#172231] text-[#8fa2bb] hover:border-[#3d516b] hover:!bg-[#1b2940] hover:text-white"
+            onClick={handleSettingsClick}
+            title={t('userSettings')}
+          >
+            <Settings className="h-4 w-4" />
+          </Button>
         </div>
-      </UserPopover>
-
-      <div className="flex items-center space-x-0.5">
-        <Button
-          variant="ghost"
-          size="icon"
-          className={cn(
-            'h-8 w-8 rounded-lg border border-[#314055] !bg-[#172231] text-[#8fa2bb] hover:border-[#3d516b] hover:!bg-[#1b2940] hover:text-white',
-            ownVoiceState.micMuted
-              ? 'border-red-500/20 !bg-red-500/10 text-red-500 hover:!bg-red-500/20 hover:text-red-400'
-              : 'text-[#8fa2bb] hover:text-white'
-          )}
-          onClick={toggleMic}
-          title={ownVoiceState.micMuted ? t('unmuteMic') : t('muteMic')}
-          disabled={!channelCan(ChannelPermission.SPEAK)}
-        >
-          {ownVoiceState.micMuted ? (
-            <MicOff className="h-4 w-4" />
-          ) : (
-            <Mic className="h-4 w-4" />
-          )}
-        </Button>
-
-        <Button
-          variant="ghost"
-          size="icon"
-          className={cn(
-            'h-8 w-8 rounded-lg border border-[#314055] !bg-[#172231] text-[#8fa2bb] hover:border-[#3d516b] hover:!bg-[#1b2940] hover:text-white',
-            ownVoiceState.soundMuted
-              ? 'border-red-500/20 !bg-red-500/10 text-red-500 hover:!bg-red-500/20 hover:text-red-400'
-              : 'text-[#8fa2bb] hover:text-white'
-          )}
-          onClick={toggleSound}
-          title={ownVoiceState.soundMuted ? t('undeafen') : t('deafen')}
-        >
-          {ownVoiceState.soundMuted ? (
-            <HeadphoneOff className="h-4 w-4" />
-          ) : (
-            <Headphones className="h-4 w-4" />
-          )}
-        </Button>
-
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 rounded-lg border border-[#314055] !bg-[#172231] text-[#8fa2bb] hover:border-[#3d516b] hover:!bg-[#1b2940] hover:text-white"
-          onClick={handleSettingsClick}
-          title={t('userSettings')}
-        >
-          <Settings className="h-4 w-4" />
-        </Button>
       </div>
     </div>
   );

@@ -17,7 +17,7 @@ import {
   Input
 } from '@opencord/ui';
 import { Hash, Mic } from 'lucide-react';
-import { memo, useCallback, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TDialogBaseProps } from '../types';
 
@@ -65,6 +65,7 @@ const ChannelTypeItem = ({
 type TCreateChannelDialogProps = TDialogBaseProps & {
   categoryId: number;
   defaultChannelType?: ChannelType;
+  forcedChannelType?: ChannelType;
 };
 
 const CreateChannelDialog = memo(
@@ -72,13 +73,24 @@ const CreateChannelDialog = memo(
     isOpen,
     categoryId,
     close,
-    defaultChannelType = ChannelType.TEXT
+    defaultChannelType = ChannelType.TEXT,
+    forcedChannelType
   }: TCreateChannelDialogProps) => {
     const { t } = useTranslation('dialogs');
-    const [channelType, setChannelType] = useState(defaultChannelType);
-    const [name, setName] = useState('New Channel');
+    const [channelType, setChannelType] = useState(
+      forcedChannelType ?? defaultChannelType
+    );
+    const [name, setName] = useState(t('defaultChannelName'));
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState<TTrpcErrors>({});
+
+    useEffect(() => {
+      if (!isOpen) return;
+
+      setChannelType(forcedChannelType ?? defaultChannelType);
+      setName(t('defaultChannelName'));
+      setErrors({});
+    }, [defaultChannelType, forcedChannelType, isOpen, t]);
 
     const onSubmit = useCallback(async () => {
       const trpc = getTRPCClient();
@@ -88,7 +100,7 @@ const CreateChannelDialog = memo(
       try {
         await trpc.channels.add.mutate({
           type: channelType,
-          name,
+          name: name.trim(),
           categoryId
         });
 
@@ -106,7 +118,7 @@ const CreateChannelDialog = memo(
           close={close}
           overlayClassName="bg-[#0b1220]/70 backdrop-blur-sm"
           closeClassName="top-4 right-4 h-9 w-9 rounded-lg border border-[#314055] !bg-[#101926] p-0 text-[#8fa2bb] opacity-100 shadow-none hover:border-[#3d516b] hover:!bg-[#1b2940] hover:text-white data-[state=open]:!bg-[#101926] data-[state=open]:text-[#8fa2bb]"
-          className="w-[min(560px,calc(100vw-2rem))] max-w-[min(560px,calc(100vw-2rem))] rounded-[12px] border border-[#2b3544] bg-[#182433] p-0 text-[#d7e2f0] shadow-[0_24px_64px_rgba(2,6,23,0.5)] [&_.text-muted-foreground]:text-[#8fa2bb] [&_[data-slot=button]]:rounded-sm [&_[data-slot=button]]:border [&_[data-slot=button]]:border-[#314055] [&_[data-slot=button]]:shadow-none [&_[data-slot=input]]:rounded-sm [&_[data-slot=input]]:border-[#314055] [&_[data-slot=input]]:bg-[#0f1722] [&_[data-slot=input]]:text-[#d7e2f0] [&_[data-slot=input]]:placeholder:text-[#6f839b] [&_[data-slot=input]:focus-visible]:border-[#4677b8] [&_[data-slot=input]:focus-visible]:ring-2 [&_[data-slot=input]:focus-visible]:ring-[#4677b8]/25"
+          className="w-[min(560px,calc(100vw-2rem))] max-w-[min(560px,calc(100vw-2rem))] overflow-hidden rounded-[12px] border border-[#2b3544] bg-[#182433] p-0 text-[#d7e2f0] shadow-[0_24px_64px_rgba(2,6,23,0.5)] [&_.text-muted-foreground]:text-[#8fa2bb] [&_[data-slot=button]]:rounded-sm [&_[data-slot=button]]:border [&_[data-slot=button]]:border-[#314055] [&_[data-slot=button]]:shadow-none [&_[data-slot=input]]:rounded-sm [&_[data-slot=input]]:border-[#314055] [&_[data-slot=input]]:bg-[#0f1722] [&_[data-slot=input]]:text-[#d7e2f0] [&_[data-slot=input]]:placeholder:text-[#6f839b] [&_[data-slot=input]:focus-visible]:border-[#4677b8] [&_[data-slot=input]:focus-visible]:ring-2 [&_[data-slot=input]:focus-visible]:ring-[#4677b8]/25"
         >
           <DialogHeader className="border-b border-[#2b3544] bg-[#172231] px-5 py-4 text-left">
             <DialogTitle className="text-lg font-semibold text-white">
@@ -115,25 +127,27 @@ const CreateChannelDialog = memo(
           </DialogHeader>
 
           <div className="space-y-4 px-5 py-5">
-            <Group label={t('channelTypeLabel')}>
-              <div className="space-y-2">
-                <ChannelTypeItem
-                  title={t('textChannelTitle')}
-                  description={t('textChannelDesc')}
-                  icon={<Hash className="h-5 w-5" />}
-                  isActive={channelType === ChannelType.TEXT}
-                  onClick={() => setChannelType(ChannelType.TEXT)}
-                />
+            {!forcedChannelType && (
+              <Group label={t('channelTypeLabel')}>
+                <div className="space-y-2">
+                  <ChannelTypeItem
+                    title={t('textChannelTitle')}
+                    description={t('textChannelDesc')}
+                    icon={<Hash className="h-5 w-5" />}
+                    isActive={channelType === ChannelType.TEXT}
+                    onClick={() => setChannelType(ChannelType.TEXT)}
+                  />
 
-                <ChannelTypeItem
-                  title={t('voiceChannelTitle')}
-                  description={t('voiceChannelDesc')}
-                  icon={<Mic className="h-5 w-5" />}
-                  isActive={channelType === ChannelType.VOICE}
-                  onClick={() => setChannelType(ChannelType.VOICE)}
-                />
-              </div>
-            </Group>
+                  <ChannelTypeItem
+                    title={t('voiceChannelTitle')}
+                    description={t('voiceChannelDesc')}
+                    icon={<Mic className="h-5 w-5" />}
+                    isActive={channelType === ChannelType.VOICE}
+                    onClick={() => setChannelType(ChannelType.VOICE)}
+                  />
+                </div>
+              </Group>
+            )}
 
             <Group label={t('channelNameLabel')}>
               <AutoFocus>
@@ -160,7 +174,7 @@ const CreateChannelDialog = memo(
             </Button>
             <Button
               onClick={onSubmit}
-              disabled={loading || !name || !channelType}
+                disabled={loading || !name.trim() || !channelType}
               className="border-[#4677b8] bg-[#2b5ea7] text-white hover:border-[#5f90d1] hover:bg-[#346cbd]"
             >
               {t('createChannelBtn')}

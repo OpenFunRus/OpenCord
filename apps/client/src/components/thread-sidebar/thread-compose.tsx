@@ -1,5 +1,4 @@
 import { MessageCompose } from '@/components/message-compose';
-import { useCustomEmojis } from '@/features/server/emojis/hooks';
 import { usePublicServerSettings } from '@/features/server/hooks';
 import { playSound } from '@/features/server/sounds/actions';
 import { SoundType } from '@/features/server/types';
@@ -27,7 +26,6 @@ type TThreadComposeProps = {
 const ThreadCompose = memo(
   ({ parentMessageId, channelId, typingUsers }: TThreadComposeProps) => {
     const [newMessage, setNewMessage] = useState('');
-    const customEmojis = useCustomEmojis();
     const publicSettings = usePublicServerSettings();
 
     const sendTypingSignal = useMemo(
@@ -52,9 +50,7 @@ const ThreadCompose = memo(
         sendTypingSignal.cancel();
 
         const trpc = getTRPCClient();
-        const preparedContent = prepareMessageHtml(
-          canonicalizeMessageEmojiHtml(message, customEmojis)
-        );
+        const preparedContent = prepareMessageHtml(canonicalizeMessageEmojiHtml(message));
         const maxTextLength =
           publicSettings?.messageMaxTextLength ??
           MESSAGE_DEFAULT_TEXT_LENGTH_LIMIT;
@@ -94,7 +90,6 @@ const ThreadCompose = memo(
       },
       [
         channelId,
-        customEmojis,
         parentMessageId,
         publicSettings?.messageMaxLines,
         publicSettings?.messageMaxTextLength,

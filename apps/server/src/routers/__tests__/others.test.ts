@@ -37,7 +37,6 @@ describe('others router', () => {
     expect(result).toHaveProperty('ownUserId');
     expect(result).toHaveProperty('voiceMap');
     expect(result).toHaveProperty('roles');
-    expect(result).toHaveProperty('emojis');
     expect(result).toHaveProperty('channelPermissions');
     expect(result).toHaveProperty('commands');
     expect(result).toHaveProperty('pluginIdsWithComponents');

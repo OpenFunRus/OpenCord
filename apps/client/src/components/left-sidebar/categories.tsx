@@ -7,6 +7,7 @@ import {
   useCan,
   useHasVisibleChannelsInCategory
 } from '@/features/server/hooks';
+import { useSelectedSpaceId } from '@/features/server/spaces/hooks';
 import { getTRPCClient } from '@/lib/trpc';
 import {
   DndContext,
@@ -22,7 +23,7 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Permission, getTrpcError } from '@opencord/shared';
+import { ChannelType, Permission, getTrpcError } from '@opencord/shared';
 import { IconButton } from '@opencord/ui';
 import { ChevronDown, ChevronRight, Plus } from 'lucide-react';
 import { memo, useCallback, useMemo } from 'react';
@@ -42,15 +43,27 @@ const getDisplayCategoryName = (
   categoryName: string,
   t: (key: string) => string
 ) => {
-  if (categoryName === 'Text Channels') {
+  if (categoryName === 'Text Channels' || categoryName === 'Текстовые каналы') {
     return t('defaultTextChannels');
   }
 
-  if (categoryName === 'Voice Channels') {
+  if (categoryName === 'Voice Channels' || categoryName === 'Голосовые каналы') {
     return t('defaultVoiceChannels');
   }
 
   return categoryName;
+};
+
+const getDefaultChannelTypeForCategory = (categoryName: string) => {
+  if (categoryName === 'Text Channels' || categoryName === 'Текстовые каналы') {
+    return ChannelType.TEXT;
+  }
+
+  if (categoryName === 'Voice Channels' || categoryName === 'Голосовые каналы') {
+    return ChannelType.VOICE;
+  }
+
+  return undefined;
 };
 
 const Category = memo(({ categoryId }: TCategoryProps) => {
@@ -71,8 +84,16 @@ const Category = memo(({ categoryId }: TCategoryProps) => {
   } = useSortable({ id: categoryId });
 
   const onCreateChannelClick = useCallback(() => {
-    openDialog(Dialog.CREATE_CHANNEL, { categoryId });
-  }, [categoryId]);
+    const forcedChannelType = category
+      ? getDefaultChannelTypeForCategory(category.name)
+      : undefined;
+
+    openDialog(Dialog.CREATE_CHANNEL, {
+      categoryId,
+      defaultChannelType: forcedChannelType ?? ChannelType.TEXT,
+      forcedChannelType
+    });
+  }, [category, categoryId]);
 
   if (
     !category ||
@@ -135,6 +156,7 @@ const Category = memo(({ categoryId }: TCategoryProps) => {
 const Categories = memo(() => {
   const { t } = useTranslation('sidebar');
   const can = useCan();
+  const selectedSpaceId = useSelectedSpaceId();
   const categories = useCategories();
   const categoryIds = useMemo(
     () => categories.map((cat) => cat.id),
@@ -172,12 +194,17 @@ const Categories = memo(() => {
       const trpc = getTRPCClient();
 
       try {
-        await trpc.categories.reorder.mutate({ categoryIds: reorderedIds });
+        if (!selectedSpaceId) return;
+
+        await trpc.categories.reorder.mutate({
+          spaceId: selectedSpaceId,
+          categoryIds: reorderedIds
+        });
       } catch (error) {
         toast.error(getTrpcError(error, t('failedReorderCategories')));
       }
     },
-    [categoryIds, t]
+    [categoryIds, selectedSpaceId, t]
   );
 
   return (

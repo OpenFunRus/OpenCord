@@ -8,7 +8,6 @@ import {
   channels,
   channelUserPermissions,
   directMessages,
-  emojis,
   files,
   invites,
   logins,
@@ -387,7 +386,7 @@ describe('database cascades', async () => {
     expect(messageReactionsAfter.length).toBe(0);
   });
 
-  test('deleting a file cascades to message_files and emojis', async () => {
+  test('deleting a file cascades to message_files', async () => {
     const usersBefore = await tdb.select().from(users);
     const messagesBefore = await tdb.select().from(messages);
 
@@ -411,25 +410,12 @@ describe('database cascades', async () => {
       createdAt: Date.now()
     });
 
-    await tdb.insert(emojis).values({
-      name: 'test_emoji',
-      fileId: file!.id,
-      userId: usersBefore[0]!.id,
-      createdAt: Date.now()
-    });
-
     const messageFilesBefore = await tdb
       .select()
       .from(messageFiles)
       .where(eq(messageFiles.fileId, file!.id));
 
-    const emojisBefore = await tdb
-      .select()
-      .from(emojis)
-      .where(eq(emojis.fileId, file!.id));
-
     expect(messageFilesBefore.length).toBeGreaterThan(0);
-    expect(emojisBefore.length).toBeGreaterThan(0);
 
     await tdb.delete(files).where(eq(files.id, file!.id));
 
@@ -438,40 +424,13 @@ describe('database cascades', async () => {
       .from(messageFiles)
       .where(eq(messageFiles.fileId, file!.id));
 
-    const emojisAfter = await tdb
-      .select()
-      .from(emojis)
-      .where(eq(emojis.fileId, file!.id));
-
     expect(messageFilesAfter.length).toBe(0);
-    expect(emojisAfter.length).toBe(0);
   });
 
-  test('deleting a user cascades to emojis and message_reactions', async () => {
+  test('deleting a user cascades to message_reactions', async () => {
     const usersBefore = await tdb.select().from(users);
     const messagesBefore = await tdb.select().from(messages);
     const userId = usersBefore[0]!.id;
-
-    const [file] = await tdb
-      .insert(files)
-      .values({
-        name: 'emoji.png',
-        originalName: 'emoji.png',
-        md5: 'emoji123',
-        userId,
-        size: 100,
-        mimeType: 'image/png',
-        extension: 'png',
-        createdAt: Date.now()
-      })
-      .returning();
-
-    await tdb.insert(emojis).values({
-      name: 'user_emoji',
-      fileId: file!.id,
-      userId,
-      createdAt: Date.now()
-    });
 
     await tdb.insert(messageReactions).values({
       messageId: messagesBefore[0]!.id,
@@ -480,32 +439,20 @@ describe('database cascades', async () => {
       createdAt: Date.now()
     });
 
-    const emojisBefore = await tdb
-      .select()
-      .from(emojis)
-      .where(eq(emojis.userId, userId));
-
     const messageReactionsBefore = await tdb
       .select()
       .from(messageReactions)
       .where(eq(messageReactions.userId, userId));
 
-    expect(emojisBefore.length).toBeGreaterThan(0);
     expect(messageReactionsBefore.length).toBeGreaterThan(0);
 
     await tdb.delete(users).where(eq(users.id, userId));
-
-    const emojisAfter = await tdb
-      .select()
-      .from(emojis)
-      .where(eq(emojis.userId, userId));
 
     const messageReactionsAfter = await tdb
       .select()
       .from(messageReactions)
       .where(eq(messageReactions.userId, userId));
 
-    expect(emojisAfter.length).toBe(0);
     expect(messageReactionsAfter.length).toBe(0);
   });
 
