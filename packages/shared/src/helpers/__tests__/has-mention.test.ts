@@ -77,4 +77,25 @@ describe('has-mention', () => {
       '<p>Hello <span class="mention" data-type="mention" data-user-id="123" data-name="user">@user</span></p>';
     expect(hasMention(content, 123)).toBe(true);
   });
+
+  test('should return true when content contains a role mention for one of the user roles', () => {
+    const content =
+      '<p>Hello <span data-type="mention" data-mention-kind="role" data-role-id="7">@Developer</span></p>';
+
+    expect(hasMention(content, { roleIds: [3, 7] })).toBe(true);
+  });
+
+  test('should return false when role mention does not match user roles', () => {
+    const content =
+      '<p>Hello <span data-type="mention" data-mention-kind="role" data-role-id="7">@Developer</span></p>';
+
+    expect(hasMention(content, { roleIds: [3, 8] })).toBe(false);
+  });
+
+  test('should return true when content contains an everyone mention', () => {
+    const content =
+      '<p>Hello <span data-type="mention" data-mention-kind="everyone">@everyone</span></p>';
+
+    expect(hasMention(content, { userId: 123 })).toBe(true);
+  });
 });

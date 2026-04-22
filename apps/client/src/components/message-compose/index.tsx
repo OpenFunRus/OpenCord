@@ -226,6 +226,7 @@ const MessageCompose = memo(
             disabled={uploading || !canSendMessages}
             readOnly={sending}
             commands={pluginCommands}
+            mentionChannelId={channelId}
           />
           {showPluginSlot && (
             <PluginSlotRenderer slotId={PluginSlot.CHAT_ACTIONS} />

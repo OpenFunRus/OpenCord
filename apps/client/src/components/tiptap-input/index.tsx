@@ -1,6 +1,9 @@
 import { EmojiPicker } from '@/components/emoji-picker';
 import { ALL_EMOJIS } from '@/components/emoji-picker/emoji-data';
+import { useRoles } from '@/features/server/roles/hooks';
+import { useChannelById } from '@/features/server/channels/hooks';
 import { useMentionableUsers } from '@/features/server/users/hooks';
+import { getRenderedUsername } from '@/helpers/get-rendered-username';
 import type { TCommandInfo } from '@opencord/shared';
 import { Button } from '@opencord/ui';
 import Emoji, { type EmojiItem } from '@tiptap/extension-emoji';
@@ -25,10 +28,12 @@ import { Mention } from './plugins/mentions';
 import { MentionNode } from './plugins/mentions/node';
 import {
   MENTION_STORAGE_KEY,
-  MentionSuggestion
+  MentionSuggestion,
+  type TMentionSuggestionItem
 } from './plugins/mentions/suggestion';
 import { SlashCommands } from './plugins/slash-commands-extension';
 import { EmojiSuggestion } from './plugins/suggestions';
+import { useTranslation } from 'react-i18next';
 
 type TTiptapInputProps = {
   disabled?: boolean;
@@ -40,6 +45,7 @@ type TTiptapInputProps = {
   onCancel?: () => void;
   onTyping?: () => void;
   commands?: TCommandInfo[];
+  mentionChannelId?: number;
 };
 
 const TiptapInput = memo(
@@ -52,8 +58,10 @@ const TiptapInput = memo(
     onTyping,
     disabled,
     readOnly,
-    commands
+    commands,
+    mentionChannelId
   }: TTiptapInputProps) => {
+    const { t } = useTranslation('common');
     const readOnlyRef = useRef(readOnly);
 
     readOnlyRef.current = readOnly;
@@ -65,6 +73,32 @@ const TiptapInput = memo(
     const editorWrapperRef = useRef<HTMLDivElement>(null);
 
     const users = useMentionableUsers();
+    const roles = useRoles();
+    const channel = useChannelById(mentionChannelId ?? -1);
+    const mentionItems = useMemo<TMentionSuggestionItem[]>(
+      () => [
+        {
+          kind: 'everyone',
+          id: 'everyone',
+          label: t('mentionEveryone')
+        },
+        ...(channel?.isDm
+          ? []
+          : roles.map((role) => ({
+              kind: 'role' as const,
+              id: role.id,
+              label: role.name,
+              color: role.color
+            }))),
+        ...users.map((user) => ({
+          kind: 'user' as const,
+          id: user.id,
+          label: getRenderedUsername(user),
+          user
+        }))
+      ],
+      [channel?.isDm, roles, users, t]
+    );
 
     const extensions = useMemo(() => {
       const exts = [
@@ -96,7 +130,7 @@ const TiptapInput = memo(
           }
         }),
         Mention.configure({
-          users,
+          items: mentionItems,
           suggestion: MentionSuggestion
         }),
         MentionNode
@@ -113,7 +147,7 @@ const TiptapInput = memo(
       }
 
       return exts;
-    }, [commands, users]);
+    }, [commands, mentionItems]);
 
     const editor = useEditor({
       extensions,
@@ -215,19 +249,19 @@ const TiptapInput = memo(
       }
     }, [editor, commands]);
 
-    // keep mention users storage in sync with the users from the store
+    // keep mention items storage in sync with the latest users/roles from the store
     useEffect(() => {
       if (editor) {
         const storage = editor.storage as unknown as Record<
           string,
-          { users?: typeof users }
+          { items?: TMentionSuggestionItem[] }
         >;
 
         if (storage[MENTION_STORAGE_KEY]) {
-          storage[MENTION_STORAGE_KEY].users = users;
+          storage[MENTION_STORAGE_KEY].items = mentionItems;
         }
       }
-    }, [editor, users]);
+    }, [editor, mentionItems]);
 
     useEffect(() => {
       if (editor && value !== undefined) {

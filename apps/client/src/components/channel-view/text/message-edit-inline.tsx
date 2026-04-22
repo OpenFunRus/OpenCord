@@ -92,6 +92,7 @@ const MessageEditInline = memo(
             onChange={setValue}
             onSubmit={() => onSubmit(value)}
             onCancel={onBlur}
+            mentionChannelId={message.channelId}
           />
         </AutoFocus>
         <span className="text-xs text-primary/60">{t('pressEnterToSave')}</span>

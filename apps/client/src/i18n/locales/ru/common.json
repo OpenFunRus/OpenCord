@@ -33,6 +33,7 @@
   "removeImageBtn": "Удалить изображение",
   "openInNewTab": "Открыть в новой вкладке",
   "mentionUser": "Упомянуть пользователя",
+  "mentionEveryone": "everyone",
   "copyErrorDetailsTitle": "Произошла ошибка. Нажмите, чтобы скопировать детали.",
   "errorDetailsCopied": "Детали ошибки скопированы в буфер обмена",
   "pluginErrorOccurred": "В плагине {{pluginId}} произошла ошибка в слоте {{slotId}}.",

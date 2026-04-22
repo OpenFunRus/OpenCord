@@ -5,6 +5,7 @@ import { computePosition, flip, offset, shift } from '@floating-ui/dom';
 import { UserStatus, type TJoinedPublicUser } from '@opencord/shared';
 import type { Editor } from '@tiptap/core';
 import { ReactRenderer } from '@tiptap/react';
+import { AtSign, Shield } from 'lucide-react';
 import {
   forwardRef,
   useCallback,
@@ -15,11 +16,40 @@ import {
 
 const MENTION_STORAGE_KEY = 'mentionUsers';
 
-const getMentionSearchTerms = (user: TJoinedPublicUser) => {
-  const displayName = getRenderedUsername(user).toLowerCase();
-  const identity = user._identity?.toLowerCase().trim() ?? '';
+type TUserMentionSuggestionItem = {
+  kind: 'user';
+  id: number;
+  label: string;
+  user: TJoinedPublicUser;
+};
 
-  return { displayName, identity };
+type TRoleMentionSuggestionItem = {
+  kind: 'role';
+  id: number;
+  label: string;
+  color?: string | null;
+};
+
+type TEveryoneMentionSuggestionItem = {
+  kind: 'everyone';
+  id: 'everyone';
+  label: string;
+};
+
+export type TMentionSuggestionItem =
+  | TUserMentionSuggestionItem
+  | TRoleMentionSuggestionItem
+  | TEveryoneMentionSuggestionItem;
+
+const getMentionSearchTerms = (item: TMentionSuggestionItem) => {
+  if (item.kind === 'user') {
+    const displayName = getRenderedUsername(item.user).toLowerCase();
+    const identity = item.user._identity?.toLowerCase().trim() ?? '';
+
+    return { primary: displayName, secondary: identity };
+  }
+
+  return { primary: item.label.toLowerCase(), secondary: '' };
 };
 
 const getStatusDotClassName = (status?: UserStatus) => {
@@ -34,8 +64,8 @@ const getStatusDotClassName = (status?: UserStatus) => {
 };
 
 type TUserListProps = {
-  items: TJoinedPublicUser[];
-  onSelect: (item: TJoinedPublicUser) => void;
+  items: TMentionSuggestionItem[];
+  onSelect: (item: TMentionSuggestionItem) => void;
 };
 
 export type TUserListRef = {
@@ -110,21 +140,36 @@ const UserList = forwardRef<TUserListRef, TUserListProps>(
             }`}
             onClick={() => onSelect(item)}
           >
-            <div className="relative shrink-0">
-              <UserAvatar userId={item.id} className="h-8 w-8 shrink-0" />
-              <span
-                className={`absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border border-[#101926] ${getStatusDotClassName(item.status)}`}
-              />
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="truncate font-medium">
-                {getRenderedUsername(item)}
+            {item.kind === 'user' ? (
+              <div className="relative shrink-0">
+                <UserAvatar userId={item.id} className="h-8 w-8 shrink-0" />
+                <span
+                  className={`absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border border-[#101926] ${getStatusDotClassName(item.user.status)}`}
+                />
               </div>
-              {item._identity &&
-                item._identity.toLowerCase() !==
-                  getRenderedUsername(item).toLowerCase() && (
+            ) : (
+              <div
+                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border ${
+                  item.kind === 'everyone'
+                    ? 'border-[#8a6a18]/55 bg-[#5f4708]/30 text-[#ffd66b]'
+                    : 'border-[#5b4aa6]/45 bg-[#352a63]/28 text-[#c9b7ff]'
+                }`}
+              >
+                {item.kind === 'everyone' ? (
+                  <AtSign className="h-4 w-4" />
+                ) : (
+                  <Shield className="h-4 w-4" />
+                )}
+              </div>
+            )}
+            <div className="min-w-0 flex-1">
+              <div className="truncate font-medium">{item.label}</div>
+              {item.kind === 'user' &&
+                item.user._identity &&
+                item.user._identity.toLowerCase() !==
+                  getRenderedUsername(item.user).toLowerCase() && (
                   <div className="truncate text-xs text-[#8fa2bb]">
-                    @{item._identity}
+                    @{item.user._identity}
                   </div>
                 )}
             </div>
@@ -166,7 +211,7 @@ type TSuggestionProps = {
   editor: Editor;
   query: string;
   clientRect?: (() => DOMRect | null) | null;
-  command: (item: TJoinedPublicUser) => void;
+  command: (item: TMentionSuggestionItem) => void;
 };
 
 const MentionSuggestion = {
@@ -176,29 +221,29 @@ const MentionSuggestion = {
   }: {
     editor: Editor;
     query: string;
-  }): TJoinedPublicUser[] => {
-    const users: TJoinedPublicUser[] =
+  }): TMentionSuggestionItem[] => {
+    const items: TMentionSuggestionItem[] =
       (
         editor.storage as unknown as Record<
           string,
-          { users?: TJoinedPublicUser[] }
+          { items?: TMentionSuggestionItem[] }
         >
-      )[MENTION_STORAGE_KEY]?.users ?? [];
+      )[MENTION_STORAGE_KEY]?.items ?? [];
 
-    if (!query) return users.slice(0, 10);
+    if (!query) return items.slice(0, 10);
 
     const q = query.toLowerCase();
 
-    return users
-      .filter((u) => {
-        const { displayName, identity } = getMentionSearchTerms(u);
+    return items
+      .filter((item) => {
+        const { primary, secondary } = getMentionSearchTerms(item);
 
-        return displayName.includes(q) || identity.includes(q);
+        return primary.includes(q) || secondary.includes(q);
       })
       .sort((a, b) => {
-        const { displayName: aName, identity: aIdentity } =
+        const { primary: aName, secondary: aIdentity } =
           getMentionSearchTerms(a);
-        const { displayName: bName, identity: bIdentity } =
+        const { primary: bName, secondary: bIdentity } =
           getMentionSearchTerms(b);
 
         const aS = aName.startsWith(q);
@@ -211,7 +256,12 @@ const MentionSuggestion = {
         if (aIdentityStarts && !bIdentityStarts) return -1;
         if (!aIdentityStarts && bIdentityStarts) return 1;
 
-        return aS && bS ? aName.length - bName.length : 0;
+        if (a.kind === 'everyone' && b.kind !== 'everyone') return -1;
+        if (a.kind !== 'everyone' && b.kind === 'everyone') return 1;
+        if (a.kind === 'role' && b.kind === 'user') return -1;
+        if (a.kind === 'user' && b.kind === 'role') return 1;
+
+        return aName.length - bName.length;
       })
       .slice(0, 10);
   },
@@ -224,7 +274,7 @@ const MentionSuggestion = {
           editor: props.editor,
           query: props.query
         });
-        const onSelect = (item: TJoinedPublicUser) => {
+        const onSelect = (item: TMentionSuggestionItem) => {
           props.command(item);
 
           cleanup(component);
@@ -258,7 +308,7 @@ const MentionSuggestion = {
         });
         component?.updateProps({
           items,
-          onSelect: (item: TJoinedPublicUser) => {
+          onSelect: (item: TMentionSuggestionItem) => {
             props.command(item);
 
             cleanup(component);

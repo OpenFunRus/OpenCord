@@ -191,9 +191,9 @@ export const hasUnreadMentionsSelector = createCachedSelector(
     channelReadStateByIdSelector,
     channelByIdSelector,
     messagesByChannelIdSelector,
-    ownUserIdSelector
+    ownUserSelector
   ],
-  (readState, channel, messages, ownUserId) => {
+  (readState, channel, messages, ownUser) => {
     if (!channel || !messages) return false;
 
     const unreadMessages = messages.slice(-readState);
@@ -201,7 +201,10 @@ export const hasUnreadMentionsSelector = createCachedSelector(
     return unreadMessages.some((message) => {
       if (!message.content) return false;
 
-      const isUserMentioned = hasMention(message.content, ownUserId);
+      const isUserMentioned = hasMention(message.content, {
+        userId: ownUser?.id,
+        roleIds: ownUser?.roleIds
+      });
 
       return isUserMentioned;
     });

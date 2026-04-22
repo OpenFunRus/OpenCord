@@ -156,4 +156,18 @@ describe('sanitize-html', () => {
 
     expect(sanitizeMessageHtml(input)).toBe(input);
   });
+
+  test('should preserve role mention attributes', () => {
+    const input =
+      '<span data-type="mention" data-mention-kind="role" data-role-id="5" class="mention">@Developer</span>';
+
+    expect(sanitizeMessageHtml(input)).toBe(input);
+  });
+
+  test('should preserve everyone mention attributes', () => {
+    const input =
+      '<span data-type="mention" data-mention-kind="everyone" class="mention">@everyone</span>';
+
+    expect(sanitizeMessageHtml(input)).toBe(input);
+  });
 });

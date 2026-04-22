@@ -3,7 +3,7 @@ import { openThreadSidebar } from '@/features/app/actions';
 import { requestConfirmation } from '@/features/dialogs/actions';
 import { useThreadSidebar } from '@/features/app/hooks';
 import { useCan } from '@/features/server/hooks';
-import { useIsOwnUser, useOwnUserId } from '@/features/server/users/hooks';
+import { useIsOwnUser, useOwnUser } from '@/features/server/users/hooks';
 import { getFileUrl } from '@/helpers/get-file-url';
 import { getTRPCClient } from '@/lib/trpc';
 import { cn } from '@/lib/utils';
@@ -47,7 +47,7 @@ const Message = memo(
     const can = useCan();
     const { isOpen: isThreadOpen, parentMessageId: threadParentId } =
       useThreadSidebar();
-    const ownUserId = useOwnUserId();
+    const ownUser = useOwnUser();
 
     const canManage = useMemo(
       () => can(Permission.MANAGE_MESSAGES) || isFromOwnUser,
@@ -55,8 +55,12 @@ const Message = memo(
     );
 
     const isMentioned = useMemo(
-      () => hasMention(message.content, ownUserId),
-      [message.content, ownUserId]
+      () =>
+        hasMention(message.content, {
+          userId: ownUser?.id,
+          roleIds: ownUser?.roleIds
+        }),
+      [message.content, ownUser?.id, ownUser?.roleIds]
     );
 
     const isThreadReply = !!message.parentMessageId;

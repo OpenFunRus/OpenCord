@@ -22,7 +22,7 @@ import {
 import { serverSliceActions } from '../slice';
 import { playSound } from '../sounds/actions';
 import { SoundType } from '../types';
-import { ownUserIdSelector, userByIdSelector } from '../users/selectors';
+import { ownUserSelector, userByIdSelector } from '../users/selectors';
 import { threadMessagesMapSelector } from './selectors';
 import {
   removeCachedMessage,
@@ -120,13 +120,13 @@ export const addMessages = (
 
   if (isSubscriptionMessage && messages.length > 0) {
     const state = store.getState();
-    const ownUserId = ownUserIdSelector(state);
+    const ownUser = ownUserSelector(state);
     const hasBrowserNotificationsEnabled = browserNotificationsSelector(state);
     const notificationsForMentionsOnly =
       browserNotificationsForMentionsSelector(state);
     const dmsOpen = dmsOpenSelector(state);
     const targetMessage = messages[0];
-    const isFromOwnUser = ownUserId === targetMessage.userId;
+    const isFromOwnUser = ownUser?.id === targetMessage.userId;
 
     const isTextChannelSelected = selectedChannelId === channelId;
     const isDmChannelSelected = selectedDmChannelId === channelId && dmsOpen; // only consider DM channel selected if DMs are open
@@ -158,7 +158,10 @@ export const addMessages = (
         } else if (notificationsForMentionsOnly) {
           const isMentioned = hasMention(
             targetMessage.content ?? null,
-            ownUserId
+            {
+              userId: ownUser?.id,
+              roleIds: ownUser?.roleIds
+            }
           );
 
           if (isMentioned) {

@@ -94,14 +94,41 @@ const serializer = (
     } else if (
       domNode instanceof Element &&
       domNode.name === 'span' &&
-      domNode.attribs['data-type'] === 'mention' &&
-      domNode.attribs['data-user-id']
+      domNode.attribs['data-type'] === 'mention'
     ) {
+      const mentionKind =
+        domNode.attribs['data-mention-kind'] ??
+        (domNode.attribs['data-role-id']
+          ? 'role'
+          : domNode.attribs['data-user-id']
+            ? 'user'
+            : undefined);
       const userId = parseInt(domNode.attribs['data-user-id'], 10);
+      const roleId = parseInt(domNode.attribs['data-role-id'], 10);
       const label = getMentionLabel(domNode);
 
+      if (mentionKind === 'everyone') {
+        return <MentionOverride kind="everyone" label={label || 'everyone'} />;
+      }
+
+      if (mentionKind === 'role' && !Number.isNaN(roleId)) {
+        return (
+          <MentionOverride
+            kind="role"
+            roleId={roleId}
+            label={label || undefined}
+          />
+        );
+      }
+
       if (!Number.isNaN(userId)) {
-        return <MentionOverride userId={userId} label={label || undefined} />;
+        return (
+          <MentionOverride
+            kind="user"
+            userId={userId}
+            label={label || undefined}
+          />
+        );
       }
     }
   } catch (error) {

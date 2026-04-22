@@ -2,12 +2,14 @@ import { MentionChip } from '@/components/mention-chip';
 import { memo } from 'react';
 
 type TMentionOverrideProps = {
-  userId: number;
+  kind?: 'user' | 'role' | 'everyone';
+  userId?: number;
+  roleId?: number;
   label?: string;
 };
 
-const MentionOverride = memo(({ userId, label }: TMentionOverrideProps) => (
-  <MentionChip userId={userId} label={label} />
+const MentionOverride = memo(({ kind, userId, roleId, label }: TMentionOverrideProps) => (
+  <MentionChip kind={kind} userId={userId} roleId={roleId} label={label} />
 ));
 
 export { MentionOverride };
