@@ -24,25 +24,22 @@ const openDirectMessageRoute = protectedProcedure
       message: 'Direct messages are disabled on this server'
     });
 
-    invariant(input.userId !== ctx.userId, {
-      code: 'BAD_REQUEST',
-      message: 'Cannot create a direct message with yourself'
-    });
+    if (input.userId !== ctx.userId) {
+      const targetUser = await db
+        .select({
+          id: users.id,
+          banned: users.banned
+        })
+        .from(users)
+        .where(eq(users.id, input.userId))
+        .limit(1)
+        .get();
 
-    const targetUser = await db
-      .select({
-        id: users.id,
-        banned: users.banned
-      })
-      .from(users)
-      .where(eq(users.id, input.userId))
-      .limit(1)
-      .get();
-
-    invariant(targetUser && !targetUser.banned, {
-      code: 'NOT_FOUND',
-      message: 'User not found'
-    });
+      invariant(targetUser && !targetUser.banned, {
+        code: 'NOT_FOUND',
+        message: 'User not found'
+      });
+    }
 
     const [userOneId, userTwoId] = normalizePair(ctx.userId, input.userId);
 

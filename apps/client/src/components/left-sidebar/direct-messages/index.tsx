@@ -28,12 +28,14 @@ const isPresenceOnline = (status: UserStatus | undefined) =>
 
 type TDirectMessageItemProps = {
   dm: TDirectMessageConversation;
+  isNotes?: boolean;
   selected: boolean;
   onSelect: () => void;
 };
 
 const DirectMessageItem = memo(
-  ({ dm, selected, onSelect }: TDirectMessageItemProps) => {
+  ({ dm, isNotes = false, selected, onSelect }: TDirectMessageItemProps) => {
+    const { t } = useTranslation('sidebar');
     const user = useUserById(dm.userId);
     const unreadCount = useUnreadMessagesCount(dm.channelId);
 
@@ -51,8 +53,15 @@ const DirectMessageItem = memo(
         )}
         onClick={onSelect}
       >
-        <UserAvatar userId={user.id} className="h-6 w-6" showUserPopover />
-        <span className="truncate flex-1 text-left">{user.name}</span>
+        <UserAvatar
+          userId={user.id}
+          className="h-6 w-6"
+          showUserPopover={!isNotes}
+          showStatusBadge={!isNotes}
+        />
+        <span className="truncate flex-1 text-left">
+          {isNotes ? t('personalNotes') : user.name}
+        </span>
         <UnreadCount count={unreadCount} />
       </button>
     );
@@ -112,6 +121,19 @@ const DirectMessages = memo(() => {
   }, [channels.length, fetchConversations]);
 
   useEffect(() => {
+    if (!ownUserId) return;
+
+    const trpc = getTRPCClient();
+
+    void trpc.dms.open
+      .mutate({ userId: ownUserId })
+      .then(() => fetchConversations())
+      .catch(() => {
+        // ignore notes bootstrap errors here; normal DM list error handling stays below
+      });
+  }, [fetchConversations, ownUserId]);
+
+  useEffect(() => {
     const trpc = getTRPCClient();
 
     const sub = trpc.dms.onConversationOpen.subscribe(undefined, {
@@ -151,16 +173,22 @@ const DirectMessages = memo(() => {
 
   const sortedRecentDms = useMemo(() => {
     let list = [...visibleConversations].sort(
-      (a, b) => b.lastMessageAt - a.lastMessageAt
+      (a, b) =>
+        Number(b.userId === ownUserId) - Number(a.userId === ownUserId) ||
+        b.lastMessageAt - a.lastMessageAt
     );
     if (q) {
       list = list.filter((dm) => {
+        if (dm.userId === ownUserId) {
+          return t('personalNotes').toLowerCase().includes(q);
+        }
+
         const u = users.find((x) => x.id === dm.userId);
         return u?.name.toLowerCase().includes(q);
       });
     }
     return list;
-  }, [visibleConversations, users, q]);
+  }, [visibleConversations, users, q, ownUserId]);
 
   const { onlineOthers, offlineOthers } = useMemo(() => {
     const rest = users.filter(
@@ -233,6 +261,7 @@ const DirectMessages = memo(() => {
                 <DirectMessageItem
                   key={dm.channelId}
                   dm={dm}
+                  isNotes={dm.userId === ownUserId}
                   selected={selectedDmChannelId === dm.channelId}
                   onSelect={() => setSelectedDmChannelId(dm.channelId)}
                 />

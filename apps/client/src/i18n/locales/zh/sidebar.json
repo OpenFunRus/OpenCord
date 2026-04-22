@@ -43,6 +43,7 @@
   "failedReorderChannels": "重新排序频道失败",
   "failedReorderCategories": "重新排序分类失败",
   "directMessages": "私信",
+  "personalNotes": "个人笔记",
   "failedLoadDMs": "加载私信失败",
   "couldNotOpenDM": "无法打开私信",
   "noDMsYet": "暂无私信",

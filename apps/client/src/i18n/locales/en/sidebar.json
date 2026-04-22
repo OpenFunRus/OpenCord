@@ -53,6 +53,7 @@
   "defaultTextChannels": "Text Channels",
   "defaultVoiceChannels": "Voice Channels",
   "directMessages": "Direct Messages",
+  "personalNotes": "Personal Notes",
   "failedLoadDMs": "Failed to load direct messages",
   "couldNotOpenDM": "Could not open direct message",
   "noDMsYet": "No direct messages yet",

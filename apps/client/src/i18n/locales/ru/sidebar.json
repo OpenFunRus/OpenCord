@@ -53,6 +53,7 @@
   "defaultTextChannels": "Текстовые каналы",
   "defaultVoiceChannels": "Голосовые каналы",
   "directMessages": "Личные сообщения",
+  "personalNotes": "Личные заметки",
   "failedLoadDMs": "Не удалось загрузить личные сообщения",
   "couldNotOpenDM": "Не удалось открыть личный чат",
   "noDMsYet": "Личных сообщений пока нет",
