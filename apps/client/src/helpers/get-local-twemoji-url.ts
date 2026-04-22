@@ -49,6 +49,7 @@ const toUniqueStrings = (values: Array<string | null | undefined>) =>
   );
 
 const normalizeTwemojiFileName = (value: string) => value.toLowerCase();
+const isTwemojiCodepoint = (value: string) => /^[0-9a-f]+(?:-[0-9a-f]+)*$/i.test(value);
 const normalizeTwemojiIcon = (icon: string) =>
   icon
     .split('-')
@@ -139,9 +140,10 @@ const getLocalTwemojiUrl = ({
 };
 
 const getLocalTwemojiUrlByIcon = (icon: string) => {
-  const fileName = normalizeTwemojiFileName(
-    `${normalizeTwemojiIcon(twemoji.convert.toCodePoint(icon))}.png`
-  );
+  const normalizedIcon = isTwemojiCodepoint(icon)
+    ? normalizeTwemojiIcon(icon)
+    : normalizeTwemojiIcon(twemoji.convert.toCodePoint(icon));
+  const fileName = normalizeTwemojiFileName(`${normalizedIcon}.png`);
 
   if (!LOCAL_TWEMOJI_IMAGE_SET.has(fileName)) {
     return undefined;

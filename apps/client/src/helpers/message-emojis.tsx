@@ -43,6 +43,24 @@ const renderUnicodeEmojiHtml = (text: string) =>
     })
   });
 
+const getEmojiParseStats = (text: string) => {
+  if (!text.trim() || typeof DOMParser === 'undefined') {
+    return { emojiCount: 0, remainingText: '' };
+  }
+
+  const parser = new DOMParser();
+  const renderedHtml = renderUnicodeEmojiHtml(text);
+  const renderedDoc = parser.parseFromString(renderedHtml, 'text/html');
+  const emojiCount = renderedDoc.body.querySelectorAll('img').length;
+
+  renderedDoc.body.querySelectorAll('img').forEach((node) => node.remove());
+
+  return {
+    emojiCount,
+    remainingText: renderedDoc.body.textContent ?? ''
+  };
+};
+
 const renderMessageTextWithEmojis = (text: string, key: string) => {
   if (!text) return null;
 
@@ -97,19 +115,34 @@ const isEmojiOnlyHtml = (html: string | null | undefined) => {
     return false;
   }
 
-  const unicodeAsImages = renderUnicodeEmojiHtml(plainText).replace(
-    /<img[^>]*>/g,
-    ''
-  );
-  const unicodeDoc = parser.parseFromString(unicodeAsImages, 'text/html');
-  const remainingText = unicodeDoc.body.textContent ?? '';
+  const { emojiCount, remainingText } = getEmojiParseStats(plainText);
 
-  return remainingText.trim().length === 0;
+  return emojiCount > 0 && remainingText.trim().length === 0;
+};
+
+const getEmojiOnlyCount = (html: string | null | undefined) => {
+  if (!html || typeof DOMParser === 'undefined') {
+    return 0;
+  }
+
+  const canonicalHtml = canonicalizeMessageEmojiHtml(html);
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(canonicalHtml, 'text/html');
+  const plainText = doc.body.textContent ?? '';
+
+  if (!plainText.trim()) {
+    return 0;
+  }
+
+  const { emojiCount, remainingText } = getEmojiParseStats(plainText);
+
+  return remainingText.trim().length === 0 ? emojiCount : 0;
 };
 
 export {
   canonicalizeMessageEmojiHtml,
   getClipboardTextFromRenderedEmojiHtml,
+  getEmojiOnlyCount,
   isEmojiOnlyHtml,
   renderMessageTextWithEmojis
 };

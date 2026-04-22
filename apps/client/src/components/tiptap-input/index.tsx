@@ -4,9 +4,9 @@ import { useRoles } from '@/features/server/roles/hooks';
 import { useChannelById } from '@/features/server/channels/hooks';
 import { useMentionableUsers } from '@/features/server/users/hooks';
 import { getRenderedUsername } from '@/helpers/get-rendered-username';
+import { canonicalizeMessageEmojiHtml } from '@/helpers/message-emojis';
 import type { TCommandInfo } from '@opencord/shared';
 import { Button } from '@opencord/ui';
-import Emoji, { type EmojiItem } from '@tiptap/extension-emoji';
 import Link from '@tiptap/extension-link';
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
@@ -24,6 +24,8 @@ import {
   COMMANDS_STORAGE_KEY,
   CommandSuggestion
 } from './plugins/command-suggestion';
+import { EmojiText } from './plugins/emoji-text';
+import { EmojiVisualDecorations } from './plugins/emoji-visual-decorations';
 import { Mention } from './plugins/mentions';
 import { MentionNode } from './plugins/mentions/node';
 import {
@@ -121,14 +123,12 @@ const TiptapInput = memo(
             return /^https?:\/\//i.test(url);
           }
         }),
-        Emoji.configure({
-          emojis: ALL_EMOJIS as EmojiItem[],
+        EmojiText.configure({
+          emojis: ALL_EMOJIS,
           enableEmoticons: true,
-          suggestion: EmojiSuggestion,
-          HTMLAttributes: {
-            class: 'emoji-image'
-          }
+          suggestion: EmojiSuggestion
         }),
+        EmojiVisualDecorations,
         Mention.configure({
           items: mentionItems,
           suggestion: MentionSuggestion
@@ -151,7 +151,7 @@ const TiptapInput = memo(
 
     const editor = useEditor({
       extensions,
-      content: value,
+      content: value ? canonicalizeMessageEmojiHtml(value) : value,
       editable: !disabled,
       onUpdate: ({ editor }) => {
         const html = editor.getHTML();
@@ -265,11 +265,12 @@ const TiptapInput = memo(
 
     useEffect(() => {
       if (editor && value !== undefined) {
+        const normalizedValue = canonicalizeMessageEmojiHtml(value);
         const currentContent = editor.getHTML();
 
         // only update if content is actually different to avoid cursor jumping
-        if (currentContent !== value) {
-          editor.commands.setContent(value);
+        if (currentContent !== normalizedValue) {
+          editor.commands.setContent(normalizedValue);
         }
       }
     }, [editor, value]);
@@ -329,6 +330,7 @@ const TiptapInput = memo(
         <EmojiPicker
           onEmojiSelect={handleEmojiSelect}
           onGifSelect={handleGifSelect}
+          closeOnEmojiSelect={false}
         >
           <Button
             variant="ghost"

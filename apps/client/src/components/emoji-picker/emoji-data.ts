@@ -22,7 +22,11 @@ const toTEmojiItem = (emoji: TEmojiItem): TEmojiItem => ({
   name: emoji.name,
   shortcodes: emoji.shortcodes,
   fallbackImage: emoji.fallbackImage,
-  emoji: emoji.emoji
+  emoji: emoji.emoji,
+  tags: emoji.tags,
+  group: emoji.group,
+  emoticons: emoji.emoticons,
+  version: emoji.version
 });
 
 const processEmojis = () => {

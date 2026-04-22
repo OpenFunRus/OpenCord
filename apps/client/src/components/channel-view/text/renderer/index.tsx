@@ -6,6 +6,7 @@ import { getFileUrl } from '@/helpers/get-file-url';
 import { getRenderedUsername } from '@/helpers/get-rendered-username';
 import {
   getClipboardTextFromRenderedEmojiHtml,
+  getEmojiOnlyCount,
   isEmojiOnlyHtml,
   renderMessageTextWithEmojis
 } from '@/helpers/message-emojis';
@@ -61,6 +62,25 @@ const MessageRenderer = memo(
     );
 
     const emojiOnly = useMemo(() => isEmojiOnlyHtml(message.content), [message.content]);
+    const emojiOnlyCount = useMemo(
+      () => getEmojiOnlyCount(message.content),
+      [message.content]
+    );
+    const emojiOnlySizeClass = useMemo(() => {
+      if (!emojiOnly) {
+        return undefined;
+      }
+
+      if (emojiOnlyCount === 1) {
+        return 'emoji-only-3x';
+      }
+
+      if (emojiOnlyCount > 1 && emojiOnlyCount <= 5) {
+        return 'emoji-only-2x';
+      }
+
+      return 'emoji-only-1x';
+    }, [emojiOnly, emojiOnlyCount]);
     const hasMessageText = useMemo(() => {
       const plainText = (message.content ?? '')
         .replace(/<[^>]+>/g, ' ')
@@ -190,6 +210,7 @@ const MessageRenderer = memo(
             className={cn(
               'prose max-w-full wrap-break-word msg-content',
               emojiOnly && 'emoji-only',
+              emojiOnlySizeClass,
               message.editedAt && 'msg-edited'
             )}
           >

@@ -10,7 +10,7 @@ import {
   TabsList,
   TabsTrigger
 } from '@opencord/ui';
-import { memo, useCallback, useMemo, useState } from 'react';
+import { memo, useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ALL_EMOJIS, searchEmojis } from './emoji-data';
 import { EmojiGrid } from './emoji-grid';
@@ -35,6 +35,7 @@ type TEmojiPickerProps = {
   side?: React.ComponentProps<typeof PopoverContent>['side'];
   align?: React.ComponentProps<typeof PopoverContent>['align'];
   sideOffset?: number;
+  closeOnEmojiSelect?: boolean;
 };
 
 const EmojiPicker = memo(
@@ -51,7 +52,8 @@ const EmojiPicker = memo(
     anchorPosition = null,
     side = 'bottom',
     align = 'start',
-    sideOffset = 8
+    sideOffset = 8,
+    closeOnEmojiSelect = true
   }: TEmojiPickerProps) => {
     const { t } = useTranslation('common');
     const [internalOpen, setInternalOpen] = useState(false);
@@ -60,6 +62,7 @@ const EmojiPicker = memo(
       showGifs ? defaultTab : 'native'
     );
     const [gifReloadKey, setGifReloadKey] = useState(0);
+    const ignoreNextCloseRef = useRef(false);
     const { addRecent } = useRecentEmojis();
 
     const isSearching = search.trim().length > 0;
@@ -83,9 +86,18 @@ const EmojiPicker = memo(
     const handleEmojiSelect = useCallback(
       (emoji: TEmojiItem) => {
         onEmojiSelect(emoji);
+
+        if (!closeOnEmojiSelect) {
+          ignoreNextCloseRef.current = true;
+          requestAnimationFrame(() => {
+            ignoreNextCloseRef.current = false;
+          });
+          return;
+        }
+
         closePicker();
       },
-      [closePicker, onEmojiSelect]
+      [closeOnEmojiSelect, closePicker, onEmojiSelect]
     );
 
     const handleSearchResultSelect = useCallback(
@@ -134,6 +146,10 @@ const EmojiPicker = memo(
     const open = controlledOpen ?? internalOpen;
 
     const handleOpenChange = useCallback((nextOpen: boolean) => {
+      if (!nextOpen && ignoreNextCloseRef.current) {
+        return;
+      }
+
       if (controlledOnOpenChange) {
         controlledOnOpenChange(nextOpen);
       } else {

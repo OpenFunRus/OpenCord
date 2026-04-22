@@ -3,6 +3,10 @@ type TEmojiItem = {
   shortcodes: string[];
   fallbackImage?: string;
   emoji?: string;
+  tags?: string[];
+  group?: string;
+  emoticons?: string[];
+  version?: number;
 };
 
 // checks if the emoji is likely to be rendered as a text presentation emoji, which often look worse and less consistent across platforms than image presentation emojis

@@ -142,7 +142,11 @@ const UserList = forwardRef<TUserListRef, TUserListProps>(
           >
             {item.kind === 'user' ? (
               <div className="relative shrink-0">
-                <UserAvatar userId={item.id} className="h-8 w-8 shrink-0" />
+                <UserAvatar
+                  userId={item.id}
+                  className="h-8 w-8 shrink-0"
+                  showStatusBadge={false}
+                />
                 <span
                   className={`absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border border-[#101926] ${getStatusDotClassName(item.user.status)}`}
                 />
