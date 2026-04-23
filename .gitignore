@@ -8,6 +8,9 @@
 /apps/client/dist
 /apps/server/build/out
 /apps/server/build/temp
+/apps/windows/bin
+/apps/windows/obj
+/apps/windows/dist
 /data
 *.bun-build
 .*.bun-build
