@@ -2,6 +2,7 @@ import chalk from 'chalk';
 import http from 'http';
 import z from 'zod';
 import { config } from '../config';
+import { desktopDownloadRouteHandler } from './downloads';
 import { getErrorMessage } from '../helpers/get-error-message';
 import { getWsInfo } from '../helpers/get-ws-info';
 import { logger } from '../logger';
@@ -39,6 +40,8 @@ const routeHandlers: Partial<
 > = {
   GET: {
     exact: {
+      '/downloads/opencord.exe': (req, res) =>
+        desktopDownloadRouteHandler(req, res),
       '/healthz': (req, res) => healthRouteHandler(req, res),
       '/info': (req, res) => infoRouteHandler(req, res),
       '/manifest.json': (req, res) => manifestRouteHandler(req, res),

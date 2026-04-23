@@ -21,6 +21,11 @@
   "serverNameRequired": "Имя на сервере обязательно",
   "serverNameConfirmBtn": "Продолжить",
   "connectError": "Не удалось подключиться: {{message}}",
+  "downloadAppsTitle": "Скачать приложение",
+  "downloadAppsDesc": "Windows-версия уже доступна. Android и iOS будут добавлены позже.",
+  "downloadWindowsBtn": "Windows",
+  "downloadAndroidBtn": "Android",
+  "downloadIosBtn": "iOS",
   "loggingInAutomatically": "Автоматический вход...",
   "loadingApp": "Загрузка OpenCord",
   "loadingPlugins": "Загрузка плагинов"

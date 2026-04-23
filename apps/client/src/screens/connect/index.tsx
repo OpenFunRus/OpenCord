@@ -180,6 +180,10 @@ const Connect = memo(() => {
 
     return '/logo.webp';
   }, [info]);
+  const windowsDownloadUrl = useMemo(
+    () => `${getUrlFromServer()}/downloads/opencord.exe`,
+    []
+  );
 
   const currentLanguage = (i18n.resolvedLanguage ??
     i18n.language) as TLanguageCode;
@@ -334,6 +338,40 @@ const Connect = memo(() => {
               >
                 {t('connectBtn')}
               </Button>
+
+              <div className="space-y-3 rounded-xl border border-[#2b3544] bg-[#101926]/85 p-3.5">
+                <div className="space-y-1 text-center">
+                  <div className="text-sm font-semibold text-[#d7e2f0]">
+                    {t('downloadAppsTitle')}
+                  </div>
+                  <div className="text-xs leading-5 text-[#8fa2bb]">
+                    {t('downloadAppsDesc')}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                  <Button
+                    asChild
+                    className="h-11 rounded-lg border border-[#2f7ad1] bg-[#16273b] text-sm font-semibold text-white hover:bg-[#1b314a]"
+                  >
+                    <a href={windowsDownloadUrl}>{t('downloadWindowsBtn')}</a>
+                  </Button>
+                  <Button
+                    type="button"
+                    disabled
+                    className="h-11 rounded-lg border border-[#314055] bg-[#172130] text-sm font-semibold text-[#7f91a8]"
+                  >
+                    {t('downloadAndroidBtn')}
+                  </Button>
+                  <Button
+                    type="button"
+                    disabled
+                    className="h-11 rounded-lg border border-[#314055] bg-[#172130] text-sm font-semibold text-[#7f91a8]"
+                  >
+                    {t('downloadIosBtn')}
+                  </Button>
+                </div>
+              </div>
 
               {!window.isSecureContext && (
                 <Alert

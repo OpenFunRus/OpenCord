@@ -21,6 +21,11 @@
   "serverNameRequired": "Server name is required",
   "serverNameConfirmBtn": "Continue",
   "connectError": "Could not connect: {{message}}",
+  "downloadAppsTitle": "Download the app",
+  "downloadAppsDesc": "The Windows version is available now. Android and iOS will be added later.",
+  "downloadWindowsBtn": "Windows",
+  "downloadAndroidBtn": "Android",
+  "downloadIosBtn": "iOS",
   "loggingInAutomatically": "Logging in automatically...",
   "loadingApp": "Loading OpenCord",
   "loadingPlugins": "Loading Plugins"

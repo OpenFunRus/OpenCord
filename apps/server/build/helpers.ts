@@ -23,6 +23,14 @@ const windowsIconPath = path.join(
   'public',
   'favicon.ico'
 );
+const windowsDesktopDownloadPath = path.join(
+  rootCwd,
+  'apps',
+  'server',
+  'assets',
+  'downloads',
+  'opencord.exe'
+);
 
 const unpack = async (tgzPath: string, outDir: string) => {
   const tarProc = Bun.spawn(['tar', '-xzf', tgzPath, '-C', outDir], {
@@ -158,7 +166,8 @@ const compile = async ({ out, target }: TTarget) => {
     path.join(serverCwd, 'src', 'index.ts'),
     path.join(serverCwd, 'build', 'temp', 'drizzle.zip'),
     path.join(serverCwd, 'build', 'temp', 'interface.zip'),
-    path.join(serverCwd, 'build', 'temp', mediasoupBinary)
+    path.join(serverCwd, 'build', 'temp', mediasoupBinary),
+    windowsDesktopDownloadPath
   ];
 
   if (target === 'bun-windows-x64') {

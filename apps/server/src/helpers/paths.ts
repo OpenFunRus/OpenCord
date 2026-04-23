@@ -49,6 +49,11 @@ const DRIZZLE_PATH = path.resolve(DATA_PATH, 'drizzle');
 const MEDIASOUP_PATH = path.resolve(DATA_PATH, 'mediasoup');
 const CONFIG_INI_PATH = path.resolve(DATA_PATH, 'config.ini');
 const PLUGINS_PATH = path.join(DATA_PATH, 'plugins');
+const WINDOWS_DOWNLOADS_PATH = path.resolve(
+  process.cwd(),
+  'assets',
+  'downloads'
+);
 const SRC_MIGRATIONS_PATH = path.join(process.cwd(), 'src', 'db', 'migrations');
 
 export {
@@ -64,6 +69,7 @@ export {
   PUBLIC_PATH,
   SRC_MIGRATIONS_PATH,
   TMP_PATH,
-  UPLOADS_PATH
+  UPLOADS_PATH,
+  WINDOWS_DOWNLOADS_PATH
 };
 
