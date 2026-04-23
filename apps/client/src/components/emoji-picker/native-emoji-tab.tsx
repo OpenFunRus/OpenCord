@@ -1,5 +1,6 @@
 import type { TEmojiItem } from '@/components/tiptap-input/helpers';
 import { cn } from '@/lib/utils';
+import { Tooltip } from '@opencord/ui';
 import { memo, useCallback, useMemo, useState } from 'react';
 import {
   EMOJI_CATEGORIES,
@@ -29,29 +30,29 @@ const CategoryBar = memo(
         }
 
         return (
-          <button
-            key={category.id}
-            type="button"
-            onClick={() => onCategorySelect(category.id)}
-            className={cn(
-              'flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg text-base text-[#8fa2bb] transition-colors',
-              activeCategory === category.id
-                ? 'bg-[#223146] text-white'
-                : 'hover:bg-[#223146] hover:text-white'
-            )}
-            title={category.label}
-          >
-            {findStandardEmoji(category.icon)?.fallbackImage ? (
-              <img
-                src={findStandardEmoji(category.icon)?.fallbackImage}
-                alt={category.label}
-                className="h-4 w-4 object-contain"
-                loading="lazy"
-              />
-            ) : (
-              category.icon
-            )}
-          </button>
+          <Tooltip key={category.id} content={category.label}>
+            <button
+              type="button"
+              onClick={() => onCategorySelect(category.id)}
+              className={cn(
+                'flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg text-base text-[#8fa2bb] transition-colors',
+                activeCategory === category.id
+                  ? 'bg-[#223146] text-white'
+                  : 'hover:bg-[#223146] hover:text-white'
+              )}
+            >
+              {findStandardEmoji(category.icon)?.fallbackImage ? (
+                <img
+                  src={findStandardEmoji(category.icon)?.fallbackImage}
+                  alt={category.label}
+                  className="h-4 w-4 object-contain"
+                  loading="lazy"
+                />
+              ) : (
+                category.icon
+              )}
+            </button>
+          </Tooltip>
         );
       })}
     </div>

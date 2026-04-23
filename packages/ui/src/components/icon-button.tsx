@@ -3,6 +3,7 @@ import type { LucideIcon } from 'lucide-react';
 import * as React from 'react';
 
 import { cn } from '../lib/utils';
+import { Tooltip } from './tooltip';
 
 const iconButtonVariants = cva(
   'inline-flex items-center justify-center transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 outline-none shrink-0',
@@ -36,16 +37,27 @@ type IconButtonProps = React.ComponentProps<'button'> &
   };
 
 const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
-  ({ className, variant, size, icon: Icon, ...props }, ref) => {
-    return (
+  ({ className, variant, size, icon: Icon, title, disabled, ...props }, ref) => {
+    const button = (
       <button
         ref={ref}
         data-slot="icon-button"
         className={cn(iconButtonVariants({ variant, size, className }))}
+        disabled={disabled}
         {...props}
       >
         <Icon />
       </button>
+    );
+
+    if (!title) {
+      return button;
+    }
+
+    return (
+      <Tooltip content={title}>
+        {disabled ? <span className="inline-flex">{button}</span> : button}
+      </Tooltip>
     );
   }
 );

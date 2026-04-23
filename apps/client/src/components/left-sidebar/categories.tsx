@@ -66,6 +66,12 @@ const getDefaultChannelTypeForCategory = (categoryName: string) => {
   return undefined;
 };
 
+const isStaticDefaultCategory = (categoryName: string) =>
+  categoryName === 'Text Channels' ||
+  categoryName === 'Текстовые каналы' ||
+  categoryName === 'Voice Channels' ||
+  categoryName === 'Голосовые каналы';
+
 const Category = memo(({ categoryId }: TCategoryProps) => {
   const { t } = useTranslation('sidebar');
   const can = useCan();
@@ -104,6 +110,16 @@ const Category = memo(({ categoryId }: TCategoryProps) => {
   }
 
   const ChevronIcon = expanded ? ChevronDown : ChevronRight;
+  const isDefaultCategory = isStaticDefaultCategory(category.name);
+  const categoryLabel = (
+    <span
+      {...(!isDefaultCategory ? attributes : {})}
+      {...(!isDefaultCategory ? listeners : {})}
+      className="flex-1 truncate rounded-md px-1 py-1 text-[#9fb2c8] transition-colors hover:text-white"
+    >
+      {getDisplayCategoryName(category.name, t)}
+    </span>
+  );
 
   return (
     <div
@@ -125,15 +141,19 @@ const Category = memo(({ categoryId }: TCategoryProps) => {
             title={expanded ? t('collapseCategory') : t('expandCategory')}
             className="h-6 w-6 rounded-md text-[#8fa2bb] hover:bg-[#1b2940] hover:text-white"
           />
-          <CategoryContextMenu categoryId={category.id}>
-            <span
-              {...attributes}
-              {...listeners}
-              className="flex-1 cursor-grab truncate rounded-md px-1 py-1 text-[#9fb2c8] transition-colors active:cursor-grabbing hover:text-white"
-            >
-              {getDisplayCategoryName(category.name, t)}
-            </span>
-          </CategoryContextMenu>
+          {isDefaultCategory ? (
+            categoryLabel
+          ) : (
+            <CategoryContextMenu categoryId={category.id}>
+              <span
+                {...attributes}
+                {...listeners}
+                className="flex-1 cursor-grab truncate rounded-md px-1 py-1 text-[#9fb2c8] transition-colors active:cursor-grabbing hover:text-white"
+              >
+                {getDisplayCategoryName(category.name, t)}
+              </span>
+            </CategoryContextMenu>
+          )}
         </div>
 
         <Protect permission={Permission.MANAGE_CHANNELS}>

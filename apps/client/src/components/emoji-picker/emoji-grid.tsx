@@ -2,6 +2,7 @@ import {
   shouldUseFallbackImage,
   type TEmojiItem
 } from '@/components/tiptap-input/helpers';
+import { Tooltip } from '@opencord/ui';
 import { memo, useCallback, useMemo } from 'react';
 import { VirtuosoGrid } from 'react-virtuoso';
 import { GRID_COLS } from './emoji-data';
@@ -15,27 +16,28 @@ const EmojiButton = memo(({ emoji, onSelect }: TEmojiButtonProps) => {
   const useImage = shouldUseFallbackImage(emoji);
 
   return (
-    <button
-      type="button"
-      onClick={() => onSelect(emoji)}
-      className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-[#d7e2f0] transition-colors hover:bg-[#223146]"
-      title={`:${emoji.shortcodes[0]}:`}
-    >
-      {emoji.emoji && !useImage ? (
-        <span className="text-xl leading-none">{emoji.emoji}</span>
-      ) : emoji.fallbackImage ? (
-        <img
-          src={emoji.fallbackImage}
-          alt={emoji.name}
-          className="w-6 h-6 object-contain"
-          loading="lazy"
-        />
-      ) : (
-        <span className="text-xs text-muted-foreground truncate">
-          {emoji.shortcodes[0]}
-        </span>
-      )}
-    </button>
+    <Tooltip content={`:${emoji.shortcodes[0]}:`}>
+      <button
+        type="button"
+        onClick={() => onSelect(emoji)}
+        className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-[#d7e2f0] transition-colors hover:bg-[#223146]"
+      >
+        {emoji.emoji && !useImage ? (
+          <span className="text-xl leading-none">{emoji.emoji}</span>
+        ) : emoji.fallbackImage ? (
+          <img
+            src={emoji.fallbackImage}
+            alt={emoji.name}
+            className="w-6 h-6 object-contain"
+            loading="lazy"
+          />
+        ) : (
+          <span className="text-xs text-muted-foreground truncate">
+            {emoji.shortcodes[0]}
+          </span>
+        )}
+      </button>
+    </Tooltip>
   );
 });
 

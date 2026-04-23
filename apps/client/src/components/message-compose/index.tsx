@@ -12,16 +12,27 @@ import { getTRPCClient } from '@/lib/trpc';
 import type { TJoinedPublicUser, TTempFile } from '@opencord/shared';
 import {
   ChannelPermission,
+  FileCategory,
   MESSAGE_DEFAULT_LINES_LIMIT,
   MESSAGE_DEFAULT_TEXT_LENGTH_LIMIT,
   Permission,
   PluginSlot,
+  getFileCategory,
   getMessageTextMetrics,
   isEmptyMessage
 } from '@opencord/shared';
 import { Button, Spinner } from '@opencord/ui';
 import { filesize } from 'filesize';
-import { Paperclip, Send } from 'lucide-react';
+import {
+  File,
+  FileImage,
+  FileMusic,
+  FileText,
+  FileVideo,
+  Paperclip,
+  Send,
+  X
+} from 'lucide-react';
 import {
   memo,
   useCallback,
@@ -31,7 +42,6 @@ import {
   useState,
   type Ref
 } from 'react';
-import { FileCard } from '../channel-view/text/file-card';
 import { UsersTypingIndicator } from '../channel-view/text/users-typing';
 
 type TMessageComposeProps = {
@@ -48,6 +58,51 @@ type TMessageComposeProps = {
 type TMessageComposeHandle = {
   clearFiles: () => void;
 };
+
+const composeFileIconMap: Record<FileCategory, React.ElementType> = {
+  [FileCategory.AUDIO]: FileMusic,
+  [FileCategory.IMAGE]: FileImage,
+  [FileCategory.VIDEO]: FileVideo,
+  [FileCategory.DOCUMENT]: FileText,
+  [FileCategory.OTHER]: File
+};
+
+type TAttachedFileChipProps = {
+  file: TTempFile;
+  onRemove: () => void;
+};
+
+const AttachedFileChip = memo(({ file, onRemove }: TAttachedFileChipProps) => {
+  const category = getFileCategory(file.extension);
+  const Icon = composeFileIconMap[category] ?? File;
+
+  return (
+    <div className="relative flex w-[172px] shrink-0 overflow-hidden rounded-xl border border-[#314055] bg-[#101926] text-[#d7e2f0] shadow-[0_10px_28px_rgba(2,6,23,0.22)]">
+      <div className="flex w-full items-center gap-3 p-3 pr-10">
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#2b3a4f] bg-[#172231] text-[#8fa2bb]">
+          <Icon className="h-5 w-5" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="truncate text-sm font-medium text-[#e6edf7]">
+            {file.originalName}
+          </div>
+          <div className="truncate text-xs text-[#8fa2bb]">
+            {file.extension.toUpperCase().replace('.', '') || 'FILE'} ·{' '}
+            {filesize(file.size)}
+          </div>
+        </div>
+      </div>
+      <button
+        type="button"
+        onClick={onRemove}
+        aria-label="Remove file"
+        className="absolute top-2 right-2 inline-flex h-6 w-6 items-center justify-center rounded-md border border-transparent bg-[#172231]/92 text-[#8fa2bb] transition-colors hover:border-[#3d516b] hover:bg-[#1b2940] hover:text-white"
+      >
+        <X className="h-4 w-4" />
+      </button>
+    </div>
+  );
+});
 
 const MessageCompose = memo(
   ({
@@ -189,13 +244,11 @@ const MessageCompose = memo(
           </div>
         )}
         {files.length > 0 && (
-          <div className="flex gap-1 flex-wrap">
+          <div className="flex flex-wrap gap-2">
             {files.map((file) => (
-              <FileCard
+              <AttachedFileChip
                 key={file.id}
-                name={file.originalName}
-                extension={file.extension}
-                size={file.size}
+                file={file}
                 onRemove={() => onRemoveFileClick(file.id)}
               />
             ))}

@@ -55,6 +55,7 @@ const ServerDropdownMenu = memo(({ className }: TServerDropdownMenuProps) => {
         <Button
           variant="ghost"
           size="icon"
+          title={t('serverSettings')}
           className={cn(
             'h-8 w-8 rounded-lg border border-[#314055] !bg-[#172231] text-[#8fa2bb] hover:!bg-[#1b2940] hover:border-[#3d516b] hover:text-white',
             className

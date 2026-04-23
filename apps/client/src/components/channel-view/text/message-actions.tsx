@@ -10,7 +10,7 @@ import { openThreadSidebar } from '@/features/app/actions';
 import { requestConfirmation } from '@/features/dialogs/actions';
 import { getTRPCClient } from '@/lib/trpc';
 import { Permission } from '@opencord/shared';
-import { IconButton } from '@opencord/ui';
+import { IconButton, Tooltip } from '@opencord/ui';
 import {
   MessageSquareText,
   Pencil,
@@ -145,42 +145,43 @@ const MessageActions = memo(
         )}
         {!disablePin && (
           <Protect permission={Permission.PIN_MESSAGES}>
-            <button
-              type="button"
-              onClick={onPinClick}
-              aria-label={isPinned ? t('unpinMessage') : t('pinMessage')}
-              title={isPinned ? t('unpinMessage') : t('pinMessage')}
-              className={
-                isPinned
-                  ? 'inline-flex shrink-0 items-center justify-center rounded-lg border border-transparent bg-transparent text-[#73a7ff] outline-none transition-all hover:text-white [&_svg]:pointer-events-none [&_svg]:shrink-0'
-                  : 'inline-flex shrink-0 items-center justify-center rounded-lg border border-transparent bg-transparent text-[#8fa2bb] outline-none transition-all hover:text-white [&_svg]:pointer-events-none [&_svg]:shrink-0'
-              }
-            >
-              <PushPinIcon className="h-4 w-4" />
-            </button>
+            <Tooltip content={isPinned ? t('unpinMessage') : t('pinMessage')}>
+              <button
+                type="button"
+                onClick={onPinClick}
+                aria-label={isPinned ? t('unpinMessage') : t('pinMessage')}
+                className={
+                  isPinned
+                    ? 'inline-flex shrink-0 items-center justify-center rounded-lg border border-transparent bg-transparent text-[#73a7ff] outline-none transition-all hover:text-white [&_svg]:pointer-events-none [&_svg]:shrink-0'
+                    : 'inline-flex shrink-0 items-center justify-center rounded-lg border border-transparent bg-transparent text-[#8fa2bb] outline-none transition-all hover:text-white [&_svg]:pointer-events-none [&_svg]:shrink-0'
+                }
+              >
+                <PushPinIcon className="h-4 w-4" />
+              </button>
+            </Tooltip>
           </Protect>
         )}
 
         <Protect permission={Permission.REACT_TO_MESSAGES}>
           <div className="flex items-center gap-1 border-l border-[#314055] pl-1.5">
             {recentEmojisToShow.map((emoji) => (
-              <button
-                key={emoji.name}
-                type="button"
-                onClick={() => onEmojiSelect(emoji)}
-                className="flex h-7 w-7 items-center justify-center rounded-lg text-md text-[#d7e2f0] transition-colors hover:bg-transparent"
-                title={`:${emoji.shortcodes[0]}:`}
-              >
-                {emoji.emoji && !shouldUseFallbackImage(emoji) ? (
-                  <span>{emoji.emoji}</span>
-                ) : emoji.fallbackImage ? (
-                  <img
-                    src={emoji.fallbackImage}
-                    alt={emoji.name}
-                    className="w-5 h-5 object-contain"
-                  />
-                ) : null}
-              </button>
+              <Tooltip key={emoji.name} content={`:${emoji.shortcodes[0]}:`}>
+                <button
+                  type="button"
+                  onClick={() => onEmojiSelect(emoji)}
+                  className="flex h-7 w-7 items-center justify-center rounded-lg text-md text-[#d7e2f0] transition-colors hover:bg-transparent"
+                >
+                  {emoji.emoji && !shouldUseFallbackImage(emoji) ? (
+                    <span>{emoji.emoji}</span>
+                  ) : emoji.fallbackImage ? (
+                    <img
+                      src={emoji.fallbackImage}
+                      alt={emoji.name}
+                      className="w-5 h-5 object-contain"
+                    />
+                  ) : null}
+                </button>
+              </Tooltip>
             ))}
 
             <EmojiPicker onEmojiSelect={onEmojiSelect} showGifs={false}>

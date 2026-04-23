@@ -27,12 +27,14 @@ const TooltipPreview = memo(
     const { t } = useTranslation('common');
 
     return (
-      <div className="flex items-center gap-2 max-w-xs wrap-break-word whitespace-pre-wrap text-sm">
+      <div className="flex max-w-xs items-center gap-2 whitespace-pre-wrap break-words text-sm text-[#d7e2f0]">
         <div className="flex items-center flex-col">
           {emojiSlot}
-          <span className="text-[8px]">:{emojiName}:</span>
+          <span className="text-[8px] text-[#8fa2bb]">:{emojiName}:</span>
         </div>
-        <span className="text-xs">{t('wasReactedBy', { reacters })}</span>
+        <span className="text-xs leading-relaxed">
+          {t('wasReactedBy', { reacters })}
+        </span>
       </div>
     );
   }

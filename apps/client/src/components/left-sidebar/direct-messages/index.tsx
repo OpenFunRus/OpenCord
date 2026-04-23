@@ -17,11 +17,10 @@ import {
   type TDirectMessageConversation,
   type TJoinedPublicUser
 } from '@opencord/shared';
-import { Spinner } from '@opencord/ui';
+import { Input, Spinner } from '@opencord/ui';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { SearchUserDropdown } from './search-user-dropdown';
 
 const isPresenceOnline = (status: UserStatus | undefined) =>
   status === UserStatus.ONLINE || status === UserStatus.IDLE;
@@ -143,22 +142,6 @@ const DirectMessages = memo(() => {
     return () => sub.unsubscribe();
   }, [fetchConversations]);
 
-  const directMessageUserIds = useMemo(
-    () => new Set(conversations.map((dm) => dm.userId)),
-    [conversations]
-  );
-
-  const usersToStartDm = useMemo(() => {
-    return users.filter(
-      (user) =>
-        user.id !== ownUserId &&
-        !user.banned &&
-        user.name !== DELETED_USER_IDENTITY_AND_NAME &&
-        !directMessageUserIds.has(user.id) &&
-        user.name.toLowerCase().includes(query.trim().toLowerCase())
-    );
-  }, [directMessageUserIds, ownUserId, query, users]);
-
   const visibleConversations = useMemo(
     () => conversations.filter((dm) => visibleUserIds.has(dm.userId)),
     [conversations, visibleUserIds]
@@ -238,11 +221,13 @@ const DirectMessages = memo(() => {
         <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#8fa2bb]">
           {t('directMessages')}
         </span>
-        <SearchUserDropdown
-          query={query}
-          setQuery={setQuery}
-          usersToStartDm={usersToStartDm}
-          onStartDm={onStartDm}
+      </div>
+      <div className="mb-3 px-2">
+        <Input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder={t('searchUser')}
+          className="h-9 rounded-lg border-[#314055] bg-[#101926] text-[#d7e2f0] placeholder:text-[#6b7c94] focus-visible:border-[#4677b8] focus-visible:ring-[#4677b8]/25"
         />
       </div>
 

@@ -12,7 +12,8 @@ import {
   ContextMenuItem,
   ContextMenuLabel,
   ContextMenuSeparator,
-  ContextMenuTrigger
+  ContextMenuTrigger,
+  Tooltip
 } from '@opencord/ui';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { getTRPCClient } from '@/lib/trpc';
@@ -174,7 +175,6 @@ const SpacesStrip = memo(() => {
       {spaces.map((space) => {
         const button = (
           <SpaceButton
-            key={space.id}
             name={space.name}
             avatar={space.avatar}
             selected={space.id === selectedSpaceId}
@@ -183,46 +183,55 @@ const SpacesStrip = memo(() => {
         );
 
         if (!canManageSpaces) {
-          return button;
+          return (
+            <Tooltip key={space.id} content={space.name}>
+              <span className="inline-flex shrink-0">{button}</span>
+            </Tooltip>
+          );
         }
 
         return (
-          <ContextMenu key={space.id}>
-            <ContextMenuTrigger>{button}</ContextMenuTrigger>
-            <ContextMenuContent>
-              <ContextMenuLabel>{space.name}</ContextMenuLabel>
-              <ContextMenuSeparator />
-              <ContextMenuItem
-                onClick={() => openDialog(Dialog.SPACE_EDITOR, { spaceId: space.id })}
-              >
-                <Pencil className="mr-2 h-4 w-4" />
-                {t('editLabel')}
-              </ContextMenuItem>
-              {!space.isDefault && (
-                <ContextMenuItem
-                  variant="destructive"
-                  onClick={() => handleDeleteSpace(space.id, space.name)}
-                >
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  {t('deleteLabel')}
-                </ContextMenuItem>
-              )}
-            </ContextMenuContent>
-          </ContextMenu>
+          <Tooltip key={space.id} content={space.name}>
+            <span className="inline-flex shrink-0">
+              <ContextMenu>
+                <ContextMenuTrigger asChild>{button}</ContextMenuTrigger>
+                <ContextMenuContent>
+                  <ContextMenuLabel>{space.name}</ContextMenuLabel>
+                  <ContextMenuSeparator />
+                  <ContextMenuItem
+                    onClick={() => openDialog(Dialog.SPACE_EDITOR, { spaceId: space.id })}
+                  >
+                    <Pencil className="mr-2 h-4 w-4" />
+                    {t('editLabel')}
+                  </ContextMenuItem>
+                  {!space.isDefault && (
+                    <ContextMenuItem
+                      variant="destructive"
+                      onClick={() => handleDeleteSpace(space.id, space.name)}
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      {t('deleteLabel')}
+                    </ContextMenuItem>
+                  )}
+                </ContextMenuContent>
+              </ContextMenu>
+            </span>
+          </Tooltip>
         );
       })}
 
       {canManageSpaces && (
-        <button
-          type="button"
-          onClick={() => openDialog(Dialog.SPACE_EDITOR)}
-          className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-dashed border-[#314055] bg-[#101926] text-[#8fa2bb] transition-colors hover:border-[#5f90d1] hover:bg-[#1b2940] hover:text-white"
-          title={t('createSpace')}
-        >
-          <div className="relative">
-            <Plus className="h-5 w-5" />
-          </div>
-        </button>
+        <Tooltip content={t('createSpace')}>
+          <button
+            type="button"
+            onClick={() => openDialog(Dialog.SPACE_EDITOR)}
+            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-dashed border-[#314055] bg-[#101926] text-[#8fa2bb] transition-colors hover:border-[#5f90d1] hover:bg-[#1b2940] hover:text-white"
+          >
+            <div className="relative">
+              <Plus className="h-5 w-5" />
+            </div>
+          </button>
+        </Tooltip>
       )}
     </div>
   );
