@@ -248,36 +248,17 @@ body,
 }
 
 .tiptap .ProseMirror span[data-type='emoji'] {
+  display: inline-flex;
+  vertical-align: -0.2em;
   user-select: text;
   -webkit-user-select: text;
 }
 
 .tiptap .ProseMirror span[data-type='emoji'] img {
-  pointer-events: none;
-}
-
-.tiptap .ProseMirror .pm-unicode-emoji {
-  position: relative;
-  display: inline-block;
-  width: 1.15em;
   height: 1.15em;
-  vertical-align: -0.2em;
-  font-size: 0;
-  line-height: 0;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
-  user-select: text;
-  -webkit-user-select: text;
-}
-
-.tiptap .ProseMirror .pm-unicode-emoji::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: var(--emoji-url);
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
+  width: 1.15em;
+  display: inline-block;
+  object-fit: contain;
   pointer-events: none;
 }
 

@@ -3,6 +3,7 @@ import { getLocalTwemojiUrlByIcon } from '@/helpers/get-local-twemoji-url';
 import parse from 'html-react-parser';
 import twemoji from 'twemoji';
 import { Fragment } from 'react';
+import { EDITOR_EMOJI_SEPARATOR } from '@/components/tiptap-input/plugins/emoji-text';
 
 const INLINE_EMOJI_CLASS =
   'inline-block h-[1.15em] w-[1.15em] select-none align-[-0.2em]';
@@ -15,13 +16,16 @@ const escapeHtml = (value: string) =>
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 
+const stripEditorEmojiSeparators = (value: string) =>
+  value.replaceAll(EDITOR_EMOJI_SEPARATOR, '');
+
 const canonicalizeMessageEmojiHtml = (html: string) => {
   if (!html || typeof DOMParser === 'undefined') {
-    return html;
+    return html ? stripEditorEmojiSeparators(html) : html;
   }
 
   const parser = new DOMParser();
-  const doc = parser.parseFromString(html, 'text/html');
+  const doc = parser.parseFromString(stripEditorEmojiSeparators(html), 'text/html');
 
   doc.querySelectorAll('span[data-type="emoji"]').forEach((node) => {
     const name = node.getAttribute('data-name')?.trim();
@@ -31,11 +35,11 @@ const canonicalizeMessageEmojiHtml = (html: string) => {
     node.replaceWith(doc.createTextNode(findStandardEmoji(name)?.emoji ?? `:${name}:`));
   });
 
-  return doc.body.innerHTML;
+  return stripEditorEmojiSeparators(doc.body.innerHTML);
 };
 
 const renderUnicodeEmojiHtml = (text: string) =>
-  twemoji.parse(escapeHtml(text), {
+  twemoji.parse(escapeHtml(stripEditorEmojiSeparators(text)), {
     callback: (icon) => getLocalTwemojiUrlByIcon(icon) || false,
     attributes: (rawText) => ({
       class: INLINE_EMOJI_CLASS,
@@ -76,7 +80,7 @@ const renderMessageTextWithEmojis = (text: string, key: string) => {
 
 const getClipboardTextFromRenderedEmojiHtml = (html: string) => {
   if (!html || typeof DOMParser === 'undefined') {
-    return html;
+    return html ? stripEditorEmojiSeparators(html) : html;
   }
 
   const parser = new DOMParser();
@@ -98,7 +102,9 @@ const getClipboardTextFromRenderedEmojiHtml = (html: string) => {
     node.replaceWith(doc.createTextNode(token));
   });
 
-  return (doc.body.innerText || doc.body.textContent || '').replace(/\r\n/g, '\n');
+  return stripEditorEmojiSeparators(
+    (doc.body.innerText || doc.body.textContent || '').replace(/\r\n/g, '\n')
+  );
 };
 
 const isEmojiOnlyHtml = (html: string | null | undefined) => {
@@ -144,5 +150,6 @@ export {
   getClipboardTextFromRenderedEmojiHtml,
   getEmojiOnlyCount,
   isEmojiOnlyHtml,
+  stripEditorEmojiSeparators,
   renderMessageTextWithEmojis
 };

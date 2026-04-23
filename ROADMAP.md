@@ -1,5 +1,33 @@
 # OpenCord Roadmap
 
+## 2026-04-23
+
+### Twemoji editor pipeline и стабилизация emoji в compose
+
+- Поле ввода сообщения переведено на нормальную twemoji-модель без decoration-подложек:
+  - editor снова использует emoji-nodes с локальными `twemoji` asset-ами;
+  - добавлены внутренние невидимые boundary-разделители только для editor-state, чтобы стабилизировать выделение подряд идущих emoji в начале строки;
+  - перед `onChange`, сохранением и отправкой эти служебные разделители очищаются.
+- Доведён compose-flow для emoji:
+  - клик по emoji в picker снова вставляет emoji в editor;
+  - copy/paste unicode emoji и emoji, скопированных из чата, снова корректно попадает в поле ввода;
+  - визуальные артефакты с нативными подложками при выделении убраны вместе с decoration-слоем.
+
+## 2026-04-22
+
+### Mentions, emoji picker UX и emoji-only rendering
+
+- Упоминания расширены поверх пользовательских `@mention`:
+  - добавлены mention-элементы для ролей и `@everyone`;
+  - unread mention / browser notifications / message highlight теперь срабатывают и на `@роль`, и на `@everyone`;
+  - доступ ограничен уже существующей моделью видимости пространства и канала.
+- Emoji picker и чат доведены по UX:
+  - picker в composer перестал закрываться после каждого выбранного emoji;
+  - список `@mention` показывает только один status badge у пользователя;
+  - emoji-only сообщения получили отдельную шкалу размеров: `1 emoji -> 3x`, `2-5 -> 2x`, `6+ -> 1x`.
+- Серверный и shared слой обновлены под новый emoji/mention HTML:
+  - sanitizer и helper-логика (`hasMention`, emoji-only detection, clipboard/plain-text extraction) расширены под новые атрибуты и twemoji-рендер.
+
 ## 2026-04-21
 
 ### Spaces UI polish, composer/footer alignment и локализация

@@ -1,5 +1,5 @@
 import { EmojiPicker } from '@/components/emoji-picker';
-import { ALL_EMOJIS } from '@/components/emoji-picker/emoji-data';
+import { ALL_EMOJIS, findStandardEmoji } from '@/components/emoji-picker/emoji-data';
 import { useRoles } from '@/features/server/roles/hooks';
 import { useChannelById } from '@/features/server/channels/hooks';
 import { useMentionableUsers } from '@/features/server/users/hooks';
@@ -25,7 +25,6 @@ import {
   CommandSuggestion
 } from './plugins/command-suggestion';
 import { EmojiText } from './plugins/emoji-text';
-import { EmojiVisualDecorations } from './plugins/emoji-visual-decorations';
 import { Mention } from './plugins/mentions';
 import { MentionNode } from './plugins/mentions/node';
 import {
@@ -126,9 +125,11 @@ const TiptapInput = memo(
         EmojiText.configure({
           emojis: ALL_EMOJIS,
           enableEmoticons: true,
+          HTMLAttributes: {
+            class: 'emoji-image'
+          },
           suggestion: EmojiSuggestion
         }),
-        EmojiVisualDecorations,
         Mention.configure({
           items: mentionItems,
           suggestion: MentionSuggestion
@@ -154,7 +155,7 @@ const TiptapInput = memo(
       content: value ? canonicalizeMessageEmojiHtml(value) : value,
       editable: !disabled,
       onUpdate: ({ editor }) => {
-        const html = editor.getHTML();
+        const html = canonicalizeMessageEmojiHtml(editor.getHTML());
 
         onChange?.(html);
 
@@ -221,8 +222,13 @@ const TiptapInput = memo(
     const handleEmojiSelect = (emoji: TEmojiItem) => {
       if (disabled || readOnly) return;
 
-      if (emoji.shortcodes.length > 0) {
-        editor?.chain().focus().setEmoji(emoji.shortcodes[0]).run();
+      const shortcode =
+        emoji.shortcodes[0] ??
+        findStandardEmoji(emoji.name)?.shortcodes[0] ??
+        emoji.name;
+
+      if (shortcode) {
+        editor?.chain().focus().setEmoji(shortcode).run();
       }
     };
 
