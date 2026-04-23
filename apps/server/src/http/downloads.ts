@@ -13,54 +13,68 @@ const findEmbeddedDownload = (fileName: string) => {
   return embeddedFiles.find((file) => (file as File).name.endsWith(fileName));
 };
 
+const getDownloadCandidatePaths = () => {
+  const sourcePath = path.join(WINDOWS_DOWNLOADS_PATH, WINDOWS_DOWNLOAD_FILE);
+  const executableSiblingPath = path.join(
+    path.dirname(process.execPath),
+    'downloads',
+    WINDOWS_DOWNLOAD_FILE
+  );
+
+  return [sourcePath, executableSiblingPath];
+};
+
+const serveFileFromDisk = (
+  filePath: string,
+  res: http.ServerResponse
+): http.ServerResponse => {
+  const stat = fs.statSync(filePath);
+  const fileStream = fs.createReadStream(filePath);
+
+  fileStream.on('open', () => {
+    res.writeHead(200, {
+      'Content-Type': 'application/octet-stream',
+      'Content-Length': stat.size,
+      'Content-Disposition': `attachment; filename="${WINDOWS_DOWNLOAD_FILE}"`,
+      'Cache-Control': 'public, max-age=3600'
+    });
+    fileStream.pipe(res);
+  });
+
+  fileStream.on('error', (error) => {
+    logger.error('Error serving desktop app: %s', getErrorMessage(error));
+
+    if (!res.headersSent) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Internal server error' }));
+    } else {
+      res.destroy();
+    }
+  });
+
+  res.on('close', () => {
+    fileStream.destroy();
+  });
+
+  return res;
+};
+
 const desktopDownloadRouteHandler = async (
   _req: http.IncomingMessage,
   res: http.ServerResponse
 ) => {
-  const sourcePath = path.join(WINDOWS_DOWNLOADS_PATH, WINDOWS_DOWNLOAD_FILE);
+  const candidatePaths = getDownloadCandidatePaths();
   const isSourceMode = IS_DEVELOPMENT || IS_TEST;
 
-  if (isSourceMode) {
-    if (!fs.existsSync(sourcePath)) {
-      res.writeHead(404, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: 'Desktop app not found' }));
-      return res;
+  for (const candidatePath of candidatePaths) {
+    if (fs.existsSync(candidatePath)) {
+      return serveFileFromDisk(candidatePath, res);
     }
-
-    const stat = fs.statSync(sourcePath);
-    const fileStream = fs.createReadStream(sourcePath);
-
-    fileStream.on('open', () => {
-      res.writeHead(200, {
-        'Content-Type': 'application/octet-stream',
-        'Content-Length': stat.size,
-        'Content-Disposition': `attachment; filename="${WINDOWS_DOWNLOAD_FILE}"`,
-        'Cache-Control': 'public, max-age=3600'
-      });
-      fileStream.pipe(res);
-    });
-
-    fileStream.on('error', (error) => {
-      logger.error('Error serving desktop app: %s', getErrorMessage(error));
-
-      if (!res.headersSent) {
-        res.writeHead(500, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: 'Internal server error' }));
-      } else {
-        res.destroy();
-      }
-    });
-
-    res.on('close', () => {
-      fileStream.destroy();
-    });
-
-    return res;
   }
 
   const embeddedFile = findEmbeddedDownload(WINDOWS_DOWNLOAD_FILE);
 
-  if (!embeddedFile) {
+  if (!embeddedFile || isSourceMode) {
     res.writeHead(404, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: 'Desktop app not found' }));
     return res;

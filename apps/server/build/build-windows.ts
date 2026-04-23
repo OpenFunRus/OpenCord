@@ -11,9 +11,20 @@ const buildPath = path.join(serverCwd, 'build');
 const buildTempPath = path.join(buildPath, 'temp');
 const drizzleMigrationsPath = path.join(serverCwd, 'src', 'db', 'migrations');
 const outPath = path.join(buildPath, 'out');
+const outDownloadsPath = path.join(outPath, 'downloads');
 const releasePath = path.join(outPath, 'release.json');
 const interfaceZipPath = path.join(buildTempPath, 'interface.zip');
 const drizzleZipPath = path.join(buildTempPath, 'drizzle.zip');
+const downloadsSourcePath = path.join(serverCwd, 'assets', 'downloads');
+
+const pathExists = async (targetPath: string) => {
+  try {
+    await fs.access(targetPath);
+    return true;
+  } catch {
+    return false;
+  }
+};
 const defaultOutputFile = 'opencord-server.exe';
 
 const { values } = parseArgs({
@@ -67,6 +78,7 @@ const killRunningWindowsProcess = async (fileName: string) => {
 await rmIfExists(buildTempPath);
 await fs.mkdir(buildTempPath, { recursive: true });
 await fs.mkdir(outPath, { recursive: true });
+await fs.mkdir(outDownloadsPath, { recursive: true });
 
 const outputFilePath = path.join(outPath, values.out);
 
@@ -113,6 +125,10 @@ for (const target of targets) {
 }
 
 const releaseInfo = await getVersionInfo(targets, outPath);
+
+if (await pathExists(downloadsSourcePath)) {
+  await fs.cp(downloadsSourcePath, outDownloadsPath, { recursive: true });
+}
 
 await fs.writeFile(releasePath, JSON.stringify(releaseInfo, null, 2), 'utf8');
 await fs.rm(buildTempPath, { recursive: true, force: true });
