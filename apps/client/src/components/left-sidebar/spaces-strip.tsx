@@ -25,7 +25,7 @@ type TSpaceButtonProps = {
   name: string;
   avatar?: TFile | null;
   selected?: boolean;
-  onClick?: () => void;
+  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   children?: ReactNode;
 };
 
@@ -161,6 +161,31 @@ const SpacesStrip = memo(() => {
     [t]
   );
 
+  const handleSpaceClick = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>, spaceId: number, isSelected: boolean) => {
+      if (canManageSpaces && isSelected) {
+        event.preventDefault();
+
+        const rect = event.currentTarget.getBoundingClientRect();
+
+        event.currentTarget.dispatchEvent(
+          new MouseEvent('contextmenu', {
+            bubbles: true,
+            cancelable: true,
+            clientX: rect.left + rect.width / 2,
+            clientY: rect.top + rect.height / 2,
+            view: window
+          })
+        );
+
+        return;
+      }
+
+      selectSpace(spaceId);
+    },
+    [canManageSpaces]
+  );
+
   return (
     <div
       ref={scrollRef}
@@ -178,7 +203,9 @@ const SpacesStrip = memo(() => {
             name={space.name}
             avatar={space.avatar}
             selected={space.id === selectedSpaceId}
-            onClick={() => selectSpace(space.id)}
+            onClick={(event) =>
+              handleSpaceClick(event, space.id, space.id === selectedSpaceId)
+            }
           />
         );
 
@@ -191,32 +218,30 @@ const SpacesStrip = memo(() => {
         }
 
         return (
-          <Tooltip key={space.id} content={space.name}>
-            <span className="inline-flex shrink-0">
-              <ContextMenu>
-                <ContextMenuTrigger asChild>{button}</ContextMenuTrigger>
-                <ContextMenuContent>
-                  <ContextMenuLabel>{space.name}</ContextMenuLabel>
-                  <ContextMenuSeparator />
-                  <ContextMenuItem
-                    onClick={() => openDialog(Dialog.SPACE_EDITOR, { spaceId: space.id })}
-                  >
-                    <Pencil className="mr-2 h-4 w-4" />
-                    {t('editLabel')}
-                  </ContextMenuItem>
-                  {!space.isDefault && (
-                    <ContextMenuItem
-                      variant="destructive"
-                      onClick={() => handleDeleteSpace(space.id, space.name)}
-                    >
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      {t('deleteLabel')}
-                    </ContextMenuItem>
-                  )}
-                </ContextMenuContent>
-              </ContextMenu>
-            </span>
-          </Tooltip>
+          <ContextMenu key={space.id}>
+            <ContextMenuTrigger asChild>
+              <span className="inline-flex shrink-0">{button}</span>
+            </ContextMenuTrigger>
+            <ContextMenuContent>
+              <ContextMenuLabel>{space.name}</ContextMenuLabel>
+              <ContextMenuSeparator />
+              <ContextMenuItem
+                onClick={() => openDialog(Dialog.SPACE_EDITOR, { spaceId: space.id })}
+              >
+                <Pencil className="mr-2 h-4 w-4" />
+                {t('editLabel')}
+              </ContextMenuItem>
+              {!space.isDefault && (
+                <ContextMenuItem
+                  variant="destructive"
+                  onClick={() => handleDeleteSpace(space.id, space.name)}
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  {t('deleteLabel')}
+                </ContextMenuItem>
+              )}
+            </ContextMenuContent>
+          </ContextMenu>
         );
       })}
 
