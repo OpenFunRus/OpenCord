@@ -581,7 +581,7 @@ const Details = memo(() => {
             </Button>
           </div>
         </CardHeader>
-        <CardContent className="space-y-5 px-5 pb-5 pt-1">
+        <CardContent className="space-y-5 px-5 pb-5 pt-4">
           <div className="rounded-sm border border-[#243140] bg-[#111a26] px-4 py-3 text-sm leading-6 text-[#8fa2bb]">
             {t('userVisibilityCustomHint')}
           </div>
