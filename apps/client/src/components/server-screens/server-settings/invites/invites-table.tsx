@@ -32,17 +32,17 @@ const InvitesTable = memo(({ invites, refetch }: TInvitesTableProps) => {
       searchFilter={searchFilter}
       headerColumns={
         <>
-          <div>{t('invitesCodeCol')}</div>
-          <div>{t('invitesRoleCol')}</div>
-          <div>{t('invitesCreatorCol')}</div>
-          <div>{t('invitesUsesCol')}</div>
-          <div>{t('invitesExpiresCol')}</div>
-          <div>{t('invitesCreatedCol')}</div>
-          <div>{t('invitesStatusCol')}</div>
-          <div>{t('invitesActionsCol')}</div>
+          <div className="min-w-0 truncate">{t('invitesCodeCol')}</div>
+          <div className="min-w-0 truncate">{t('invitesRoleCol')}</div>
+          <div className="min-w-0 truncate">{t('invitesCreatorCol')}</div>
+          <div className="min-w-0 truncate">{t('invitesUsesCol')}</div>
+          <div className="min-w-0 truncate">{t('invitesExpiresCol')}</div>
+          <div className="min-w-0 truncate">{t('invitesCreatedCol')}</div>
+          <div className="min-w-0 truncate">{t('invitesStatusCol')}</div>
+          <div className="min-w-0 truncate text-center">{t('invitesActionsCol')}</div>
         </>
       }
-      gridCols="grid-cols-[1fr_80px_50px_70px_90px_110px_70px_60px]"
+      gridCols="grid-cols-[minmax(220px,1.3fr)_minmax(110px,0.75fr)_minmax(120px,0.75fr)_minmax(110px,0.7fr)_minmax(110px,0.8fr)_minmax(120px,0.9fr)_minmax(100px,0.7fr)_70px]"
       itemsPerPage={8}
       searchPlaceholder={t('searchInvitesPlaceholder')}
       emptyMessage={t('noInvitesFound')}

@@ -25,6 +25,8 @@ type TTableInviteProps = {
   refetch: () => void;
 };
 
+const UNLIMITED_USES_SYMBOL = '\u221E';
+
 const copyTextWithFallback = async (text: string) => {
   try {
     if (navigator.clipboard?.writeText) {
@@ -116,7 +118,7 @@ const TableInvite = memo(({ invite, refetch }: TTableInviteProps) => {
 
   const usesText = useMemo(() => {
     if (!invite.maxUses) {
-      return `${invite.uses} / в€ћ`;
+      return `${invite.uses} / ${UNLIMITED_USES_SYMBOL}`;
     }
     return `${invite.uses} / ${invite.maxUses}`;
   }, [invite.uses, invite.maxUses]);
@@ -159,7 +161,7 @@ const TableInvite = memo(({ invite, refetch }: TTableInviteProps) => {
   return (
     <div
       key={invite.id}
-      className="grid min-w-max grid-cols-[1fr_80px_50px_70px_90px_110px_70px_60px] gap-4 px-4 py-3 text-sm transition-colors hover:bg-[#16212f]"
+      className="grid min-w-max grid-cols-[minmax(220px,1.3fr)_minmax(110px,0.75fr)_minmax(120px,0.75fr)_minmax(110px,0.7fr)_minmax(110px,0.8fr)_minmax(120px,0.9fr)_minmax(100px,0.7fr)_70px] gap-4 px-4 py-3 text-sm transition-colors hover:bg-[#16212f]"
     >
       <div className="flex items-center min-w-0">
         <div className="flex items-center gap-2 min-w-0">
