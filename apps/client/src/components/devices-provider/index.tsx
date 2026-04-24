@@ -5,7 +5,6 @@ import {
   setLocalStorageItemAsJSON
 } from '@/helpers/storage';
 import { Resolution, VideoCodec, type TDeviceSettings } from '@/types';
-import { DEFAULT_BITRATE } from '@opencord/shared';
 import {
   createContext,
   memo,
@@ -20,8 +19,8 @@ const DEFAULT_DEVICE_SETTINGS: TDeviceSettings = {
   microphoneId: undefined,
   playbackId: undefined,
   webcamId: undefined,
-  webcamResolution: Resolution['720p'],
-  webcamFramerate: 30,
+  webcamResolution: Resolution['1080p'],
+  webcamFramerate: 15,
   echoCancellation: false,
   noiseSuppression: false,
   autoGainControl: true,
@@ -29,10 +28,10 @@ const DEFAULT_DEVICE_SETTINGS: TDeviceSettings = {
   noiseGateThresholdDb: MICROPHONE_GATE_DEFAULT_THRESHOLD_DB,
   shareSystemAudio: true,
   mirrorOwnVideo: false,
-  screenResolution: Resolution['720p'],
-  screenFramerate: 30,
+  screenResolution: Resolution['1080p'],
+  screenFramerate: 15,
   screenCodec: VideoCodec.AUTO,
-  screenBitrate: DEFAULT_BITRATE
+  screenBitrate: 10000
 };
 
 export type TDevicesProvider = {

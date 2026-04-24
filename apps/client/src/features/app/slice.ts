@@ -39,21 +39,21 @@ const initialState: TAppState = {
   threadChannelId: undefined,
   autoJoinLastChannel: getLocalStorageItemBool(
     LocalStorageKey.AUTO_JOIN_LAST_CHANNEL,
-    false
+    true
   ),
   dmsOpen: false,
   selectedDmChannelId: undefined,
   browserNotifications: getLocalStorageItemBool(
     LocalStorageKey.BROWSER_NOTIFICATIONS,
-    false
+    true
   ),
   browserNotificationsForMentions: getLocalStorageItemBool(
     LocalStorageKey.BROWSER_NOTIFICATIONS_FOR_MENTIONS,
-    false
+    true
   ),
   browserNotificationsForDms: getLocalStorageItemBool(
     LocalStorageKey.BROWSER_NOTIFICATIONS_FOR_DMS,
-    false
+    true
   ),
   messageJumpTarget: undefined,
   voiceChatSidebarOpen: getLocalStorageItemBool(
