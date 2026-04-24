@@ -104,6 +104,12 @@ export type TServerInfo = Pick<
   version: string;
 };
 
+export type TMuteSettings = {
+  mutedSpaceIds: number[];
+  mutedChannelIds: number[];
+  mutedDmUserIds: number[];
+};
+
 export type TWebAppManifest = {
   name: string;
   short_name: string;

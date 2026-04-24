@@ -118,6 +118,11 @@ const joinServerRoute = rateLimitedProcedure(t.procedure, {
       categories: visibleStructure.categories,
       channels: visibleStructure.channels,
       users: processedPublicUsers,
+      muteSettings: {
+        mutedSpaceIds: ctx.user.mutedSpaceIds ?? [],
+        mutedChannelIds: ctx.user.mutedChannelIds ?? [],
+        mutedDmUserIds: ctx.user.mutedDmUserIds ?? []
+      },
       serverId: settings.serverId,
       serverName: settings.name,
       ownUserId: ctx.user.id,

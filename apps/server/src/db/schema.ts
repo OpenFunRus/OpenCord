@@ -214,6 +214,18 @@ const users = sqliteTable(
       .$type<number[]>()
       .notNull()
       .default([]),
+    mutedSpaceIds: text('muted_space_ids', { mode: 'json' })
+      .$type<number[]>()
+      .notNull()
+      .default([]),
+    mutedChannelIds: text('muted_channel_ids', { mode: 'json' })
+      .$type<number[]>()
+      .notNull()
+      .default([]),
+    mutedDmUserIds: text('muted_dm_user_ids', { mode: 'json' })
+      .$type<number[]>()
+      .notNull()
+      .default([]),
     banned: integer('banned', { mode: 'boolean' }).notNull().default(false),
     banReason: text('ban_reason'),
     bannedAt: integer('banned_at'),

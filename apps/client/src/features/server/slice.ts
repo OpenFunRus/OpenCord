@@ -10,6 +10,7 @@ import type {
   TExternalStream,
   TExternalStreamsMap,
   TJoinedMessage,
+  TMuteSettings,
   TJoinedPublicUser,
   TJoinedRole,
   TJoinedSpace,
@@ -60,6 +61,7 @@ export interface IServerState {
   readStatesMap: {
     [channelId: number]: number | undefined;
   };
+  muteSettings: TMuteSettings;
   pluginCommands: TCommandsMapByPlugin;
   hideNonVideoParticipants: boolean;
   showUserBannersInVoice: boolean;
@@ -98,6 +100,11 @@ const initialState: IServerState = {
   pinnedCard: undefined,
   channelPermissions: {},
   readStatesMap: {},
+  muteSettings: {
+    mutedSpaceIds: [],
+    mutedChannelIds: [],
+    mutedDmUserIds: []
+  },
   pluginCommands: {},
   hideNonVideoParticipants: getLocalStorageItemBool(
     LocalStorageKey.HIDE_NON_VIDEO_PARTICIPANTS,
@@ -168,6 +175,7 @@ export const serverSlice = createSlice({
         externalStreamsMap: TExternalStreamsMap;
         channelPermissions: TChannelUserPermissionsMap;
         readStates: TReadStateMap;
+        muteSettings: TMuteSettings;
       }>
     ) => {
       state.connected = true;
@@ -184,6 +192,10 @@ export const serverSlice = createSlice({
       state.serverId = action.payload.serverId;
       state.channelPermissions = action.payload.channelPermissions;
       state.readStatesMap = action.payload.readStates;
+      state.muteSettings = action.payload.muteSettings;
+    },
+    setMuteSettings: (state, action: PayloadAction<TMuteSettings>) => {
+      state.muteSettings = action.payload;
     },
     setSpaces: (state, action: PayloadAction<TJoinedSpace[]>) => {
       state.spaces = action.payload;

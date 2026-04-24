@@ -1,10 +1,12 @@
-import { UnreadCount } from '@/components/unread-count';
+import { MuteBadge, UnreadCount } from '@/components/unread-count';
 import { UserAvatar } from '@/components/user-avatar';
 import { setSelectedDmChannelId } from '@/features/app/actions';
 import { useSelectedDmChannelId } from '@/features/app/hooks';
 import { useChannels } from '@/features/server/channels/hooks';
 import { useUnreadMessagesCount } from '@/features/server/hooks';
+import { toggleDmUserMute } from '@/features/server/users/actions';
 import {
+  useIsDmUserMuted,
   useOwnUserId,
   useUserById,
   useUsers
@@ -17,7 +19,17 @@ import {
   type TDirectMessageConversation,
   type TJoinedPublicUser
 } from '@opencord/shared';
-import { Input, Spinner } from '@opencord/ui';
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuLabel,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+  Input,
+  Spinner
+} from '@opencord/ui';
+import { VolumeX } from 'lucide-react';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
@@ -37,12 +49,13 @@ const DirectMessageItem = memo(
     const { t } = useTranslation('sidebar');
     const user = useUserById(dm.userId);
     const unreadCount = useUnreadMessagesCount(dm.channelId);
+    const isMuted = useIsDmUserMuted(dm.userId);
 
     if (!user) {
       return null;
     }
 
-    return (
+    const button = (
       <button
         type="button"
         className={cn(
@@ -61,8 +74,34 @@ const DirectMessageItem = memo(
         <span className="truncate flex-1 text-left">
           {isNotes ? t('personalNotes') : user.name}
         </span>
-        <UnreadCount count={unreadCount} />
+        {isMuted ? <MuteBadge /> : <UnreadCount count={unreadCount} />}
       </button>
+    );
+
+    if (isNotes) {
+      return button;
+    }
+
+    return (
+      <ContextMenu>
+        <ContextMenuTrigger asChild>{button}</ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuLabel>{user.name}</ContextMenuLabel>
+          <ContextMenuSeparator />
+          <ContextMenuItem
+            onClick={async () => {
+              try {
+                await toggleDmUserMute(dm.userId);
+              } catch {
+                toast.error(t('failedUpdateMute'));
+              }
+            }}
+          >
+            <VolumeX className="mr-2 h-4 w-4" />
+            {isMuted ? t('unmuteSidebarItem') : t('muteSidebarItem')}
+          </ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>
     );
   }
 );

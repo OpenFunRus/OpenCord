@@ -15,6 +15,7 @@ import {
   useVoiceUsersByChannelId
 } from '@/features/server/hooks';
 import { useVoiceChannelExternalStreamsList } from '@/features/server/voice/hooks';
+import { useIsChannelMuted } from '@/features/server/users/hooks';
 import { getTRPCClient } from '@/lib/trpc';
 import { cn } from '@/lib/utils';
 import {
@@ -42,7 +43,7 @@ import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { ChannelContextMenu } from '../context-menus/channel';
-import { UnreadCount } from '../unread-count';
+import { MuteBadge, UnreadCount } from '../unread-count';
 import { ExternalStream } from './external-stream';
 import { useSelectChannel } from './hooks';
 import { VoiceUser } from './voice-user';
@@ -61,6 +62,7 @@ const Voice = memo(
     const users = useVoiceUsersByChannelId(channel.id);
     const externalStreams = useVoiceChannelExternalStreamsList(channel.id);
     const unreadCount = useUnreadMessagesCount(channel.id);
+    const isMuted = useIsChannelMuted(channel.id);
     const currentVoiceChannelId = useCurrentVoiceChannelId();
     const someoneIsSharingScreen = useHasSharingScreenUsers(channel.id);
 
@@ -91,8 +93,10 @@ const Voice = memo(
 
           <span className="flex-1 truncate">{channel.name}</span>
 
-          {!isVoiceActive && unreadCount > 0 && (
-            <UnreadCount count={unreadCount} />
+          {isMuted ? (
+            <MuteBadge />
+          ) : (
+            !isVoiceActive && unreadCount > 0 && <UnreadCount count={unreadCount} />
           )}
         </ItemWrapper>
         {channel.type === 'VOICE' && (
@@ -124,20 +128,22 @@ const Text = memo(({ channel, ...props }: TTextProps) => {
   const typingUsers = useTypingUsersByChannelId(channel.id);
   const unreadCount = useUnreadMessagesCount(channel.id);
   const hasUnreadMessages = useHasUnreadMentions(channel.id);
+  const isMuted = useIsChannelMuted(channel.id);
   const hasTypingUsers = typingUsers.length > 0;
 
   return (
     <ItemWrapper {...props}>
       <Hash className="h-4 w-4" />
       <span className="min-w-0 flex-1 truncate">{channel.name}</span>
-      {hasTypingUsers && (
+      {isMuted ? (
+        <MuteBadge />
+      ) : hasTypingUsers ? (
         <div className="flex items-center gap-0.5 ml-auto">
           <TypingDots className="space-x-0.5" />
         </div>
-      )}
-      {!hasTypingUsers && unreadCount > 0 && (
+      ) : unreadCount > 0 ? (
         <UnreadCount count={unreadCount} hasMention={hasUnreadMessages} />
-      )}
+      ) : null}
     </ItemWrapper>
   );
 });

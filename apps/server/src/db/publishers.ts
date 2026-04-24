@@ -1,6 +1,7 @@
 import {
   ChannelPermission,
   ServerEvents,
+  type TMuteSettings,
   type TChannelUserPermissionsMap
 } from '@opencord/shared';
 import { count, eq } from 'drizzle-orm';
@@ -15,7 +16,7 @@ import { getMessage } from './queries/messages';
 import { getRole } from './queries/roles';
 import { getPublicSettings } from './queries/server';
 import { getAffectedUserIdsForSpace } from './queries/spaces';
-import { getAllUserIds, getPublicUserById } from './queries/users';
+import { getAllUserIds, getPublicUserById, getUserById } from './queries/users';
 import { categories, channels, messages, users } from './schema';
 
 const publishMessage = async (
@@ -105,6 +106,22 @@ const publishUser = async (
 
   pubsub.publish(targetEvent, user);
   await publishSpacesSync(userId);
+};
+
+const publishUserMuteSettings = async (userId: number | undefined) => {
+  if (!userId) return;
+
+  const user = await getUserById(userId);
+
+  if (!user) return;
+
+  const muteSettings: TMuteSettings = {
+    mutedSpaceIds: user.mutedSpaceIds ?? [],
+    mutedChannelIds: user.mutedChannelIds ?? [],
+    mutedDmUserIds: user.mutedDmUserIds ?? []
+  };
+
+  pubsub.publishFor(userId, ServerEvents.USER_MUTE_SETTINGS_UPDATE, muteSettings);
 };
 
 const publishChannel = async (
@@ -287,6 +304,7 @@ export {
   publishRole,
   publishSpacesSync,
   publishSettings,
-  publishUser
+  publishUser,
+  publishUserMuteSettings
 };
 

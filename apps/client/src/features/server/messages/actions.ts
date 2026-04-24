@@ -22,7 +22,11 @@ import {
 import { serverSliceActions } from '../slice';
 import { playSound } from '../sounds/actions';
 import { SoundType } from '../types';
-import { ownUserSelector, userByIdSelector } from '../users/selectors';
+import {
+  muteSettingsSelector,
+  ownUserSelector,
+  userByIdSelector
+} from '../users/selectors';
 import { threadMessagesMapSelector } from './selectors';
 import {
   removeCachedMessage,
@@ -136,22 +140,58 @@ export const addMessages = (
       const isThreadReply = !!targetMessage.parentMessageId;
 
       if (isThreadReply) {
+        const channel = channelByIdSelector(state, channelId);
+        const muteSettings = muteSettingsSelector(state);
+        const isMuted = Boolean(
+          channel &&
+            (muteSettings.mutedChannelIds.includes(channel.id) ||
+              (!!channel.spaceId &&
+                muteSettings.mutedSpaceIds.includes(channel.spaceId)) ||
+              (!!channel.isDm &&
+                muteSettings.mutedDmUserIds.includes(targetMessage.userId)))
+        );
         const { isOpen, parentMessageId } = threadSidebarDataSelector(state);
 
         // only play sound if the user has this thread open
-        if (isOpen && parentMessageId === targetMessage.parentMessageId) {
+        if (!isMuted && isOpen && parentMessageId === targetMessage.parentMessageId) {
           playSound(SoundType.MESSAGE_RECEIVED);
         }
       } else {
-        playSound(SoundType.MESSAGE_RECEIVED);
+        const channel = channelByIdSelector(state, channelId);
+        const muteSettings = muteSettingsSelector(state);
+        const isMuted = Boolean(
+          channel &&
+            (muteSettings.mutedChannelIds.includes(channel.id) ||
+              (!!channel.spaceId &&
+                muteSettings.mutedSpaceIds.includes(channel.spaceId)) ||
+              (!!channel.isDm &&
+                muteSettings.mutedDmUserIds.includes(targetMessage.userId)))
+        );
+
+        if (!isMuted) {
+          playSound(SoundType.MESSAGE_RECEIVED);
+        }
       }
 
       // only send browser notifications if the user is not currently viewing this channel
       if (!isChannelSelected) {
         const channel = channelByIdSelector(state, channelId);
         const isDmChannel = !!channel?.isDm;
+        const muteSettings = muteSettingsSelector(state);
+        const isMuted = Boolean(
+          channel &&
+            (muteSettings.mutedChannelIds.includes(channel.id) ||
+              (!!channel.spaceId &&
+                muteSettings.mutedSpaceIds.includes(channel.spaceId)) ||
+              (isDmChannel &&
+                muteSettings.mutedDmUserIds.includes(targetMessage.userId)))
+        );
         const hasDmNotificationsEnabled =
           browserNotificationsForDmsSelector(state);
+
+        if (isMuted) {
+          return;
+        }
 
         if (isDmChannel && hasDmNotificationsEnabled) {
           sendBrowserNotification(targetMessage, channelId, true);

@@ -31,6 +31,7 @@ export enum ServerEvents {
 
   USER_CREATE = 'userCreate',
   USER_UPDATE = 'userUpdate',
+  USER_MUTE_SETTINGS_UPDATE = 'userMuteSettingsUpdate',
   USER_DELETE = 'userDelete',
 
   SERVER_SETTINGS_UPDATE = 'serverSettingsUpdate',

@@ -13,6 +13,15 @@ const onUserUpdateRoute = protectedProcedure.subscription(async ({ ctx }) => {
   return ctx.pubsub.subscribe(ServerEvents.USER_UPDATE);
 });
 
+const onUserMuteSettingsUpdateRoute = protectedProcedure.subscription(
+  async ({ ctx }) => {
+    return ctx.pubsub.subscribeFor(
+      ctx.userId,
+      ServerEvents.USER_MUTE_SETTINGS_UPDATE
+    );
+  }
+);
+
 const onUserCreateRoute = protectedProcedure.subscription(async ({ ctx }) => {
   return ctx.pubsub.subscribe(ServerEvents.USER_CREATE);
 });
@@ -26,6 +35,7 @@ export {
   onUserDeleteRoute,
   onUserJoinRoute,
   onUserLeaveRoute,
+  onUserMuteSettingsUpdateRoute,
   onUserUpdateRoute
 };
 

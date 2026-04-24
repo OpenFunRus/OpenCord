@@ -3,6 +3,7 @@ import { createSelector } from '@reduxjs/toolkit';
 import {
   canUserSeeTarget,
   DELETED_USER_IDENTITY_AND_NAME,
+  type TMuteSettings,
   UserStatus
 } from '@opencord/shared';
 import { createCachedSelector } from 're-reselect';
@@ -71,6 +72,39 @@ export const ownUserSelector = createSelector(
   [ownUserIdSelector, rawUsersSelector],
   (ownUserId, users) => users.find((user) => user.id === ownUserId)
 );
+
+export const muteSettingsSelector = (state: IRootState): TMuteSettings =>
+  state.server.muteSettings;
+
+export const mutedSpaceIdsSelector = createSelector(
+  [muteSettingsSelector],
+  (muteSettings) => muteSettings.mutedSpaceIds
+);
+
+export const mutedChannelIdsSelector = createSelector(
+  [muteSettingsSelector],
+  (muteSettings) => muteSettings.mutedChannelIds
+);
+
+export const mutedDmUserIdsSelector = createSelector(
+  [muteSettingsSelector],
+  (muteSettings) => muteSettings.mutedDmUserIds
+);
+
+export const isSpaceMutedSelector = createCachedSelector(
+  [mutedSpaceIdsSelector, (_: IRootState, spaceId: number) => spaceId],
+  (mutedSpaceIds, spaceId) => mutedSpaceIds.includes(spaceId)
+)((_, spaceId: number) => spaceId);
+
+export const isChannelMutedSelector = createCachedSelector(
+  [mutedChannelIdsSelector, (_: IRootState, channelId: number) => channelId],
+  (mutedChannelIds, channelId) => mutedChannelIds.includes(channelId)
+)((_, channelId: number) => channelId);
+
+export const isDmUserMutedSelector = createCachedSelector(
+  [mutedDmUserIdsSelector, (_: IRootState, userId: number) => userId],
+  (mutedDmUserIds, userId) => mutedDmUserIds.includes(userId)
+)((_, userId: number) => userId);
 
 export const userByIdSelector = createCachedSelector(
   [rawUsersSelector, (_: IRootState, userId: number) => userId],

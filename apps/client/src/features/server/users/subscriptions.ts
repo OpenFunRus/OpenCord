@@ -1,10 +1,11 @@
 import { logDebug } from '@/helpers/browser-logger';
 import { getTRPCClient } from '@/lib/trpc';
-import { UserStatus, type TJoinedPublicUser } from '@opencord/shared';
+import { UserStatus, type TJoinedPublicUser, type TMuteSettings } from '@opencord/shared';
 import {
   addUser,
   handleUserJoin,
   reassignUser,
+  setMuteSettings,
   updateUser,
   wipeUser
 } from './actions';
@@ -57,12 +58,25 @@ const subscribeToUsers = () => {
     onError: (err) => console.error('onUserDelete subscription error:', err)
   });
 
+  const onUserMuteSettingsUpdateSub = trpc.users.onMuteSettingsUpdate.subscribe(
+    undefined,
+    {
+      onData: (muteSettings: TMuteSettings) => {
+        logDebug('[EVENTS] users.onMuteSettingsUpdate', { muteSettings });
+        setMuteSettings(muteSettings);
+      },
+      onError: (err) =>
+        console.error('onUserMuteSettingsUpdate subscription error:', err)
+    }
+  );
+
   return () => {
     onUserJoinSub.unsubscribe();
     onUserLeaveSub.unsubscribe();
     onUserUpdateSub.unsubscribe();
     onUserCreateSub.unsubscribe();
     onUserDeleteSub.unsubscribe();
+    onUserMuteSettingsUpdateSub.unsubscribe();
   };
 };
 

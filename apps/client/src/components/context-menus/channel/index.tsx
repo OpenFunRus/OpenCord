@@ -2,8 +2,10 @@ import { ServerScreen } from '@/components/server-screens/screens';
 import { openVoiceChatSidebar } from '@/features/app/actions';
 import { requestConfirmation } from '@/features/dialogs/actions';
 import { openServerScreen } from '@/features/server-screens/actions';
+import { toggleChannelMute } from '@/features/server/users/actions';
 import { useChannelById } from '@/features/server/channels/hooks';
 import { useCan } from '@/features/server/hooks';
+import { useIsChannelMuted } from '@/features/server/users/hooks';
 import { getTRPCClient } from '@/lib/trpc';
 import { ChannelType, Permission } from '@opencord/shared';
 import {
@@ -14,6 +16,7 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger
 } from '@opencord/ui';
+import { VolumeX } from 'lucide-react';
 import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
@@ -28,6 +31,7 @@ const ChannelContextMenu = memo(
     const { t } = useTranslation('sidebar');
     const can = useCan();
     const channel = useChannelById(channelId);
+    const isMuted = useIsChannelMuted(channelId);
 
     const canManageChannels = can(Permission.MANAGE_CHANNELS);
     const isVoiceChannel = channel?.type === ChannelType.VOICE;
@@ -60,10 +64,13 @@ const ChannelContextMenu = memo(
     const onEditClick = useCallback(() => {
       openServerScreen(ServerScreen.CHANNEL_SETTINGS, { channelId });
     }, [channelId]);
-
-    if (!canManageChannels && !isVoiceChannel) {
-      return <>{children}</>;
-    }
+    const onToggleMute = useCallback(async () => {
+      try {
+        await toggleChannelMute(channelId);
+      } catch {
+        toast.error(t('failedUpdateMute'));
+      }
+    }, [channelId, t]);
 
     return (
       <ContextMenu>
@@ -71,14 +78,21 @@ const ChannelContextMenu = memo(
         <ContextMenuContent>
           <ContextMenuLabel>{channel?.name}</ContextMenuLabel>
           <ContextMenuSeparator />
+          <ContextMenuItem onClick={onToggleMute}>
+            <VolumeX className="mr-2 h-4 w-4" />
+            {isMuted ? t('unmuteSidebarItem') : t('muteSidebarItem')}
+          </ContextMenuItem>
           {isVoiceChannel && (
-            <ContextMenuItem onClick={onOpenChat}>
+            <>
+              <ContextMenuSeparator />
+              <ContextMenuItem onClick={onOpenChat}>
               {t('openChat')}
-            </ContextMenuItem>
+              </ContextMenuItem>
+            </>
           )}
           {canManageChannels && (
             <>
-              {isVoiceChannel && <ContextMenuSeparator />}
+              <ContextMenuSeparator />
               <ContextMenuItem onClick={onEditClick}>
                 {t('editLabel')}
               </ContextMenuItem>

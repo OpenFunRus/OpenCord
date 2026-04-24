@@ -1,11 +1,15 @@
 import { Dialog } from '@/components/dialogs/dialogs';
+import { MuteBadge } from '@/components/unread-count';
 import { SpaceAvatar } from '@/components/space-avatar';
+import { useSpaceUnreadCount } from '@/features/server/spaces/hooks';
 import { openDialog, requestConfirmation } from '@/features/dialogs/actions';
 import { useCan } from '@/features/server/hooks';
 import { selectSpace } from '@/features/server/spaces/actions';
 import { useSelectedSpaceId, useSpaces } from '@/features/server/spaces/hooks';
+import { toggleSpaceMute } from '@/features/server/users/actions';
+import { useIsSpaceMuted } from '@/features/server/users/hooks';
 import { cn } from '@/lib/utils';
-import { Permission, type TFile } from '@opencord/shared';
+import { Permission, type TFile, type TJoinedSpace } from '@opencord/shared';
 import {
   ContextMenu,
   ContextMenuContent,
@@ -20,7 +24,7 @@ import {
   SelectValue,
   Tooltip
 } from '@opencord/ui';
-import { Pencil, Plus, Trash2 } from 'lucide-react';
+import { Pencil, Plus, Trash2, VolumeX } from 'lucide-react';
 import { getTRPCClient } from '@/lib/trpc';
 import {
   memo,
@@ -38,6 +42,8 @@ type TSpaceButtonProps = {
   name: string;
   avatar?: TFile | null;
   selected?: boolean;
+  unreadCount?: number;
+  muted?: boolean;
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   children?: ReactNode;
 };
@@ -46,6 +52,8 @@ const SpaceButton = ({
   name,
   avatar,
   selected = false,
+  unreadCount = 0,
+  muted = false,
   onClick,
   children
 }: TSpaceButtonProps) => (
@@ -60,8 +68,132 @@ const SpaceButton = ({
     )}
   >
     <SpaceAvatar name={name} avatar={avatar} className="h-14 w-14" />
+    {muted ? (
+      <div
+        className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center rounded-full bg-black/30"
+        aria-hidden
+      >
+        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-[#172231] bg-[#d0a12a] text-[#111827] shadow-[0_4px_14px_rgba(0,0,0,0.45)]">
+          <VolumeX className="h-4 w-4" strokeWidth={2.25} />
+        </div>
+      </div>
+    ) : unreadCount > 0 ? (
+      <div className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full border border-[#172231] bg-[#206bc4] px-1 text-[10px] font-semibold leading-none text-white shadow-[0_6px_16px_rgba(32,107,196,0.35)]">
+        {unreadCount > 99 ? '99+' : unreadCount}
+      </div>
+    ) : null}
     {children}
   </button>
+);
+
+type TSpaceSelectItemContentProps = {
+  space: TJoinedSpace;
+};
+
+const TSpaceSelectItemContent = memo(({ space }: TSpaceSelectItemContentProps) => {
+  const unreadCount = useSpaceUnreadCount(space.id);
+  const isMuted = useIsSpaceMuted(space.id);
+
+  return (
+    <div className="flex min-w-0 items-center justify-between gap-3">
+      <span className="truncate">{space.name}</span>
+      {isMuted ? (
+        <MuteBadge className="ml-0 px-0" />
+      ) : unreadCount > 0 ? (
+        <div className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#206bc4] px-1.5 text-[10px] font-semibold leading-none text-white">
+          {unreadCount > 99 ? '99+' : unreadCount}
+        </div>
+      ) : null}
+    </div>
+  );
+});
+
+type TSpaceActionProps = {
+  space: TJoinedSpace;
+  selected: boolean;
+  canManageSpaces: boolean;
+  onClick: (spaceId: number) => void;
+  onEdit: (spaceId: number) => void;
+  onDelete: (spaceId: number, spaceName: string) => void;
+  editLabel: string;
+  deleteLabel: string;
+  muteLabel: string;
+  unmuteLabel: string;
+  failedUpdateMute: string;
+};
+
+const SpaceAction = memo(
+  ({
+    space,
+    selected,
+    canManageSpaces,
+    onClick,
+    onEdit,
+    onDelete,
+    editLabel,
+    deleteLabel,
+    muteLabel,
+    unmuteLabel,
+    failedUpdateMute
+  }: TSpaceActionProps) => {
+    const unreadCount = useSpaceUnreadCount(space.id);
+    const isMuted = useIsSpaceMuted(space.id);
+
+    const handleToggleMute = useCallback(async () => {
+      try {
+        await toggleSpaceMute(space.id);
+      } catch {
+        toast.error(failedUpdateMute);
+      }
+    }, [failedUpdateMute, space.id]);
+
+    const button = (
+      <SpaceButton
+        name={space.name}
+        avatar={space.avatar}
+        selected={selected}
+        unreadCount={unreadCount}
+        muted={isMuted}
+        onClick={() => onClick(space.id)}
+      />
+    );
+
+    return (
+      <Tooltip content={space.name}>
+        <ContextMenu key={space.id}>
+          <ContextMenuTrigger asChild>
+            <span className="inline-flex shrink-0">{button}</span>
+          </ContextMenuTrigger>
+          <ContextMenuContent>
+            <ContextMenuLabel>{space.name}</ContextMenuLabel>
+            <ContextMenuSeparator />
+            <ContextMenuItem onClick={handleToggleMute}>
+              <VolumeX className="mr-2 h-4 w-4" />
+              {isMuted ? unmuteLabel : muteLabel}
+            </ContextMenuItem>
+            {canManageSpaces && (
+              <>
+                <ContextMenuSeparator />
+                <ContextMenuItem onClick={() => onEdit(space.id)}>
+                  <Pencil className="mr-2 h-4 w-4" />
+                  {editLabel}
+                </ContextMenuItem>
+                {!space.isDefault && (
+                  <ContextMenuItem
+                    variant="destructive"
+                    onClick={() => onDelete(space.id, space.name)}
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    {deleteLabel}
+                  </ContextMenuItem>
+                )}
+              </>
+            )}
+          </ContextMenuContent>
+        </ContextMenu>
+      </Tooltip>
+    );
+  }
 );
 
 const CREATE_SPACE_BUTTON_CLASSNAME =
@@ -182,28 +314,8 @@ const SpacesStrip = memo(() => {
   );
 
   const handleSpaceClick = useCallback(
-    (event: React.MouseEvent<HTMLButtonElement>, spaceId: number, isSelected: boolean) => {
-      if (canManageSpaces && isSelected) {
-        event.preventDefault();
-
-        const rect = event.currentTarget.getBoundingClientRect();
-
-        event.currentTarget.dispatchEvent(
-          new MouseEvent('contextmenu', {
-            bubbles: true,
-            cancelable: true,
-            clientX: rect.left + rect.width / 2,
-            clientY: rect.top + rect.height / 2,
-            view: window
-          })
-        );
-
-        return;
-      }
-
-      selectSpace(spaceId);
-    },
-    [canManageSpaces]
+    (spaceId: number) => selectSpace(spaceId),
+    []
   );
 
   const handleSelectSpaceChange = useCallback((value: string) => {
@@ -228,64 +340,6 @@ const SpacesStrip = memo(() => {
     [canManageSpaces, t]
   );
 
-  const renderSpaceAction = useCallback(
-    (space: (typeof spaces)[number]) => {
-      const button = (
-        <SpaceButton
-          name={space.name}
-          avatar={space.avatar}
-          selected={space.id === selectedSpaceId}
-          onClick={(event) =>
-            handleSpaceClick(event, space.id, space.id === selectedSpaceId)
-          }
-        />
-      );
-
-      if (!canManageSpaces) {
-        return (
-          <Tooltip key={space.id} content={space.name}>
-            <span className="inline-flex shrink-0">{button}</span>
-          </Tooltip>
-        );
-      }
-
-      return (
-        <ContextMenu key={space.id}>
-          <ContextMenuTrigger asChild>
-            <span className="inline-flex shrink-0">{button}</span>
-          </ContextMenuTrigger>
-          <ContextMenuContent>
-            <ContextMenuLabel>{space.name}</ContextMenuLabel>
-            <ContextMenuSeparator />
-            <ContextMenuItem
-              onClick={() => openDialog(Dialog.SPACE_EDITOR, { spaceId: space.id })}
-            >
-              <Pencil className="mr-2 h-4 w-4" />
-              {t('editLabel')}
-            </ContextMenuItem>
-            {!space.isDefault && (
-              <ContextMenuItem
-                variant="destructive"
-                onClick={() => handleDeleteSpace(space.id, space.name)}
-              >
-                <Trash2 className="mr-2 h-4 w-4" />
-                {t('deleteLabel')}
-              </ContextMenuItem>
-            )}
-          </ContextMenuContent>
-        </ContextMenu>
-      );
-    },
-    [
-      canManageSpaces,
-      handleDeleteSpace,
-      handleSpaceClick,
-      selectedSpaceId,
-      spaces,
-      t
-    ]
-  );
-
   return (
     <div className="flex min-w-0 flex-1 flex-col gap-3">
       <Select
@@ -302,7 +356,7 @@ const SpacesStrip = memo(() => {
               value={space.id.toString()}
               className="text-[#d7e2f0] data-[highlighted]:bg-[#206bc4]/35 data-[highlighted]:text-white data-[state=checked]:bg-[#1f4e8a]/45"
             >
-              {space.name}
+              <TSpaceSelectItemContent space={space} />
             </SelectItem>
           ))}
         </SelectContent>
@@ -318,7 +372,22 @@ const SpacesStrip = memo(() => {
         onMouseDown={handleMouseDown}
         onClickCapture={handleClickCapture}
       >
-        {spaces.map(renderSpaceAction)}
+        {spaces.map((space) => (
+          <SpaceAction
+            key={space.id}
+            space={space}
+            selected={space.id === selectedSpaceId}
+            canManageSpaces={canManageSpaces}
+            onClick={handleSpaceClick}
+            onEdit={(spaceId) => openDialog(Dialog.SPACE_EDITOR, { spaceId })}
+            onDelete={handleDeleteSpace}
+            editLabel={t('editLabel')}
+            deleteLabel={t('deleteLabel')}
+            muteLabel={t('muteSidebarItem')}
+            unmuteLabel={t('unmuteSidebarItem')}
+            failedUpdateMute={t('failedUpdateMute')}
+          />
+        ))}
         {renderCreateSpaceButton()}
       </div>
     </div>

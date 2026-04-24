@@ -9,6 +9,7 @@ import {
   onUserDeleteRoute,
   onUserJoinRoute,
   onUserLeaveRoute,
+  onUserMuteSettingsUpdateRoute,
   onUserUpdateRoute
 } from './events';
 import { getUserInfoRoute } from './get-user-info';
@@ -17,6 +18,7 @@ import { kickRoute } from './kick';
 import { removeRoleRoute } from './remove-role';
 import { unbanRoute } from './unban';
 import { updatePasswordRoute } from './update-password';
+import { updateMuteSettingsRoute } from './update-mute-settings';
 import { updateUserRoute } from './update-user';
 import { updateUserVisibilityRoute } from './update-visibility';
 
@@ -27,6 +29,7 @@ export const usersRouter = t.router({
   removeRole: removeRoleRoute,
   update: updateUserRoute,
   updateVisibility: updateUserVisibilityRoute,
+  updateMuteSettings: updateMuteSettingsRoute,
   updatePassword: updatePasswordRoute,
   getInfo: getUserInfoRoute,
   getAll: getUsersRoute,
@@ -37,6 +40,7 @@ export const usersRouter = t.router({
   onJoin: onUserJoinRoute,
   onLeave: onUserLeaveRoute,
   onUpdate: onUserUpdateRoute,
+  onMuteSettingsUpdate: onUserMuteSettingsUpdateRoute,
   onCreate: onUserCreateRoute,
   onDelete: onUserDeleteRoute
 });

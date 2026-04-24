@@ -2,8 +2,12 @@ import type { IRootState } from '@/features/store';
 import { useSelector } from 'react-redux';
 import {
   filteredUsersSelector,
+  isChannelMutedSelector,
+  isDmUserMutedSelector,
   isOwnUserSelector,
+  isSpaceMutedSelector,
   mentionableUsersSelector,
+  muteSettingsSelector,
   ownPublicUserSelector,
   ownUserIdSelector,
   ownUserSelector,
@@ -36,3 +40,14 @@ export const useUsernames = () => useSelector(usernamesSelector);
 export const useFilteredUsers = () => useSelector(filteredUsersSelector);
 
 export const useMentionableUsers = () => useSelector(mentionableUsersSelector);
+
+export const useMuteSettings = () => useSelector(muteSettingsSelector);
+
+export const useIsSpaceMuted = (spaceId: number) =>
+  useSelector((state: IRootState) => isSpaceMutedSelector(state, spaceId));
+
+export const useIsChannelMuted = (channelId: number) =>
+  useSelector((state: IRootState) => isChannelMutedSelector(state, channelId));
+
+export const useIsDmUserMuted = (userId: number) =>
+  useSelector((state: IRootState) => isDmUserMutedSelector(state, userId));

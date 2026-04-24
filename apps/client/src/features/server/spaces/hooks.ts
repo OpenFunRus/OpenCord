@@ -4,6 +4,7 @@ import {
   selectedSpaceIdSelector,
   selectedSpaceSelector,
   spaceByIdSelector,
+  spaceUnreadCountSelector,
   spacesSelector
 } from './selectors';
 
@@ -15,3 +16,6 @@ export const useSelectedSpace = () => useSelector(selectedSpaceSelector);
 
 export const useSpaceById = (spaceId: number) =>
   useSelector((state: IRootState) => spaceByIdSelector(state, spaceId));
+
+export const useSpaceUnreadCount = (spaceId: number) =>
+  useSelector((state: IRootState) => spaceUnreadCountSelector(state, spaceId));

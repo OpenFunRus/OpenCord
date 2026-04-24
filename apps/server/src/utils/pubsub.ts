@@ -10,6 +10,7 @@ import type {
   TJoinedPublicUser,
   TJoinedRole,
   TLogEntry,
+  TMuteSettings,
   TPublicServerSettings,
   TVoiceUserState
 } from '@opencord/shared';
@@ -39,6 +40,7 @@ type Events = {
   [ServerEvents.USER_LEAVE]: number;
   [ServerEvents.USER_CREATE]: TJoinedPublicUser;
   [ServerEvents.USER_UPDATE]: TJoinedPublicUser;
+  [ServerEvents.USER_MUTE_SETTINGS_UPDATE]: TMuteSettings;
   [ServerEvents.USER_DELETE]: {
     isWipe: boolean;
     userId: number;

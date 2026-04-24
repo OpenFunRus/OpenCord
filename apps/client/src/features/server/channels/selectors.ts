@@ -16,6 +16,8 @@ export const channelsSelector = createSelector(
     )
 );
 
+export const allChannelsSelector = (state: IRootState) => state.server.channels;
+
 export const selectedChannelIdSelector = (state: IRootState) =>
   state.server.selectedChannelId;
 
@@ -40,7 +42,7 @@ export const channelReadStateByIdSelector = (
 ) => state.server.readStatesMap[channelId] ?? 0;
 
 export const channelByIdSelector = createCachedSelector(
-  [channelsSelector, (_: IRootState, channelId: number) => channelId],
+  [allChannelsSelector, (_: IRootState, channelId: number) => channelId],
   (channels, channelId) => channels.find((channel) => channel.id === channelId)
 )((_, channelId: number) => channelId);
 
@@ -88,7 +90,7 @@ export const channelIdsSelector = createSelector(channelsSelector, (channels) =>
 );
 
 export const directMessagesUnreadCountSelector = createSelector(
-  [channelsSelector, channelsReadStatesSelector],
+  [allChannelsSelector, channelsReadStatesSelector],
   (channels, readStates) => {
     return channels
       .filter((channel) => channel.isDm)
