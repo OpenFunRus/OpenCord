@@ -34,7 +34,7 @@ ENV RUNNING_IN_DOCKER=true
 USER root
 
 COPY --from=builder /app/apps/server/build/out/opencord-linux-x64 /opencord
-COPY --from=builder /app/apps/server/assets/downloads /downloads
+COPY --from=builder /app/apps/server/downloads /downloads
 
 RUN chmod +x /opencord && \
     chown bun:bun /opencord && \
