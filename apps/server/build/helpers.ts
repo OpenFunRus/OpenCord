@@ -27,7 +27,6 @@ const windowsDesktopDownloadPath = path.join(
   rootCwd,
   'apps',
   'server',
-  'assets',
   'downloads',
   'opencord.exe'
 );
@@ -166,9 +165,16 @@ const compile = async ({ out, target }: TTarget) => {
     path.join(serverCwd, 'src', 'index.ts'),
     path.join(serverCwd, 'build', 'temp', 'drizzle.zip'),
     path.join(serverCwd, 'build', 'temp', 'interface.zip'),
-    path.join(serverCwd, 'build', 'temp', mediasoupBinary),
-    windowsDesktopDownloadPath
+    path.join(serverCwd, 'build', 'temp', mediasoupBinary)
   ];
+
+  try {
+    await fs.access(windowsDesktopDownloadPath);
+    entryPoints.push(windowsDesktopDownloadPath);
+  } catch {
+    // The desktop app can be absent on a clean checkout; the HTTP route
+    // still serves a sibling `downloads/opencord.exe` when present.
+  }
 
   if (target === 'bun-windows-x64') {
     const baseArgs = [

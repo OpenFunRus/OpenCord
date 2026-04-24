@@ -1,21 +1,16 @@
 import type { IRootState } from '@/features/store';
 import { createSelector } from '@reduxjs/toolkit';
-import { DELETED_USER_IDENTITY_AND_NAME, UserStatus } from '@opencord/shared';
+import {
+  canUserSeeTarget,
+  DELETED_USER_IDENTITY_AND_NAME,
+  UserStatus
+} from '@opencord/shared';
 import { createCachedSelector } from 're-reselect';
 
 const STATUS_ORDER: Record<string, number> = {
   online: 0,
   idle: 1,
   offline: 2
-};
-
-const hasSharedRole = (firstRoleIds: number[] = [], secondRoleIds: number[] = []) => {
-  if (firstRoleIds.length === 0 || secondRoleIds.length === 0) {
-    return false;
-  }
-
-  const firstSet = new Set(firstRoleIds);
-  return secondRoleIds.some((roleId) => firstSet.has(roleId));
 };
 
 export const ownUserIdSelector = (state: IRootState) => state.server.ownUserId;
@@ -30,9 +25,7 @@ export const visibleUsersSelector = createSelector(
       return users;
     }
 
-    return users.filter(
-      (user) => user.id === ownUserId || hasSharedRole(ownUser.roleIds, user.roleIds)
-    );
+    return users.filter((user) => canUserSeeTarget(ownUser, user));
   }
 );
 

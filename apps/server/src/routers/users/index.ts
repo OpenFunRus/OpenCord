@@ -18,6 +18,7 @@ import { removeRoleRoute } from './remove-role';
 import { unbanRoute } from './unban';
 import { updatePasswordRoute } from './update-password';
 import { updateUserRoute } from './update-user';
+import { updateUserVisibilityRoute } from './update-visibility';
 
 export const usersRouter = t.router({
   changeAvatar: changeAvatarRoute,
@@ -25,6 +26,7 @@ export const usersRouter = t.router({
   addRole: addRoleRoute,
   removeRole: removeRoleRoute,
   update: updateUserRoute,
+  updateVisibility: updateUserVisibilityRoute,
   updatePassword: updatePasswordRoute,
   getInfo: getUserInfoRoute,
   getAll: getUsersRoute,

@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'bun:test';
 import { initTest } from '../../__tests__/helpers';
 import { tdb } from '../../__tests__/setup';
-import { settings } from '../../db/schema';
+import { roles, settings, userRoles } from '../../db/schema';
 
 describe('dms router', () => {
   test('should create a direct message channel and allow messaging', async () => {
@@ -83,5 +83,57 @@ describe('dms router', () => {
     await expect(caller.dms.get()).rejects.toThrow(
       'Direct messages are disabled on this server'
     );
+  });
+
+  test('should respect custom direct message visibility lists', async () => {
+    const { caller: adminCaller } = await initTest(1);
+    const { caller: memberCaller } = await initTest(2);
+
+    await adminCaller.users.updateVisibility({
+      userId: 2,
+      canSeeUsersFromOwnRoles: false,
+      visibleUserIds: [1],
+      visibleRoleIds: []
+    });
+
+    await expect(memberCaller.dms.open({ userId: 3 })).rejects.toThrow(
+      'You cannot message this user'
+    );
+
+    const dmWithAllowedUser = await memberCaller.dms.open({ userId: 1 });
+    expect(dmWithAllowedUser.channelId).toBeDefined();
+  });
+
+  test('should allow direct messages through allowed roles', async () => {
+    const now = Date.now();
+    const [vipRole] = await tdb
+      .insert(roles)
+      .values({
+        name: 'VIP',
+        color: '#00aaff',
+        isPersistent: false,
+        isDefault: false,
+        createdAt: now
+      })
+      .returning();
+
+    await tdb.insert(userRoles).values({
+      userId: 3,
+      roleId: vipRole!.id,
+      createdAt: now
+    });
+
+    const { caller: adminCaller } = await initTest(1);
+    const { caller: memberCaller } = await initTest(2);
+
+    await adminCaller.users.updateVisibility({
+      userId: 2,
+      canSeeUsersFromOwnRoles: false,
+      visibleUserIds: [],
+      visibleRoleIds: [vipRole!.id]
+    });
+
+    const dm = await memberCaller.dms.open({ userId: 3 });
+    expect(dm.channelId).toBeDefined();
   });
 });

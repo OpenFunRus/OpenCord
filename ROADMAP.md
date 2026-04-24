@@ -783,6 +783,12 @@
 - `apps/server/build/out/opencord-server.exe`
   После серии правок shell, hover-состояний, picker/search цветов, fallback-аватарок и последних cleanup-фиксов верхней шапки/voice controls повторно подтверждена успешная пересборка основного Windows-бинаря `OpenCord`.
 
+- `apps/client/src/components/mod-view-sheet/details/index.tsx`, `apps/client/src/i18n/locales/ru/settings.json`, `apps/client/src/i18n/locales/en/settings.json`
+  Экран `Видимость и личные сообщения` в модерации пользователя переведён с режима toggle на список активных видимостей. Собственные роли пользователя теперь показываются по умолчанию как отдельные элементы списка, для каждой видимости доступно адресное удаление, а добавление ролей/пользователей вынесено в отдельную модалку с чекбоксами, синими полями поиска и выровненными отступами в стиле OpenCord.
+
+- `apps/server/src/helpers/paths.ts`, `apps/server/build/helpers.ts`, `apps/server/build/build-windows.ts`, `apps/server/build/build.ts`, `apps/windows/build.ps1`
+  Windows desktop binary для серверной раздачи переведён с `apps/server/assets/downloads/opencord.exe` на `apps/server/downloads/opencord.exe`. Это убирает лишнее создание пустой папки `assets/downloads` рядом с `opencord-server.exe`, а build-цепочка и embed-фолбэк теперь используют единый путь `downloads`.
+
 ## Как билдить OpenCord под Windows
 
 ### Подготовка

@@ -10,4 +10,5 @@ export * from './tables';
 export * from './test-ids';
 export * from './trpc';
 export * from './types';
+export * from './visibility';
 export * from './voice';

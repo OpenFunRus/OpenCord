@@ -90,6 +90,8 @@ bun run build:windows
 
 Результат сборки: `apps/server/build/out/opencord-server.exe`.
 
+Desktop `.exe` для раздачи хранится в `apps/server/downloads/opencord.exe`.
+
 ## Переменные окружения
 
 - `OPENCORD_PORT`
@@ -100,6 +102,12 @@ bun run build:windows
 - `OPENCORD_DATA_PATH`
 
 ## Примечания
+
+- По модерации и Windows build на 2026-04-24:
+  - блок `Видимость и личные сообщения` в модерации пользователя переведён на список текущих видимостей с кнопками удаления и модалкой `Добавить`;
+  - по умолчанию в списке видимости показываются собственные роли пользователя, а дополнительные роли и пользователи назначаются отдельно;
+  - модалка добавления доведена до OpenCord-style по отступам, search-полям и blue focus/selection;
+  - Windows desktop app для серверной раздачи перенесена в `apps/server/downloads/opencord.exe`, чтобы при запуске `opencord-server.exe` больше не создавалась пустая папка `assets/downloads`.
 
 - По client UX / dark tooltip polish на 2026-04-23:
   - локализация клиента сокращена до `ru/en`: каталог `apps/client/src/i18n/locales/zh` удалён;

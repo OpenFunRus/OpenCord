@@ -201,6 +201,25 @@ describe('users router', () => {
     ).rejects.toThrow('User not found');
   });
 
+  test('should update user visibility restrictions', async () => {
+    const { caller } = await initTest();
+
+    await caller.users.updateVisibility({
+      userId: 2,
+      canSeeUsersFromOwnRoles: false,
+      visibleUserIds: [1, 1],
+      visibleRoleIds: [OWNER_ROLE_ID]
+    });
+
+    const info = await caller.users.getInfo({
+      userId: 2
+    });
+
+    expect(info.user.canSeeUsersFromOwnRoles).toBe(false);
+    expect(info.user.visibleUserIds).toEqual([1]);
+    expect(info.user.visibleRoleIds).toEqual([OWNER_ROLE_ID]);
+  });
+
   test('should update own user profile', async () => {
     const { caller } = await initTest();
 

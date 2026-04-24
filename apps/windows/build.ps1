@@ -2,7 +2,7 @@ $ErrorActionPreference = "Stop"
 
 $project = Join-Path $PSScriptRoot "OpenCord.Windows.csproj"
 $output = Join-Path $PSScriptRoot "dist"
-$serverDownloads = Join-Path $PSScriptRoot "..\server\assets\downloads"
+$serverDownloads = Join-Path $PSScriptRoot "..\server\downloads"
 $desktopExe = Join-Path $output "opencord.exe"
 
 if (Test-Path $output) {

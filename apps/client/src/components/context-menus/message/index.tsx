@@ -105,7 +105,6 @@ const MessageContextMenu = memo(
     return (
       <>
         <ContextMenu
-          open={open}
           onOpenChange={(nextOpen) => {
             setOpen(nextOpen);
 

@@ -201,6 +201,19 @@ const users = sqliteTable(
       onDelete: 'set null'
     }),
     bio: text('bio'),
+    canSeeUsersFromOwnRoles: integer('can_see_users_from_own_roles', {
+      mode: 'boolean'
+    })
+      .notNull()
+      .default(true),
+    visibleUserIds: text('visible_user_ids', { mode: 'json' })
+      .$type<number[]>()
+      .notNull()
+      .default([]),
+    visibleRoleIds: text('visible_role_ids', { mode: 'json' })
+      .$type<number[]>()
+      .notNull()
+      .default([]),
     banned: integer('banned', { mode: 'boolean' }).notNull().default(false),
     banReason: text('ban_reason'),
     bannedAt: integer('banned_at'),

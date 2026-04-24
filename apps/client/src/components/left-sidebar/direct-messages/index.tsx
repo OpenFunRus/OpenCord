@@ -94,10 +94,6 @@ const DirectMessages = memo(() => {
   const channels = useChannels();
   const ownUserId = useOwnUserId();
   const selectedDmChannelId = useSelectedDmChannelId();
-  const visibleUserIds = useMemo(
-    () => new Set(users.map((user) => user.id)),
-    [users]
-  );
 
   const fetchConversations = useCallback(async () => {
     const trpc = getTRPCClient();
@@ -142,20 +138,15 @@ const DirectMessages = memo(() => {
     return () => sub.unsubscribe();
   }, [fetchConversations]);
 
-  const visibleConversations = useMemo(
-    () => conversations.filter((dm) => visibleUserIds.has(dm.userId)),
-    [conversations, visibleUserIds]
-  );
-
   const conversationUserIds = useMemo(
-    () => new Set(visibleConversations.map((dm) => dm.userId)),
-    [visibleConversations]
+    () => new Set(conversations.map((dm) => dm.userId)),
+    [conversations]
   );
 
   const q = query.trim().toLowerCase();
 
   const sortedRecentDms = useMemo(() => {
-    let list = [...visibleConversations].sort(
+    let list = [...conversations].sort(
       (a, b) =>
         Number(b.userId === ownUserId) - Number(a.userId === ownUserId) ||
         b.lastMessageAt - a.lastMessageAt
@@ -171,7 +162,7 @@ const DirectMessages = memo(() => {
       });
     }
     return list;
-  }, [visibleConversations, users, q, ownUserId]);
+  }, [conversations, users, q, ownUserId]);
 
   const { onlineOthers, offlineOthers } = useMemo(() => {
     const rest = users.filter(
@@ -227,7 +218,7 @@ const DirectMessages = memo(() => {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={t('searchUser')}
-          className="h-9 rounded-lg border-[#314055] bg-[#101926] text-[#d7e2f0] placeholder:text-[#6b7c94] focus-visible:border-[#4677b8] focus-visible:ring-[#4677b8]/25"
+          className="h-9 rounded-lg border-[#314055] bg-[#132033] text-[#d7e2f0] placeholder:text-[#8aa0bc] focus-visible:border-[#5f90d1] focus-visible:ring-[#5f90d1]/25"
         />
       </div>
 

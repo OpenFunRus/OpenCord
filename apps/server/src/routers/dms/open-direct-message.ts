@@ -1,4 +1,8 @@
-import { ChannelType, ServerEvents } from '@opencord/shared';
+import {
+  canUserDirectMessageTarget,
+  ChannelType,
+  ServerEvents
+} from '@opencord/shared';
 import { randomUUIDv7 } from 'bun';
 import { eq } from 'drizzle-orm';
 import { z } from 'zod';
@@ -6,6 +10,7 @@ import { db } from '../../db';
 import { publishChannelPermissions } from '../../db/publishers';
 import { getDirectMessageChannel, normalizePair } from '../../db/queries/dms';
 import { getSettings } from '../../db/queries/server';
+import { getPublicUserById } from '../../db/queries/users';
 import { channels, directMessages, users } from '../../db/schema';
 import { invariant } from '../../utils/invariant';
 import { protectedProcedure } from '../../utils/trpc';
@@ -25,19 +30,34 @@ const openDirectMessageRoute = protectedProcedure
     });
 
     if (input.userId !== ctx.userId) {
-      const targetUser = await db
-        .select({
-          id: users.id,
-          banned: users.banned
-        })
-        .from(users)
-        .where(eq(users.id, input.userId))
-        .limit(1)
-        .get();
+      const [viewer, targetUser] = await Promise.all([
+        getPublicUserById(ctx.userId),
+        db
+          .select({
+            id: users.id,
+            banned: users.banned
+          })
+          .from(users)
+          .where(eq(users.id, input.userId))
+          .limit(1)
+          .get()
+      ]);
 
       invariant(targetUser && !targetUser.banned, {
         code: 'NOT_FOUND',
         message: 'User not found'
+      });
+
+      const targetPublicUser = await getPublicUserById(input.userId);
+
+      invariant(viewer && targetPublicUser, {
+        code: 'NOT_FOUND',
+        message: 'User not found'
+      });
+
+      invariant(canUserDirectMessageTarget(viewer, targetPublicUser), {
+        code: 'FORBIDDEN',
+        message: 'You cannot message this user'
       });
     }
 

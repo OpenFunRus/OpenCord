@@ -49,7 +49,7 @@ const outDownloadsPath = path.join(outPath, 'downloads');
 const releasePath = path.join(outPath, 'release.json');
 const interfaceZipPath = path.join(buildTempPath, 'interface.zip');
 const drizzleZipPath = path.join(buildTempPath, 'drizzle.zip');
-const downloadsSourcePath = path.join(serverCwd, 'assets', 'downloads');
+const downloadsSourcePath = path.join(serverCwd, 'downloads');
 
 const pathExists = async (targetPath: string) => {
   try {
