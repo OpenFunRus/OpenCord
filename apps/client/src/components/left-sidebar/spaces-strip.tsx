@@ -61,24 +61,19 @@ const SpaceButton = ({
     type="button"
     onClick={onClick}
     className={cn(
-      'relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full border transition-all',
+      'relative h-14 w-14 shrink-0 rounded-full border transition-all',
       selected
         ? 'border-[#63a4ff] bg-[#1f4e8a] text-white ring-2 ring-inset ring-[#8cc0ff] shadow-[inset_0_0_18px_rgba(140,192,255,0.22)]'
         : 'border-[#314055] bg-[#101926] text-[#d7e2f0] hover:border-[#3d516b] hover:bg-[#1b2940] hover:text-white'
     )}
   >
-    <SpaceAvatar name={name} avatar={avatar} className="h-14 w-14" />
+    <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-full">
+      <SpaceAvatar name={name} avatar={avatar} className="h-full w-full" />
+    </div>
     {muted ? (
-      <div
-        className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center rounded-full bg-black/30"
-        aria-hidden
-      >
-        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-[#172231] bg-[#d0a12a] text-[#111827] shadow-[0_4px_14px_rgba(0,0,0,0.45)]">
-          <VolumeX className="h-4 w-4" strokeWidth={2.25} />
-        </div>
-      </div>
+      <MuteBadge className="pointer-events-none absolute -right-0.5 -top-0.5 z-20 ml-0 border border-[#172231] shadow-[0_6px_16px_rgba(208,161,42,0.45)]" />
     ) : unreadCount > 0 ? (
-      <div className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full border border-[#172231] bg-[#206bc4] px-1 text-[10px] font-semibold leading-none text-white shadow-[0_6px_16px_rgba(32,107,196,0.35)]">
+      <div className="pointer-events-none absolute -right-0.5 -top-0.5 z-20 flex h-5 min-w-5 items-center justify-center rounded-full border border-[#172231] bg-[#206bc4] px-1 text-[10px] font-semibold leading-none text-white shadow-[0_6px_16px_rgba(32,107,196,0.45)]">
         {unreadCount > 99 ? '99+' : unreadCount}
       </div>
     ) : null}
