@@ -52,7 +52,7 @@ const SearchUserDropdown = memo(
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align="end"
-          className="w-64 max-h-80 overflow-auto"
+          className="max-h-80 w-64 overflow-auto rounded-xl border-[#314055] bg-[#18283f] p-1 text-[#d7e2f0] shadow-[0_18px_42px_rgba(2,6,23,0.5)]"
         >
           <div className="p-2">
             <AutoFocus>
@@ -60,16 +60,21 @@ const SearchUserDropdown = memo(
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={t('searchUser')}
+                className="h-9 rounded-lg border-[#314055] bg-[#132033] text-[#d7e2f0] placeholder:text-[#8aa0bc] focus-visible:border-[#5f90d1] focus-visible:ring-[#5f90d1]/25"
               />
             </AutoFocus>
           </div>
           {allUsers.length === 0 && (
-            <div className="px-2 pb-2 text-xs text-muted-foreground">
+            <div className="px-2 pb-2 text-xs text-[#8fa2bb]">
               {t('noUsersAvailable')}
             </div>
           )}
           {allUsers.map((user) => (
-            <DropdownMenuItem key={user.id} onClick={() => onStartDm(user.id)}>
+            <DropdownMenuItem
+              key={user.id}
+              onClick={() => onStartDm(user.id)}
+              className="rounded-lg text-[#d7e2f0] data-[highlighted]:bg-[#206bc4]/35 data-[highlighted]:text-white"
+            >
               <div className="flex items-center gap-2">
                 <UserAvatar
                   userId={user.id}
@@ -81,7 +86,7 @@ const SearchUserDropdown = memo(
             </DropdownMenuItem>
           ))}
           {extraUsers > 0 && (
-            <div className="px-2 pb-2 text-xs text-muted-foreground">
+            <div className="px-2 pb-2 text-xs text-[#8fa2bb]">
               {t('andMore', { count: extraUsers })}
             </div>
           )}

@@ -35,7 +35,7 @@ const LeftSidebar = memo(({ className, isOpen = true }: TLeftSidebarProps) => {
       isOpen={isOpen}
       className={cn('h-full', className)}
     >
-      <div className="flex h-18 w-full items-center border-b border-[#2b3544] bg-[#172231]/90 px-4 py-2 backdrop-blur-sm">
+      <div className="w-full border-b border-[#2b3544] bg-[#172231]/90 px-4 py-3 backdrop-blur-sm">
         <SpacesStrip />
       </div>
       {publicSettings?.directMessagesEnabled && <DmButton />}

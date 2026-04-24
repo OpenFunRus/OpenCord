@@ -13,11 +13,24 @@ import {
   ContextMenuLabel,
   ContextMenuSeparator,
   ContextMenuTrigger,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
   Tooltip
 } from '@opencord/ui';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { getTRPCClient } from '@/lib/trpc';
-import { memo, type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
+import {
+  memo,
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 
@@ -51,6 +64,9 @@ const SpaceButton = ({
   </button>
 );
 
+const CREATE_SPACE_BUTTON_CLASSNAME =
+  'flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-dashed border-[#314055] bg-[#101926] text-[#8fa2bb] transition-colors hover:border-[#5f90d1] hover:bg-[#1b2940] hover:text-white';
+
 const SpacesStrip = memo(() => {
   const { t } = useTranslation('sidebar');
   const spaces = useSpaces();
@@ -65,6 +81,10 @@ const SpacesStrip = memo(() => {
   } | null>(null);
   const suppressClickRef = useRef(false);
   const [isDragging, setIsDragging] = useState(false);
+  const selectedSpace = useMemo(
+    () => spaces.find((space) => space.id === selectedSpaceId),
+    [selectedSpaceId, spaces]
+  );
 
   const handleWheel = useCallback((event: React.WheelEvent<HTMLDivElement>) => {
     const el = scrollRef.current;
@@ -186,78 +206,121 @@ const SpacesStrip = memo(() => {
     [canManageSpaces]
   );
 
-  return (
-    <div
-      ref={scrollRef}
-      className={cn(
-        'hide-scrollbar flex min-w-0 flex-1 items-center gap-3 overflow-x-auto overflow-y-hidden pl-1 pr-1 select-none',
-        isDragging ? 'cursor-grabbing' : 'cursor-grab'
-      )}
-      onWheel={handleWheel}
-      onMouseDown={handleMouseDown}
-      onClickCapture={handleClickCapture}
-    >
-      {spaces.map((space) => {
-        const button = (
-          <SpaceButton
-            name={space.name}
-            avatar={space.avatar}
-            selected={space.id === selectedSpaceId}
-            onClick={(event) =>
-              handleSpaceClick(event, space.id, space.id === selectedSpaceId)
-            }
-          />
-        );
+  const handleSelectSpaceChange = useCallback((value: string) => {
+    selectSpace(Number(value));
+  }, []);
 
-        if (!canManageSpaces) {
-          return (
-            <Tooltip key={space.id} content={space.name}>
-              <span className="inline-flex shrink-0">{button}</span>
-            </Tooltip>
-          );
-        }
-
-        return (
-          <ContextMenu key={space.id}>
-            <ContextMenuTrigger asChild>
-              <span className="inline-flex shrink-0">{button}</span>
-            </ContextMenuTrigger>
-            <ContextMenuContent>
-              <ContextMenuLabel>{space.name}</ContextMenuLabel>
-              <ContextMenuSeparator />
-              <ContextMenuItem
-                onClick={() => openDialog(Dialog.SPACE_EDITOR, { spaceId: space.id })}
-              >
-                <Pencil className="mr-2 h-4 w-4" />
-                {t('editLabel')}
-              </ContextMenuItem>
-              {!space.isDefault && (
-                <ContextMenuItem
-                  variant="destructive"
-                  onClick={() => handleDeleteSpace(space.id, space.name)}
-                >
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  {t('deleteLabel')}
-                </ContextMenuItem>
-              )}
-            </ContextMenuContent>
-          </ContextMenu>
-        );
-      })}
-
-      {canManageSpaces && (
+  const renderCreateSpaceButton = useCallback(
+    (className?: string) =>
+      canManageSpaces ? (
         <Tooltip content={t('createSpace')}>
           <button
             type="button"
             onClick={() => openDialog(Dialog.SPACE_EDITOR)}
-            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-dashed border-[#314055] bg-[#101926] text-[#8fa2bb] transition-colors hover:border-[#5f90d1] hover:bg-[#1b2940] hover:text-white"
+            className={cn(CREATE_SPACE_BUTTON_CLASSNAME, className)}
           >
             <div className="relative">
               <Plus className="h-5 w-5" />
             </div>
           </button>
         </Tooltip>
-      )}
+      ) : null,
+    [canManageSpaces, t]
+  );
+
+  const renderSpaceAction = useCallback(
+    (space: (typeof spaces)[number]) => {
+      const button = (
+        <SpaceButton
+          name={space.name}
+          avatar={space.avatar}
+          selected={space.id === selectedSpaceId}
+          onClick={(event) =>
+            handleSpaceClick(event, space.id, space.id === selectedSpaceId)
+          }
+        />
+      );
+
+      if (!canManageSpaces) {
+        return (
+          <Tooltip key={space.id} content={space.name}>
+            <span className="inline-flex shrink-0">{button}</span>
+          </Tooltip>
+        );
+      }
+
+      return (
+        <ContextMenu key={space.id}>
+          <ContextMenuTrigger asChild>
+            <span className="inline-flex shrink-0">{button}</span>
+          </ContextMenuTrigger>
+          <ContextMenuContent>
+            <ContextMenuLabel>{space.name}</ContextMenuLabel>
+            <ContextMenuSeparator />
+            <ContextMenuItem
+              onClick={() => openDialog(Dialog.SPACE_EDITOR, { spaceId: space.id })}
+            >
+              <Pencil className="mr-2 h-4 w-4" />
+              {t('editLabel')}
+            </ContextMenuItem>
+            {!space.isDefault && (
+              <ContextMenuItem
+                variant="destructive"
+                onClick={() => handleDeleteSpace(space.id, space.name)}
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                {t('deleteLabel')}
+              </ContextMenuItem>
+            )}
+          </ContextMenuContent>
+        </ContextMenu>
+      );
+    },
+    [
+      canManageSpaces,
+      handleDeleteSpace,
+      handleSpaceClick,
+      selectedSpaceId,
+      spaces,
+      t
+    ]
+  );
+
+  return (
+    <div className="flex min-w-0 flex-1 flex-col gap-3">
+      <Select
+        value={selectedSpaceId?.toString()}
+        onValueChange={handleSelectSpaceChange}
+      >
+        <SelectTrigger className="h-11 w-full rounded-xl border-[#314055] bg-[#132033] text-left text-[#d7e2f0] hover:border-[#3d516b] hover:bg-[#18283f] focus:border-[#5f90d1] focus:ring-1 focus:ring-[#5f90d1]/35">
+          <SelectValue placeholder={selectedSpace?.name} />
+        </SelectTrigger>
+        <SelectContent className="border-[#35506f] bg-[#1b2940] text-[#d7e2f0] shadow-[0_18px_42px_rgba(2,6,23,0.5)]">
+          {spaces.map((space) => (
+            <SelectItem
+              key={space.id}
+              value={space.id.toString()}
+              className="text-[#d7e2f0] data-[highlighted]:bg-[#206bc4]/35 data-[highlighted]:text-white data-[state=checked]:bg-[#1f4e8a]/45"
+            >
+              {space.name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
+      <div
+        ref={scrollRef}
+        className={cn(
+          'hide-scrollbar flex min-w-0 items-center gap-3 overflow-x-auto overflow-y-hidden pl-1 pr-1 select-none',
+          isDragging ? 'cursor-grabbing' : 'cursor-grab'
+        )}
+        onWheel={handleWheel}
+        onMouseDown={handleMouseDown}
+        onClickCapture={handleClickCapture}
+      >
+        {spaces.map(renderSpaceAction)}
+        {renderCreateSpaceButton()}
+      </div>
     </div>
   );
 });

@@ -62,7 +62,7 @@ const SearchDialog = memo(({ isOpen, close }: TSearchDialogProps) => {
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder={t('searchPlaceholder')}
                 autoFocus
-                className="h-10 border-[#314055] bg-[#101926] text-[#d7e2f0] placeholder:text-[#6e819a] focus-visible:border-[#3d516b] focus-visible:ring-[#206bc4]/20"
+                className="h-10 border-[#35506f] bg-[#1b2940] text-[#d7e2f0] placeholder:text-[#8aa0bc] focus-visible:border-[#5f90d1] focus-visible:ring-[#5f90d1]/25"
               />
             </div>
           </DialogHeader>

@@ -49,7 +49,7 @@ const UserControl = memo(() => {
           </div>
         </UserPopover>
 
-        <div className="flex items-center space-x-0.5">
+        <div className="flex items-center gap-1.5">
           <Button
             variant="ghost"
             size="icon"
