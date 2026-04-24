@@ -411,6 +411,8 @@
   "failedUnban": "Failed to unban user",
   "deleteBtn": "Delete",
   "modViewAssignRoleBtn": "Assign Role",
+  "modViewAccessibleSpacesTitle": "Spaces this user can access",
+  "modViewAccessibleSpacesEmpty": "No accessible spaces",
 
   "serverActivityTitle": "Server Activity",
   "serverActivityMessages": "Messages",

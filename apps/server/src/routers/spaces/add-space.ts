@@ -1,10 +1,10 @@
 import { Permission } from '@opencord/shared';
-import { sql } from 'drizzle-orm';
+import { inArray, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import { getSettings } from '../../db/queries/server';
 import { db } from '../../db';
 import { publishSpacesSync } from '../../db/publishers';
-import { categories, spaceRoles, spaces } from '../../db/schema';
+import { categories, spaceRoles, spaceUsers, spaces, users } from '../../db/schema';
 import { fileManager } from '../../utils/file-manager';
 import { invariant } from '../../utils/invariant';
 import { protectedProcedure } from '../../utils/trpc';
@@ -16,11 +16,27 @@ const addSpaceRoute = protectedProcedure
     z.object({
       name: z.string().min(1).max(32),
       avatarFileId: z.string().optional(),
-      roleIds: z.array(z.number()).default([])
+      roleIds: z.array(z.number()).default([]),
+      userIds: z.array(z.number()).default([])
     })
   )
   .mutation(async ({ ctx, input }) => {
     await ctx.needsPermission(Permission.MANAGE_SPACES);
+
+    const uniqueUserIds = [...new Set(input.userIds)];
+
+    if (uniqueUserIds.length > 0) {
+      const rows = await db
+        .select({ id: users.id })
+        .from(users)
+        .where(inArray(users.id, uniqueUserIds))
+        .all();
+
+      invariant(rows.length === uniqueUserIds.length, {
+        code: 'BAD_REQUEST',
+        message: 'One or more selected users were not found.'
+      });
+    }
 
     const [result] = await db
       .select({ maxPos: sql<number>`COALESCE(MAX(${spaces.position}), 0)` })
@@ -65,6 +81,14 @@ const addSpaceRoute = protectedProcedure
         await tx.insert(spaceRoles).values({
           spaceId: space.id,
           roleId,
+          createdAt: now
+        });
+      }
+
+      for (const userId of uniqueUserIds) {
+        await tx.insert(spaceUsers).values({
+          spaceId: space.id,
+          userId,
           createdAt: now
         });
       }

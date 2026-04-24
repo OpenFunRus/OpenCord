@@ -1,3 +1,4 @@
+import { SpaceAvatar } from '@/components/space-avatar';
 import { UserAvatar } from '@/components/user-avatar';
 import { setModViewOpen } from '@/features/app/actions';
 import {
@@ -6,16 +7,19 @@ import {
   requestTextInput
 } from '@/features/dialogs/actions';
 import { useUserRoles } from '@/features/server/hooks';
+import { useSpaces } from '@/features/server/spaces/hooks';
 import { useOwnUserId, useUserStatus } from '@/features/server/users/hooks';
 import { getTRPCClient } from '@/lib/trpc';
 import {
+  canUserAccessSpace,
   DELETED_USER_IDENTITY_AND_NAME,
   getTrpcError,
+  OWNER_ROLE_ID,
   UserStatus
 } from '@opencord/shared';
 import { Button } from '@opencord/ui';
 import { Gavel, Plus, Trash, UserMinus } from 'lucide-react';
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Dialog } from '../dialogs/dialogs';
@@ -28,8 +32,21 @@ const Header = memo(() => {
   const { user, refetch } = useModViewContext();
   const status = useUserStatus(user.id);
   const userRoles = useUserRoles(user.id);
+  const spaces = useSpaces();
   const isDeletedUser = user.identity === DELETED_USER_IDENTITY_AND_NAME;
   const isOwnUser = user.id === ownUserId;
+
+  const accessibleSpaces = useMemo(() => {
+    const roleIds = user.roleIds ?? [];
+
+    if (roleIds.includes(OWNER_ROLE_ID)) {
+      return [...spaces].sort((a, b) => a.position - b.position || a.id - b.id);
+    }
+
+    return spaces
+      .filter((space) => canUserAccessSpace(user.id, roleIds, space))
+      .sort((a, b) => a.position - b.position || a.id - b.id);
+  }, [spaces, user.id, user.roleIds]);
 
   const onRemoveRole = useCallback(
     async (roleId: number, roleName: string) => {
@@ -209,6 +226,27 @@ const Header = memo(() => {
           <Plus className="h-3 w-3" />
           {t('modViewAssignRoleBtn')}
         </Button>
+      </div>
+
+      <div className="rounded-sm border border-[#243140] bg-[#101926] p-3">
+        <div className="text-xs font-semibold uppercase tracking-[0.08em] text-[#6b7c94]">
+          {t('modViewAccessibleSpacesTitle')}
+        </div>
+        {accessibleSpaces.length === 0 ? (
+          <div className="mt-2 text-xs text-[#8fa2bb]">{t('modViewAccessibleSpacesEmpty')}</div>
+        ) : (
+          <ul className="mt-2 max-h-44 space-y-1.5 overflow-y-auto pr-1">
+            {accessibleSpaces.map((space) => (
+              <li
+                key={space.id}
+                className="flex min-w-0 items-center gap-2 rounded-md px-1 py-0.5 text-sm text-[#d7e2f0]"
+              >
+                <SpaceAvatar name={space.name} avatar={space.avatar} className="h-7 w-7 shrink-0" />
+                <span className="truncate">{space.name}</span>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );

@@ -1,4 +1,6 @@
 import { SpaceAvatar } from '@/components/space-avatar';
+import { UserAvatar } from '@/components/user-avatar';
+import { useAdminUsers } from '@/features/server/admin/hooks';
 import { requestConfirmation } from '@/features/dialogs/actions';
 import { useRoles } from '@/features/server/roles/hooks';
 import { useSpaceById } from '@/features/server/spaces/hooks';
@@ -18,7 +20,7 @@ import {
   Input
 } from '@opencord/ui';
 import { Trash2, Upload } from 'lucide-react';
-import { memo, useCallback, useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import type { TDialogBaseProps } from '../types';
@@ -32,14 +34,37 @@ const SpaceEditorDialog = memo(
     const { t } = useTranslation(['dialogs', 'sidebar', 'common']);
     const space = useSpaceById(spaceId ?? -1);
     const roles = useRoles();
+    const { users: adminUsers, loading: adminUsersLoading } = useAdminUsers();
     const openFilePicker = useFilePicker();
     const [name, setName] = useState('');
     const [avatarFileId, setAvatarFileId] = useState<string | undefined>(undefined);
     const [avatarUrl, setAvatarUrl] = useState<string | undefined>(undefined);
     const [selectedRoleIds, setSelectedRoleIds] = useState<number[]>([]);
+    const [selectedUserIds, setSelectedUserIds] = useState<number[]>([]);
+    const [roleQuery, setRoleQuery] = useState('');
+    const [userQuery, setUserQuery] = useState('');
     const [loading, setLoading] = useState(false);
 
     const isEditing = Boolean(spaceId);
+
+    const sortedAdminUsers = useMemo(
+      () => [...adminUsers].sort((a, b) => a.name.localeCompare(b.name)),
+      [adminUsers]
+    );
+
+    const filteredRoles = useMemo(() => {
+      const query = roleQuery.trim().toLowerCase();
+
+      return roles.filter((role) => !query || role.name.toLowerCase().includes(query));
+    }, [roleQuery, roles]);
+
+    const filteredUsers = useMemo(() => {
+      const query = userQuery.trim().toLowerCase();
+
+      return sortedAdminUsers.filter(
+        (user) => !query || user.name.toLowerCase().includes(query)
+      );
+    }, [sortedAdminUsers, userQuery]);
 
     useEffect(() => {
       if (isEditing && space) {
@@ -47,6 +72,9 @@ const SpaceEditorDialog = memo(
         setAvatarFileId(undefined);
         setAvatarUrl(space.avatar ? getFileUrl(space.avatar) : undefined);
         setSelectedRoleIds(space.roleIds);
+        setSelectedUserIds(space.userIds ?? []);
+        setRoleQuery('');
+        setUserQuery('');
         return;
       }
 
@@ -54,11 +82,20 @@ const SpaceEditorDialog = memo(
       setAvatarFileId(undefined);
       setAvatarUrl(undefined);
       setSelectedRoleIds([]);
+      setSelectedUserIds([]);
+      setRoleQuery('');
+      setUserQuery('');
     }, [isEditing, space, t]);
 
     const toggleRole = useCallback((roleId: number) => {
       setSelectedRoleIds((prev) =>
         prev.includes(roleId) ? prev.filter((id) => id !== roleId) : [...prev, roleId]
+      );
+    }, []);
+
+    const toggleUser = useCallback((userId: number) => {
+      setSelectedUserIds((prev) =>
+        prev.includes(userId) ? prev.filter((id) => id !== userId) : [...prev, userId]
       );
     }, []);
 
@@ -92,13 +129,15 @@ const SpaceEditorDialog = memo(
             spaceId,
             name,
             avatarFileId,
-            roleIds: selectedRoleIds
+            roleIds: selectedRoleIds,
+            userIds: selectedUserIds
           });
         } else {
           await trpc.spaces.add.mutate({
             name,
             avatarFileId,
-            roleIds: selectedRoleIds
+            roleIds: selectedRoleIds,
+            userIds: selectedUserIds
           });
         }
 
@@ -108,7 +147,16 @@ const SpaceEditorDialog = memo(
       } finally {
         setLoading(false);
       }
-    }, [avatarFileId, close, isEditing, name, selectedRoleIds, spaceId, t]);
+    }, [
+      avatarFileId,
+      close,
+      isEditing,
+      name,
+      selectedRoleIds,
+      selectedUserIds,
+      spaceId,
+      t
+    ]);
 
     const handleDelete = useCallback(async () => {
       if (!spaceId || !space || space.isDefault) {
@@ -178,8 +226,14 @@ const SpaceEditorDialog = memo(
             </Group>
 
             <Group label={t('dialogs:spaceRolesLabel')}>
+              <Input
+                value={roleQuery}
+                onChange={(e) => setRoleQuery(e.target.value)}
+                placeholder={t('dialogs:spaceRoleSearchPlaceholder')}
+                className="mb-2"
+              />
               <div className="grid max-h-56 gap-2 overflow-y-auto rounded-sm border border-[#2b3544] bg-[#101926] p-3">
-                {roles.map((role) => {
+                {filteredRoles.map((role) => {
                   const checked = selectedRoleIds.includes(role.id);
                   return (
                     <label
@@ -195,7 +249,7 @@ const SpaceEditorDialog = memo(
                         type="checkbox"
                         checked={checked}
                         onChange={() => toggleRole(role.id)}
-                        className="h-4 w-4"
+                        className="h-4 w-4 accent-[#5f90d1]"
                       />
                       <span
                         className="inline-flex h-3 w-3 rounded-full"
@@ -206,9 +260,47 @@ const SpaceEditorDialog = memo(
                   );
                 })}
               </div>
-              <p className="text-xs text-[#8fa2bb]">
-                {t('dialogs:spaceRolesHint')}
-              </p>
+            </Group>
+
+            <Group label={t('dialogs:spaceUsersLabel')}>
+              <Input
+                value={userQuery}
+                onChange={(e) => setUserQuery(e.target.value)}
+                placeholder={t('dialogs:spaceUserSearchPlaceholder')}
+                className="mb-2"
+              />
+              <div className="grid max-h-56 gap-2 overflow-y-auto rounded-sm border border-[#2b3544] bg-[#101926] p-3">
+                {adminUsersLoading ? (
+                  <p className="px-1 py-2 text-sm text-[#8fa2bb]">
+                    {t('dialogs:spaceUsersListLoading')}
+                  </p>
+                ) : (
+                  filteredUsers.map((user) => {
+                    const checked = selectedUserIds.includes(user.id);
+                    return (
+                      <label
+                        key={user.id}
+                        className={cn(
+                          'flex cursor-pointer items-center gap-3 rounded-sm border px-3 py-2 transition-colors',
+                          checked
+                            ? 'border-[#4677b8] bg-[#1b2b40] text-white'
+                            : 'border-[#314055] bg-[#0f1722] text-[#9fb2c8]'
+                        )}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={() => toggleUser(user.id)}
+                          className="h-4 w-4 accent-[#5f90d1]"
+                        />
+                        <UserAvatar userId={user.id} className="h-5 w-5" />
+                        <span className="truncate">{user.name}</span>
+                      </label>
+                    );
+                  })
+                )}
+              </div>
+              <p className="mt-2 text-xs text-[#8fa2bb]">{t('dialogs:spaceRolesHint')}</p>
             </Group>
           </div>
 

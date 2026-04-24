@@ -17,6 +17,7 @@ import {
   roles,
   settings,
   spaceRoles,
+  spaceUsers,
   spaces,
   userRoles,
   users
@@ -38,6 +39,7 @@ export type TMessage = InferSelectModel<typeof messages>;
 export type TMessageFile = InferSelectModel<typeof messageFiles>;
 export type TRolePermission = InferSelectModel<typeof rolePermissions>;
 export type TSpaceRole = InferSelectModel<typeof spaceRoles>;
+export type TSpaceUser = InferSelectModel<typeof spaceUsers>;
 export type TMessageReaction = InferSelectModel<typeof messageReactions>;
 export type TInvite = InferSelectModel<typeof invites>;
 export type TActivityLog = InferSelectModel<typeof activityLog>;
@@ -63,6 +65,7 @@ export type TIMessage = InferInsertModel<typeof messages>;
 export type TIMessageFile = InferInsertModel<typeof messageFiles>;
 export type TIRolePermission = InferInsertModel<typeof rolePermissions>;
 export type TISpaceRole = InferInsertModel<typeof spaceRoles>;
+export type TISpaceUser = InferInsertModel<typeof spaceUsers>;
 export type TIMessageReaction = InferInsertModel<typeof messageReactions>;
 export type TIInvite = InferInsertModel<typeof invites>;
 export type TIActivityLog = InferInsertModel<typeof activityLog>;
@@ -118,6 +121,7 @@ export type TJoinedRole = TRole & {
 export type TJoinedSpace = TSpace & {
   avatar: TFile | null;
   roleIds: number[];
+  userIds: number[];
 };
 
 export type TJoinedMessageReaction = TMessageReaction & {

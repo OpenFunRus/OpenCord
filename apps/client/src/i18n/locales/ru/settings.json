@@ -411,6 +411,8 @@
   "failedUnban": "Не удалось разблокировать пользователя",
   "deleteBtn": "Удалить",
   "modViewAssignRoleBtn": "Назначить роль",
+  "modViewAccessibleSpacesTitle": "Пространства, доступные пользователю",
+  "modViewAccessibleSpacesEmpty": "Нет доступных пространств",
 
   "serverActivityTitle": "Активность сервера",
   "serverActivityMessages": "Сообщения",

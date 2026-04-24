@@ -6,10 +6,10 @@ import type {
   TJoinedSpace,
   TReadStateMap
 } from '@opencord/shared';
-import { OWNER_ROLE_ID } from '@opencord/shared';
+import { canUserAccessSpace, OWNER_ROLE_ID } from '@opencord/shared';
 import { eq, inArray } from 'drizzle-orm';
 import { db } from '..';
-import { categories, files, spaceRoles, spaces, userRoles } from '../schema';
+import { categories, files, spaceRoles, spaceUsers, spaces, userRoles } from '../schema';
 import {
   getAllChannelUserPermissions,
   getChannelsForUser,
@@ -58,10 +58,28 @@ const getSpaces = async (): Promise<TJoinedSpace[]> => {
     {} as Record<number, number[]>
   );
 
+  const userRows = await db
+    .select({
+      spaceId: spaceUsers.spaceId,
+      userId: spaceUsers.userId
+    })
+    .from(spaceUsers)
+    .all();
+
+  const userIdsBySpace = userRows.reduce(
+    (acc, { spaceId, userId }) => {
+      if (!acc[spaceId]) acc[spaceId] = [];
+      acc[spaceId]!.push(userId);
+      return acc;
+    },
+    {} as Record<number, number[]>
+  );
+
   return spaceRows.map((space) => ({
     ...space,
     avatar: space.avatarId ? avatarMap.get(space.avatarId) ?? null : null,
-    roleIds: roleIdsBySpace[space.id] ?? []
+    roleIds: roleIdsBySpace[space.id] ?? [],
+    userIds: userIdsBySpace[space.id] ?? []
   }));
 };
 
@@ -74,13 +92,7 @@ const getVisibleSpacesForUser = async (userId: number): Promise<TJoinedSpace[]> 
   }
 
   return allSpaces
-    .filter((space) => {
-      if (space.roleIds.length === 0) {
-        return true;
-      }
-
-      return space.roleIds.some((roleId) => userRoleIds.includes(roleId));
-    })
+    .filter((space) => canUserAccessSpace(userId, userRoleIds, space))
     .sort((a, b) => a.position - b.position || a.id - b.id);
 };
 
@@ -95,6 +107,11 @@ const getAffectedUserIdsForSpace = async (spaceId: number): Promise<number[]> =>
     .from(spaceRoles)
     .where(eq(spaceRoles.spaceId, spaceId));
 
+  const linkedUsers = await db
+    .select({ userId: spaceUsers.userId })
+    .from(spaceUsers)
+    .where(eq(spaceUsers.spaceId, spaceId));
+
   const ownerRows = await db
     .select({ userId: userRoles.userId })
     .from(userRoles)
@@ -102,24 +119,31 @@ const getAffectedUserIdsForSpace = async (spaceId: number): Promise<number[]> =>
 
   const affectedUserIds = new Set(ownerRows.map((row) => row.userId));
 
-  if (linkedRoles.length === 0) {
+  const hasRoleRestriction = linkedRoles.length > 0;
+  const hasUserRestriction = linkedUsers.length > 0;
+
+  if (!hasRoleRestriction && !hasUserRestriction) {
     const allUserRows = await db.select({ userId: userRoles.userId }).from(userRoles).all();
 
     allUserRows.forEach((row) => affectedUserIds.add(row.userId));
     return Array.from(affectedUserIds);
   }
 
-  const roleIds = linkedRoles.map((row) => row.roleId);
-  const matchingRoleRows = await db
-    .select({ userId: userRoles.userId, roleId: userRoles.roleId })
-    .from(userRoles)
-    .where(inArray(userRoles.roleId, roleIds));
+  linkedUsers.forEach((row) => affectedUserIds.add(row.userId));
 
-  matchingRoleRows.forEach((row) => {
-    if (roleIds.includes(row.roleId)) {
-      affectedUserIds.add(row.userId);
-    }
-  });
+  if (hasRoleRestriction) {
+    const roleIds = linkedRoles.map((row) => row.roleId);
+    const matchingRoleRows = await db
+      .select({ userId: userRoles.userId, roleId: userRoles.roleId })
+      .from(userRoles)
+      .where(inArray(userRoles.roleId, roleIds));
+
+    matchingRoleRows.forEach((row) => {
+      if (roleIds.includes(row.roleId)) {
+        affectedUserIds.add(row.userId);
+      }
+    });
+  }
 
   return Array.from(affectedUserIds);
 };

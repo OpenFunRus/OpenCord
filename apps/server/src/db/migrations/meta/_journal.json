@@ -85,6 +85,13 @@
       "when": 1777100000000,
       "tag": "0011_user_mute_settings",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1777200000000,
+      "tag": "0012_space_users",
+      "breakpoints": true
     }
   ]
 }

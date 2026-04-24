@@ -262,6 +262,24 @@ const userRoles = sqliteTable(
   ]
 );
 
+const spaceUsers = sqliteTable(
+  'space_users',
+  {
+    spaceId: integer('space_id')
+      .notNull()
+      .references(() => spaces.id, { onDelete: 'cascade' }),
+    userId: integer('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    createdAt: integer('created_at').notNull()
+  },
+  (t) => [
+    primaryKey({ columns: [t.spaceId, t.userId] }),
+    index('space_users_space_idx').on(t.spaceId),
+    index('space_users_user_idx').on(t.userId)
+  ]
+);
+
 const logins = sqliteTable(
   'logins',
   {
@@ -561,6 +579,7 @@ export {
   roles,
   settings,
   spaceRoles,
+  spaceUsers,
   spaces,
   userRoles,
   users

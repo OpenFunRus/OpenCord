@@ -1,11 +1,11 @@
 import { Permission } from '@opencord/shared';
-import { eq } from 'drizzle-orm';
+import { eq, inArray } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '../../db';
 import { removeFile } from '../../db/mutations/files';
 import { publishSpacesSync } from '../../db/publishers';
 import { getSettings } from '../../db/queries/server';
-import { spaceRoles, spaces } from '../../db/schema';
+import { spaceRoles, spaceUsers, spaces, users } from '../../db/schema';
 import { fileManager } from '../../utils/file-manager';
 import { invariant } from '../../utils/invariant';
 import { protectedProcedure } from '../../utils/trpc';
@@ -16,11 +16,27 @@ const updateSpaceRoute = protectedProcedure
       spaceId: z.number().min(1),
       name: z.string().min(1).max(32),
       avatarFileId: z.string().optional(),
-      roleIds: z.array(z.number()).default([])
+      roleIds: z.array(z.number()).default([]),
+      userIds: z.array(z.number()).default([])
     })
   )
   .mutation(async ({ ctx, input }) => {
     await ctx.needsPermission(Permission.MANAGE_SPACES);
+
+    const uniqueUserIds = [...new Set(input.userIds)];
+
+    if (uniqueUserIds.length > 0) {
+      const rows = await db
+        .select({ id: users.id })
+        .from(users)
+        .where(inArray(users.id, uniqueUserIds))
+        .all();
+
+      invariant(rows.length === uniqueUserIds.length, {
+        code: 'BAD_REQUEST',
+        message: 'One or more selected users were not found.'
+      });
+    }
 
     const existingSpace = await db
       .select()
@@ -70,11 +86,20 @@ const updateSpaceRoute = protectedProcedure
         .where(eq(spaces.id, input.spaceId));
 
       await tx.delete(spaceRoles).where(eq(spaceRoles.spaceId, input.spaceId));
+      await tx.delete(spaceUsers).where(eq(spaceUsers.spaceId, input.spaceId));
 
       for (const roleId of [...new Set(input.roleIds)]) {
         await tx.insert(spaceRoles).values({
           spaceId: input.spaceId,
           roleId,
+          createdAt: now
+        });
+      }
+
+      for (const userId of uniqueUserIds) {
+        await tx.insert(spaceUsers).values({
+          spaceId: input.spaceId,
+          userId,
           createdAt: now
         });
       }
