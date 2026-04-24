@@ -301,12 +301,33 @@ body,
   min-height: 1em;
 }
 
+/* ~3s total: three 1s cycles, each ~0.5s ramp up / ~0.5s ramp down (ease-in-out) */
+@keyframes message-jump-highlight-pulse {
+  0%,
+  100% {
+    background-color: #1a2332;
+    border-color: rgba(47, 122, 209, 0.18);
+    box-shadow:
+      inset 3px 0 0 rgba(32, 107, 196, 0.15),
+      0 0 0 1px rgba(47, 122, 209, 0.06);
+  }
+  50% {
+    background-color: #1e3a63;
+    border-color: rgba(74, 148, 230, 0.55);
+    box-shadow:
+      inset 3px 0 0 #3d84d9,
+      0 0 12px rgba(47, 122, 209, 0.35),
+      0 0 0 1px rgba(90, 160, 240, 0.28);
+  }
+}
+
 .message-jump-highlight {
-  background-color: #223146 !important;
-  border-color: rgba(47, 122, 209, 0.38) !important;
+  animation: message-jump-highlight-pulse 1s ease-in-out 3;
+  background-color: #1a2332 !important;
+  border-color: rgba(47, 122, 209, 0.22) !important;
   box-shadow:
-    inset 3px 0 0 #206bc4,
-    0 0 0 1px rgba(47, 122, 209, 0.14);
+    inset 3px 0 0 rgba(32, 107, 196, 0.2),
+    0 0 0 1px rgba(47, 122, 209, 0.1);
 }
 
 .react-tweet-theme {

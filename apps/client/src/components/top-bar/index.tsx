@@ -13,6 +13,7 @@ import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PluginSlotRenderer } from '../plugin-slot-renderer';
 import { ServerDropdownMenu } from '../left-sidebar/server-dropdown';
+import { InboxBell } from './inbox-bell';
 import { ServerSearch } from './server-search';
 import { VoiceOptionsController } from './voice-options-controller';
 import { VolumeController } from './volume-controller';
@@ -99,6 +100,7 @@ const TopBar = memo(({ onToggleLeftSidebar, isLeftOpen }: TTopBarProps) => {
             </Button>
           </>
         )}
+        <InboxBell />
         <ServerDropdownMenu className="!bg-[#172231]" />
       </div>
     </div>

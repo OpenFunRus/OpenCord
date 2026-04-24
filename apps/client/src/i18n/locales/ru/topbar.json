@@ -18,5 +18,12 @@
   "stream_other": "потока",
   "noRemoteAudioStreams": "Удаленные аудиопотоки недоступны.",
   "volumeControls": "Управление громкостью",
-  "externalAudio": "Внешнее аудио"
+  "externalAudio": "Внешнее аудио",
+  "inboxTitle": "Входящие",
+  "inboxEmpty": "Нет непрочитанных сообщений.",
+  "inboxMarkAllRead": "Отметить всё как прочитанное",
+  "inboxMarkAllFailed": "Не удалось отметить всё как прочитанное.",
+  "inboxDmSpace": "Личные сообщения",
+  "inboxUnknownSpace": "Пространство",
+  "inboxUnknownUser": "Неизвестный пользователь"
 }

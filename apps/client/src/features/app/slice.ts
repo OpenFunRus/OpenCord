@@ -25,6 +25,8 @@ export interface TAppState {
   messageJumpTarget: TMessageJumpToTarget | undefined;
   voiceChatSidebarOpen: boolean;
   voiceChatChannelId: number | undefined;
+  /** Message ids the user cleared from the inbox without relying on read-state alone */
+  inboxDismissedMessageIds: number[];
 }
 
 const initialState: TAppState = {
@@ -62,7 +64,8 @@ const initialState: TAppState = {
   ),
   voiceChatChannelId: getLocalStorageItemAsNumber(
     LocalStorageKey.VOICE_CHAT_SIDEBAR_CHANNEL_ID
-  )
+  ),
+  inboxDismissedMessageIds: []
 };
 
 export const appSlice = createSlice({
@@ -142,6 +145,14 @@ export const appSlice = createSlice({
     ) => {
       state.voiceChatSidebarOpen = action.payload.open;
       state.voiceChatChannelId = action.payload.channelId;
+    },
+    dismissInboxMessage: (state, action: PayloadAction<number>) => {
+      if (!state.inboxDismissedMessageIds.includes(action.payload)) {
+        state.inboxDismissedMessageIds.push(action.payload);
+      }
+    },
+    clearInboxDismissed: (state) => {
+      state.inboxDismissedMessageIds = [];
     }
   }
 });

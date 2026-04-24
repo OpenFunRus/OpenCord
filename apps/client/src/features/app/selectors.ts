@@ -45,6 +45,9 @@ export const browserNotificationsForDmsSelector = (state: IRootState) =>
 export const messageJumpTargetSelector = (state: IRootState) =>
   state.app.messageJumpTarget;
 
+export const inboxDismissedMessageIdsSelector = (state: IRootState) =>
+  state.app.inboxDismissedMessageIds;
+
 export const voiceChatSidebarOpenSelector = (state: IRootState) =>
   state.app.voiceChatSidebarOpen;
 

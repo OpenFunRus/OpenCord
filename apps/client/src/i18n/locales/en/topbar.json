@@ -16,5 +16,12 @@
   "stream_other": "streams",
   "noRemoteAudioStreams": "No remote audio streams available.",
   "volumeControls": "Volume Controls",
-  "externalAudio": "External Audio"
+  "externalAudio": "External Audio",
+  "inboxTitle": "Inbox",
+  "inboxEmpty": "No unread messages.",
+  "inboxMarkAllRead": "Mark all as read",
+  "inboxMarkAllFailed": "Could not mark everything as read.",
+  "inboxDmSpace": "Direct messages",
+  "inboxUnknownSpace": "Space",
+  "inboxUnknownUser": "Unknown user"
 }

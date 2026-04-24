@@ -188,6 +188,12 @@ export const setMessageJumpTarget = (
   payload: TMessageJumpToTarget | undefined
 ) => store.dispatch(appSliceActions.setMessageJumpTarget(payload));
 
+export const dismissInboxMessage = (messageId: number) =>
+  store.dispatch(appSliceActions.dismissInboxMessage(messageId));
+
+export const clearInboxDismissed = () =>
+  store.dispatch(appSliceActions.clearInboxDismissed());
+
 export const openVoiceChatSidebar = (channelId: number) => {
   store.dispatch(
     appSliceActions.setVoiceChatSidebar({ open: true, channelId })
